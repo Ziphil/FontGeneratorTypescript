@@ -8,6 +8,9 @@ import {
   VekosGenerator
 } from "./font/vekos/generator";
 import {
+  Font
+} from "./module";
+import {
   FontWriter
 } from "./module/writer";
 
@@ -26,8 +29,9 @@ export class Main {
   }
 
   private debug(): void {
-    let font = new VekosGenerator({weightConst: 1, stretchConst: 1, contrastRatio: 0.75});
-    FontWriter.writeGlyph(font.glyphLes(), "out/test.svg");
+    let generator = new VekosGenerator({weightConst: 1, stretchConst: 1, contrastRatio: 0.75});
+    let font = new Font(generator, "Vekos", {weight: "regular", slope: "upright", stretch: "normal"});
+    FontWriter.writeFont(font);
   }
 
 }

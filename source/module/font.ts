@@ -26,7 +26,7 @@ export class Font {
   }
 
   public get postScriptName(): string {
-    return this.getModifiers(false).join("").replaceAll(" ", "");
+    return this.getModifiers(false).join("").replace(/\s+/g, "");
   }
 
   public get fullName(): string {
@@ -45,11 +45,7 @@ export class Font {
   }
 
   private static stringifyFontWeight(weight: FontWeight): string {
-    if (weight === "regular") {
-      return "";
-    } else {
-      return weight.charAt(0).toUpperCase() + weight.slice(1);
-    }
+    return weight.charAt(0).toUpperCase() + weight.slice(1);
   }
 
   private static stringifyFontSlope(slope: FontSlope): string {
