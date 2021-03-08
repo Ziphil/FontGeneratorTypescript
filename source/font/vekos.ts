@@ -195,6 +195,48 @@ export class VekosFont extends Font<VekosConfig> {
     return glyph;
   }
 
+  // y の文字の下半分の内側に曲がる部分について、その最下部の外側の端と丸い部分の端との水平距離を表します。
+  // 曲線の外側の曲がり具合を指定しているので、線の太さが大きくなるとより内側に曲がることに注意してください。
+  private get yesLegBend(): number {
+    return this.bowlWidth * 0.15;
+  }
+
+  // y の文字の下半分にある曲線を、上端から下端への向きで生成します。
+  public partYesLeg(): Part {
+    let bend = this.yesLegBend;
+    let height = this.mean / 2;
+    let leftCont = height * 0.6;
+    let part = Part.bezier($(0, 0), $(0, leftCont), null, $(bend, height));
+    return part;
+  }
+
+  // y の文字と同じ形を生成します。
+  // 原点は全体の中央にあるので、回転や反転で変化しません。
+  public partYes(): Part {
+    let part = Part.seq(
+      this.partYesLeg(),
+      this.partCut(),
+      this.partYesLeg().reverseZero(),
+      this.partInnerBowl(),
+      this.partInnerBowl().reflectHorZero().reverseZero(),
+      this.partYesLeg().reflectHorZero(),
+      this.partCut(),
+      this.partYesLeg().reflectHorZero().reverseZero(),
+      this.partOuterBowl().reflectHorZero(),
+      this.partOuterBowl().reverseZero()
+    );
+    part.moveZeroTo($(this.bowlWidth / 2, 0));
+    return part;
+  }
+
+  public glyphYes(): Glyph {
+    let part = Part.union(
+      this.partYes().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
 }
 
 
