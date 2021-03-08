@@ -13,6 +13,10 @@ export class Generator<C = unknown> {
     this.config = config;
   }
 
+  public getChars(): Array<string> {
+    return [];
+  }
+
   public glyph(char: string): Glyph | null {
     return null;
   }
