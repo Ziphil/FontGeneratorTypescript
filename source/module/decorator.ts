@@ -58,6 +58,17 @@ export function glyph(...chars: Array<string>): GlyphMethodDecorator {
 
 export function part(): PartMethodDecorator {
   let decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>): void {
+    let original = descriptor.value!;
+    descriptor.value = function (this: Generator): Part {
+      let cachedPart = this.partCache.get(name);
+      if (cachedPart === undefined) {
+        let part = original.apply(this);
+        this.partCache.set(name, part.clone());
+        return part;
+      } else {
+        return cachedPart.clone();
+      }
+    };
   };
   return decorator;
 }

@@ -9,7 +9,8 @@ import {
   Part,
   PathUtil,
   generator,
-  glyph
+  glyph,
+  part
 } from "../../module";
 
 
@@ -54,6 +55,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   // k, p, c, l, a などの文字に共通する丸い部分の外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
+  @part()
   public partOuterBowl(): Part {
     let width = this.bowlWidth / 2;
     let height = this.mean / 2 + this.overshoot;
@@ -64,6 +66,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   // k, p, c, l, a などの文字に共通する丸い部分の内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
+  @part()
   public partInnerBowl(): Part {
     let width = this.bowlWidth / 2 - this.horThickness;
     let height = this.mean / 2 - this.verThickness + this.overshoot;
@@ -75,6 +78,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // k, p, c, l, a などの文字に共通する丸い部分を生成します。
   // 原点は全体の中央にあるので、回転や反転で変化しません。
+  @part()
   public partBowl(): Part {
     let outerPart = Part.seq(
       this.partOuterBowl().reflectVerZero(),
@@ -139,6 +143,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   // l の文字のディセンダーの左側の曲線を、上端から下端への向きで生成します。
+  @part()
   public partLeftLesTail(): Part {
     let bend = this.lesTailBend - this.horThickness / 2 + this.lesTailCorrection;
     let virtualBend = this.lesTailBend;
@@ -150,6 +155,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   // l の文字のディセンダーの右側の曲線を、上端から下端への向きで生成します。
+  @part()
   public partRightLesTail(): Part {
     let bend = this.lesTailBend - this.horThickness / 2;
     let height = this.mean / 2 + this.descent;
@@ -160,6 +166,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   // 文字の書き始めや書き終わりの位置にある水平に切られた部分を、左端から右端への向きで生成します。
+  @part()
   public partCut(): Part {
     let part = Part.line($(0, 0), $(this.horThickness, 0));
     return part;
@@ -169,6 +176,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 反転や回転を施すことで、c などの文字のディセンダーや k, p などの文字のアセンダーとしても使えます。
   // 丸い部分と重ねたときに重なった部分が太く見えすぎないように、左側を少し細く補正してあります。
   // 原点は補正がないとしたときの左上の角にあります。
+  @part()
   public partLesTail(): Part {
     let part = Part.seq(
       this.partLeftLesTail(),
@@ -182,6 +190,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // l の文字と同じ形を生成します。
   // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
+  @part()
   public partLes(): Part {
     let part = Part.union(
       this.partBowl(),
@@ -206,6 +215,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   // y の文字の下半分にある曲線を、上端から下端への向きで生成します。
+  @part()
   public partYesLeg(): Part {
     let bend = this.yesLegBend;
     let height = this.mean / 2;
@@ -216,6 +226,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // y の文字と同じ形を生成します。
   // 原点は全体の中央にあるので、回転や反転で変化しません。
+  @part()
   public partYes(): Part {
     let part = Part.seq(
       this.partYesLeg(),
