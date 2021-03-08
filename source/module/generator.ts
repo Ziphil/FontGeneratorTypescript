@@ -1,5 +1,9 @@
 //
 
+import {
+  Glyph
+} from "./glyph";
+
 
 export class Generator<C = unknown> {
 
@@ -7,6 +11,10 @@ export class Generator<C = unknown> {
 
   public constructor(config: C) {
     this.config = config;
+  }
+
+  public glyph(char: string): Glyph | null {
+    return null;
   }
 
 }

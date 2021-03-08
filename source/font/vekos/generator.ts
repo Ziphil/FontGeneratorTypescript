@@ -7,10 +7,13 @@ import {
   Glyph,
   Metrics,
   Part,
-  PathUtil
+  PathUtil,
+  generator,
+  glyph
 } from "../../module";
 
 
+@generator()
 export class VekosGenerator extends Generator<VekosConfig> {
 
   private readonly descent: number = 250;
@@ -187,6 +190,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return part;
   }
 
+  @glyph("l")
   public glyphLes(): Glyph {
     let part = Part.union(
       this.partLes().translate($(this.bowlWidth / 2, -this.mean / 2))
@@ -229,6 +233,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return part;
   }
 
+  @glyph("y")
   public glyphYes(): Glyph {
     let part = Part.union(
       this.partYes().translate($(this.bowlWidth / 2, -this.mean / 2))
