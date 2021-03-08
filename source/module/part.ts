@@ -19,14 +19,14 @@ export class Part extends CompoundPath {
   }
 
   public static lineAsPath(startPoint: Point, endPoint: Point): Path {
-    let path = new Path([startPoint, endPoint]);
+    let path = new Path({segments: [startPoint, endPoint]});
     return path;
   }
 
   public static bezierAsPath(startPoint: Point, startHandle: Point | null, endHandle: Point | null, endPoint: Point): Path {
     let startSegment = new Segment(startPoint, undefined, startHandle ?? undefined);
     let endSegment = new Segment(endPoint, endHandle ?? undefined, undefined);
-    let path = new Path([startSegment, endSegment]);
+    let path = new Path({segments: [startSegment, endSegment]});
     return path;
   }
 
@@ -43,13 +43,12 @@ export class Part extends CompoundPath {
   }
 
   public static seq(...parts: Array<Part>): Part {
-    let path = new Path();
     let point = new Point(0, 0);
+    let path = new Path();
     for (let part of parts) {
       if (part.children.length === 1 && part.firstChild instanceof Path) {
         let child = part.firstChild;
         child.translate(point);
-        child.remove();
         point = child.lastSegment.point;
         path.addSegments(child.segments);
       } else {
@@ -67,9 +66,8 @@ export class Part extends CompoundPath {
   }
 
   public static union(...parts: Array<PathItem>): Part {
-    let unitedPart = parts.reduce((previousPart, part) => previousPart.unite(part, {insert: false}));
+    let unitedPart = parts.reduce((previousPart, part) => previousPart.unite(part));
     let resultPart = new Part({children: [unitedPart]});
-    parts[0].remove();
     return resultPart;
   }
 

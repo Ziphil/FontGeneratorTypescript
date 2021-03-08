@@ -117,7 +117,6 @@ export class VekosFont extends Font<VekosConfig> {
     let nearestPoint = path.getNearestPoint(basePoint);
     let angle = nearestPoint.subtract(basePoint).getAngle($(1, 0)) - 90;
     let error = Math.abs(nearestPoint.getDistance(basePoint) - this.calcIdealThickness(angle) / 2);
-    path.remove();
     return error;
   }
 

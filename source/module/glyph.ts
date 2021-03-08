@@ -22,7 +22,6 @@ export class Glyph {
     let clonedPart = part.clone();
     let width = part.bounds.width + bearings.left + bearings.right;
     clonedPart.translate(new Point(bearings.left, metrics.ascent));
-    clonedPart.remove();
     let glyph = new Glyph(clonedPart, metrics, width);
     return glyph;
   }

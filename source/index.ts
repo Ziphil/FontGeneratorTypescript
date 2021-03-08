@@ -16,7 +16,8 @@ export class Main {
 
   public main(): void {
     let font = new VekosFont({weightConst: 1, stretchConst: 1, contrastRatio: 0.75});
-    let size = new Size(0, 0);
+    let size = new Size(1000, 1000);
+    paper.settings.insertItems = false;
     paper.setup(size);
     FontWriter.writeGlyph(font.glyphLes(), "out/test.svg");
   }
