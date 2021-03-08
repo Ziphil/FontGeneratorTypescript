@@ -7,15 +7,22 @@ import {
 import {
   Glyph
 } from "./glyph";
+import {
+  Part
+} from "./part";
 
 
 const KEY = Symbol("key");
 
 type Metadata = Map<string, string | symbol>;
-type GeneratorDecorator = (clazz: new(config: never) => Generator) => void;
+type GeneratorDecorator = (clazz: new(...args: any) => Generator) => void;
+type GlyphMethodDecorator = (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<GlyphMethod>) => void;
+type PartMethodDecorator = (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>) => void;
+type GlyphMethod = () => Glyph;
+type PartMethod = () => Part;
 
 export function generator(): GeneratorDecorator {
-  let decorator = function (clazz: new(config: never) => Generator): void {
+  let decorator = function (clazz: new(...args: any) => Generator): void {
     let metadata = Reflect.getMetadata(KEY, clazz.prototype) as Metadata;
     clazz.prototype.glyph = function (this: Generator, char: string): Glyph | null {
       let anyThis = this as any;
@@ -31,8 +38,8 @@ export function generator(): GeneratorDecorator {
   return decorator;
 }
 
-export function glyph(...chars: Array<string>): MethodDecorator {
-  let decorator = function (target: object, name: string | symbol, descriptor: PropertyDescriptor): void {
+export function glyph(...chars: Array<string>): GlyphMethodDecorator {
+  let decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<GlyphMethod>): void {
     let metadata = Reflect.getMetadata(KEY, target) as Metadata;
     if (!metadata) {
       metadata = new Map();;
@@ -45,8 +52,8 @@ export function glyph(...chars: Array<string>): MethodDecorator {
   return decorator;
 }
 
-export function part(): MethodDecorator {
-  let decorator = function (target: object, name: string | symbol, descriptor: PropertyDescriptor): void {
+export function part(): PartMethodDecorator {
+  let decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>): void {
   };
   return decorator;
 }
