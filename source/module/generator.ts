@@ -1,7 +1,7 @@
 //
 
 
-export class Font<C> {
+export class Generator<C> {
 
   protected config: C;
 

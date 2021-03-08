@@ -3,15 +3,15 @@
 import {
   $,
   Bearings,
-  Font,
+  Generator,
   Glyph,
   Metrics,
   Part,
   PathUtil
-} from "../module";
+} from "../../module";
 
 
-export class VekosFont extends Font<VekosConfig> {
+export class VekosGenerator extends Generator<VekosConfig> {
 
   private readonly descent: number = 250;
   private readonly mean: number = 500;
