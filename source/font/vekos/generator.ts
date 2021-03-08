@@ -190,7 +190,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return part;
   }
 
-  @glyph("l")
+  @glyph("l", "L")
   public glyphLes(): Glyph {
     let part = Part.union(
       this.partLes().translate($(this.bowlWidth / 2, -this.mean / 2))
@@ -233,7 +233,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return part;
   }
 
-  @glyph("y")
+  @glyph("y", "Y")
   public glyphYes(): Glyph {
     let part = Part.union(
       this.partYes().translate($(this.bowlWidth / 2, -this.mean / 2))
