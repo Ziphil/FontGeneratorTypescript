@@ -37,7 +37,7 @@ export class VekosFont extends Font<VekosConfig> {
     let height = this.mean / 2 + this.overshoot;
     let leftHandle = height * 0.1;
     let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -47,7 +47,7 @@ export class VekosFont extends Font<VekosConfig> {
     let height = this.mean / 2 - this.verThickness + this.overshoot;
     let leftHandle = height * 0.1;
     let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -94,8 +94,8 @@ export class VekosFont extends Font<VekosConfig> {
   }
 
   private calcTailError(bend: number, height: number, innerHandle: number, outerHandle: number): number {
-    let path = Part.bezierAsPath($(0, 0), $(0, -innerHandle), $(0, outerHandle), $(-bend, -height));
-    let base = $(-bend / 2 + this.horThickness / 2, -height / 2);
+    let path = Part.bezierAsPath($(0, 0), $(0, innerHandle), $(0, -outerHandle), $(-bend, height));
+    let base = $(-bend / 2 + this.horThickness / 2, height / 2);
     let point = path.getNearestPoint(base);
     let angle = point.subtract(base).getAngle($(1, 0)) - 90;
     let error = Math.abs(point.getDistance(base) - this.calcIdealThickness(angle) / 2);
@@ -124,7 +124,7 @@ export class VekosFont extends Font<VekosConfig> {
     let height = this.mean / 2 + this.descent;
     let bottomHandle = this.descent * 1.08;
     let topHandle = this.searchTailInnerHandle(virtualBend, height, bottomHandle);
-    let part = Part.bezier($(0, 0), $(0, -topHandle), $(0, bottomHandle), $(-bend, -height));
+    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
@@ -134,7 +134,7 @@ export class VekosFont extends Font<VekosConfig> {
     let height = this.mean / 2 + this.descent;
     let topHandle = this.descent * 1.08;
     let bottomHandle = this.searchTailInnerHandle(bend, height, topHandle);
-    let part = Part.bezier($(0, 0), $(0, -topHandle), $(0, bottomHandle), $(-bend, -height));
+    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
