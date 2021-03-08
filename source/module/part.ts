@@ -15,7 +15,7 @@ export class Part extends CompoundPath {
   public constructor(object: object) {
     super(object);
     this.fillColor = new Color(0, 0, 0);
-    this.strokeColor = new Color(1, 0, 0);
+    this.strokeColor = null;
   }
 
   public static lineAsPath(startPoint: Point, endPoint: Point): Path {
