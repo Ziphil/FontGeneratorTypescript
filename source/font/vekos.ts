@@ -51,7 +51,7 @@ export class VekosFont extends Font<VekosConfig> {
   }
 
   // k, p, c, l, a などの文字に共通する丸い部分の外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
-  public outerBowl(): Part {
+  public partOuterBowl(): Part {
     let width = this.bowlWidth / 2;
     let height = this.mean / 2 + this.overshoot;
     let leftHandle = height * 0.1;
@@ -61,7 +61,7 @@ export class VekosFont extends Font<VekosConfig> {
   }
 
   // k, p, c, l, a などの文字に共通する丸い部分の内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
-  public innerBowl(): Part {
+  public partInnerBowl(): Part {
     let width = this.bowlWidth / 2 - this.horThickness;
     let height = this.mean / 2 - this.verThickness + this.overshoot;
     let leftHandle = height * 0.1;
@@ -72,18 +72,18 @@ export class VekosFont extends Font<VekosConfig> {
 
   // k, p, c, l, a などの文字に共通する丸い部分を生成します。
   // 原点は全体の中央にあるので、回転や反転で変化しません。
-  public bowl(): Part {
+  public partBowl(): Part {
     let outerPart = Part.seq(
-      this.outerBowl().reflectVerZero(),
-      this.outerBowl().rotateHalfTurnZero().reverseZero(),
-      this.outerBowl().reflectHorZero(),
-      this.outerBowl().reverseZero()
+      this.partOuterBowl().reflectVerZero(),
+      this.partOuterBowl().rotateHalfTurnZero().reverseZero(),
+      this.partOuterBowl().reflectHorZero(),
+      this.partOuterBowl().reverseZero()
     );
     let innerPart = Part.seq(
-      this.innerBowl().reflectVerZero(),
-      this.innerBowl().rotateHalfTurnZero().reverseZero(),
-      this.innerBowl().reflectHorZero(),
-      this.innerBowl().reverseZero()
+      this.partInnerBowl().reflectVerZero(),
+      this.partInnerBowl().rotateHalfTurnZero().reverseZero(),
+      this.partInnerBowl().reflectHorZero(),
+      this.partInnerBowl().reverseZero()
     );
     let part = Part.stack(
       outerPart,
@@ -181,7 +181,7 @@ export class VekosFont extends Font<VekosConfig> {
   // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
   public partLes(): Part {
     let part = Part.union(
-      this.bowl(),
+      this.partBowl(),
       this.partLesTail().translate($(this.bowlWidth / 2 - this.horThickness, 0))
     );
     return part;
