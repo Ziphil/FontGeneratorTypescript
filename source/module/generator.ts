@@ -1,7 +1,7 @@
 //
 
 
-export class Generator<C> {
+export class Generator<C = unknown> {
 
   protected config: C;
 
