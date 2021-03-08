@@ -18,26 +18,14 @@ export class Part extends CompoundPath {
     this.strokeColor = null;
   }
 
-  public static lineAsPath(startPoint: Point, endPoint: Point): Path {
-    let path = new Path({segments: [startPoint, endPoint]});
-    return path;
-  }
-
-  public static bezierAsPath(startPoint: Point, startHandle: Point | null, endHandle: Point | null, endPoint: Point): Path {
-    let startSegment = new Segment(startPoint, undefined, startHandle ?? undefined);
-    let endSegment = new Segment(endPoint, endHandle ?? undefined, undefined);
-    let path = new Path({segments: [startSegment, endSegment]});
-    return path;
-  }
-
   public static line(startPoint: Point, endPoint: Point): Part {
-    let path = Part.lineAsPath(startPoint, endPoint);
+    let path = PathUtil.line(startPoint, endPoint);
     let part = new Part({children: [path]});
     return part;
   }
 
   public static bezier(startPoint: Point, startHandle: Point | null, endHandle: Point | null, endPoint: Point): Part {
-    let path = Part.bezierAsPath(startPoint, startHandle, endHandle, endPoint);
+    let path = PathUtil.bezier(startPoint, startHandle, endHandle, endPoint);
     let part = new Part({children: [path]});
     return part;
   }
@@ -137,6 +125,23 @@ export class Part extends CompoundPath {
     } else {
       throw new Error("unsupported operation");
     }
+  }
+
+}
+
+
+export class PathUtil {
+
+  public static line(startPoint: Point, endPoint: Point): Path {
+    let path = new Path({segments: [startPoint, endPoint]});
+    return path;
+  }
+
+  public static bezier(startPoint: Point, startHandle: Point | null, endHandle: Point | null, endPoint: Point): Path {
+    let startSegment = new Segment(startPoint, undefined, startHandle ?? undefined);
+    let endSegment = new Segment(endPoint, endHandle ?? undefined, undefined);
+    let path = new Path({segments: [startSegment, endSegment]});
+    return path;
   }
 
 }

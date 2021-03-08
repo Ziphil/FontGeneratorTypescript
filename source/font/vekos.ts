@@ -6,7 +6,8 @@ import {
   Font,
   Glyph,
   Metrics,
-  Part
+  Part,
+  PathUtil
 } from "../module";
 
 
@@ -112,7 +113,7 @@ export class VekosFont extends Font<VekosConfig> {
   }
 
   private calcTailError(innerHandle: number, outerHandle: number, bend: number, height: number): number {
-    let path = Part.bezierAsPath($(0, 0), $(0, innerHandle), $(0, -outerHandle), $(-bend, height));
+    let path = PathUtil.bezier($(0, 0), $(0, innerHandle), $(0, -outerHandle), $(-bend, height));
     let basePoint = $(-bend / 2 + this.horThickness / 2, height / 2);
     let nearestPoint = path.getNearestPoint(basePoint);
     let angle = nearestPoint.subtract(basePoint).getAngle($(1, 0)) - 90;
