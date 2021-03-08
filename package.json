@@ -1,0 +1,44 @@
+{
+  "name": "font-generator",
+  "version": "1.0.0",
+  "author": "Ziphil",
+  "description": "",
+  "homepage": "https://github.com/Ziphil/TypescriptFontGenerator",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "develop": "ts-node ./source/index.ts",
+    "build": "tsc"
+  },
+  "eslintConfig": {
+    "extends": "ziphil",
+    "rules": {
+      "@typescript-eslint/unified-signatures": "off"
+    }
+  },
+  "nodemonConfig": {
+    "watch": [
+      "source"
+    ],
+    "ext": "ts",
+    "exec": "ts-node ./source/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.32",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
+    "eslint": "^7.15.0",
+    "eslint-config-ziphil": "^1.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsdoc": "^30.7.8",
+    "ts-node": "^9.0.0",
+    "ts-node-dev": "^1.0.0",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "jsdom": "^16.5.0",
+    "nodemon": "^2.0.7",
+    "paper": "^0.12.11",
+    "reflect-metadata": "^0.1.13"
+  }
+}

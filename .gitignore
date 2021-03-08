@@ -1,0 +1,7 @@
+node_modules
+out
+*.code-workspace
+*.env
+.vscode
+desktop.ini
+Thumbs.db
