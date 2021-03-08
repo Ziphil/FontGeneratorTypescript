@@ -15,10 +15,18 @@ import {
 export class Main {
 
   public main(): void {
-    let font = new VekosFont({weightConst: 1, stretchConst: 1, contrastRatio: 0.75});
+    this.setupPaper();
+    this.debug();
+  }
+
+  private setupPaper(): void {
     let size = new Size(1000, 1000);
     paper.settings.insertItems = false;
     paper.setup(size);
+  }
+
+  private debug(): void {
+    let font = new VekosFont({weightConst: 1, stretchConst: 1, contrastRatio: 0.75});
     FontWriter.writeGlyph(font.glyphLes(), "out/test.svg");
   }
 
