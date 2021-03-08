@@ -111,25 +111,25 @@ export class VekosFont extends Font<VekosConfig> {
     }
   }
 
-  private calcTailError(bend: number, height: number, innerHandle: number, outerHandle: number): number {
+  private calcTailError(innerHandle: number, outerHandle: number, bend: number, height: number): number {
     let path = Part.bezierAsPath($(0, 0), $(0, innerHandle), $(0, -outerHandle), $(-bend, height));
-    let base = $(-bend / 2 + this.horThickness / 2, height / 2);
-    let point = path.getNearestPoint(base);
-    let angle = point.subtract(base).getAngle($(1, 0)) - 90;
-    let error = Math.abs(point.getDistance(base) - this.calcIdealThickness(angle) / 2);
+    let basePoint = $(-bend / 2 + this.horThickness / 2, height / 2);
+    let nearestPoint = path.getNearestPoint(basePoint);
+    let angle = nearestPoint.subtract(basePoint).getAngle($(1, 0)) - 90;
+    let error = Math.abs(nearestPoint.getDistance(basePoint) - this.calcIdealThickness(angle) / 2);
     path.remove();
     return error;
   }
 
-  private searchTailInnerHandle(bend: number, height: number, outerHandle: number): number {
+  private searchTailInnerHandle(outerHandle: number, bend: number, height: number): number {
     let interval = 0.5;
     let resultHandle = 0;
-    let minimum = 10000;
-    for (let cont = 0 ; cont <= height ; cont += interval) {
-      let error = this.calcTailError(bend, height, cont, outerHandle);
-      if (error < minimum) {
-        minimum = error;
-        resultHandle = cont;
+    let minimumError = 10000;
+    for (let innerHandle = 0 ; innerHandle <= height ; innerHandle += interval) {
+      let error = this.calcTailError(innerHandle, outerHandle, bend, height);
+      if (error < minimumError) {
+        minimumError = error;
+        resultHandle = innerHandle;
       }
     }
     return resultHandle;
@@ -141,7 +141,7 @@ export class VekosFont extends Font<VekosConfig> {
     let virtualBend = this.lesTailBend;
     let height = this.mean / 2 + this.descent;
     let bottomHandle = this.descent * 1.08;
-    let topHandle = this.searchTailInnerHandle(virtualBend, height, bottomHandle);
+    let topHandle = this.searchTailInnerHandle(bottomHandle, virtualBend, height);
     let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
@@ -151,7 +151,7 @@ export class VekosFont extends Font<VekosConfig> {
     let bend = this.lesTailBend - this.horThickness / 2;
     let height = this.mean / 2 + this.descent;
     let topHandle = this.descent * 1.08;
-    let bottomHandle = this.searchTailInnerHandle(bend, height, topHandle);
+    let bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
     let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
