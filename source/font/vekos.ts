@@ -2,7 +2,10 @@
 
 import {
   $,
+  Bearings,
   Font,
+  Glyph,
+  Metrics,
   Part
 } from "../module";
 
@@ -17,6 +20,21 @@ export class VekosFont extends Font<VekosConfig> {
 
   private get bearing(): number {
     return this.bowlWidth * 0.09;
+  }
+
+  private get metrics(): Metrics {
+    let ascent = this.mean + this.descent + this.extraAscent;
+    let descent = this.descent + this.extraDescent;
+    let em = descent + ascent;
+    let metrics = {em, ascent, descent};
+    return metrics;
+  }
+
+  private get bearings(): Bearings {
+    let left = this.bearing;
+    let right = this.bearing;
+    let bearings = {left, right};
+    return bearings;
   }
 
   private get horThickness(): number {
@@ -167,6 +185,14 @@ export class VekosFont extends Font<VekosConfig> {
       this.partLesTail().translate($(this.bowlWidth / 2 - this.horThickness, 0))
     );
     return part;
+  }
+
+  public glyphLes(): Glyph {
+    let part = Part.union(
+      this.partLes().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
   }
 
 }
