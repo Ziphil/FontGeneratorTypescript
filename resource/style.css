@@ -2,6 +2,8 @@
 
 
 body {
+  margin: 0px;
+  padding: 0px;
   font-family: "Alegreya Sans";
   font-size: 12pt;
   font-feature-settings: "lnum";
@@ -10,26 +12,49 @@ body {
 #root {
   width: 90%;
   max-width: 1000px;
-  margin: 0px auto;
-  padding: 30px 0px;
+  margin: 50px auto;
+  padding: 0px;
 }
 
 h1 {
-  margin: 20px 0px;
+  margin: 0px 0px;
   padding: 0px;
   font-size: 200%;
   font-weight: bold;
 }
 
 h2 {
-  margin: 15px 0px;
+  margin: 30px 0px 15px 0px;
   padding: 0px;
   font-size: 150%;
   font-weight: bold;
 }
 
-#preview {
+#preview-wrapper {
+  margin: 0px;
+  padding: 8px;
+  background-color: hsl(0, 0%, 90%);
+  border-radius: 8px;
+}
+
+#preview-text {
   width: 100%;
+  margin: 0px;
+  padding: 4px 4px;
+  font-family: inherit;
+  font-size: inherit;
+  border-radius: 4px;
+  background-color: white;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+}
+
+#preview {
+  margin: 8px 0px 0px 0px;
+  border-radius: 4px;
+  background-color: white;
+  display: block;
 }
 
 #glyph-list {

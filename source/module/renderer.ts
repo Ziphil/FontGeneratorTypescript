@@ -14,6 +14,7 @@ import {
 
 const GLYPH_CANVAS_WIDTH = 80;
 const GLYPH_CANVAS_HEIGHT = 80;
+const PREVIEW_CANVAS_WIDTH = 984;
 const PREVIEW_CANVAS_HEIGHT = 150;
 
 
@@ -34,8 +35,9 @@ export class FontRenderer {
   private setupPreviewCanvas(): void {
     let input = document.getElementById("preview-text")! as HTMLInputElement;
     let canvas = document.getElementById("preview")! as HTMLCanvasElement;
-    let project = new Project("preview");
+    canvas.width = PREVIEW_CANVAS_WIDTH;
     canvas.height = PREVIEW_CANVAS_HEIGHT;
+    let project = new Project("preview");
     input.addEventListener("input", () => {
       this.updatePreviewCanvas(project, input);
     });
