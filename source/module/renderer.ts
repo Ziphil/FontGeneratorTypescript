@@ -5,18 +5,15 @@ import {
   Color,
   Path,
   Point,
-  Project,
-  Size
+  Project
 } from "paper";
 import {
   Font
 } from "./font";
-import {
-  Glyph
-} from "./glyph";
 
 
-const GLYPH_CANVAS_SIZE = 80;
+const GLYPH_CANVAS_WIDTH = 80;
+const GLYPH_CANVAS_HEIGHT = 80;
 
 
 export class FontRenderer {
@@ -52,11 +49,11 @@ export class FontRenderer {
     let generator = this.font.generator;
     let glyph = generator.glyph(char);
     if (glyph !== null) {
-      let scale = GLYPH_CANVAS_SIZE / generator.metrics.em;
+      let scale = GLYPH_CANVAS_HEIGHT / generator.metrics.em;
       let scaledWidth = Math.floor(glyph.width * scale) + 0.5;
       let scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
-      let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(GLYPH_CANVAS_SIZE, scaledAscent)], insert: true});
-      let widthPath = new Path({segments: [new Point(scaledWidth, 0), new Point(scaledWidth, GLYPH_CANVAS_SIZE)], insert: true});
+      let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
+      let widthPath = new Path({segments: [new Point(scaledWidth, 0), new Point(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
       baselinePath.strokeColor = new Color({hue: 0, saturation: 0, lightness: 0.9});
       widthPath.strokeColor = new Color({hue: 0, saturation: 0, lightness: 0.9});
       baselinePath.strokeWidth = 1;
@@ -78,8 +75,8 @@ export class FontRenderer {
     let canvas = document.createElement("canvas");
     glyphPane.classList.add("glyph-pane");
     canvas.id = `glyph-${char.charCodeAt(0)}`;
-    canvas.width = GLYPH_CANVAS_SIZE;
-    canvas.height = GLYPH_CANVAS_SIZE;
+    canvas.width = GLYPH_CANVAS_WIDTH;
+    canvas.height = GLYPH_CANVAS_HEIGHT;
     glyphPane.append(this.createInfoPane(char));
     glyphPane.append(canvas);
     return glyphPane;
