@@ -14,6 +14,7 @@ import {
 
 const GLYPH_CANVAS_WIDTH = 80;
 const GLYPH_CANVAS_HEIGHT = 80;
+const PREVIEW_CANVAS_HEIGHT = 150;
 
 
 export class FontRenderer {
@@ -27,6 +28,39 @@ export class FontRenderer {
   public render(): void {
     this.changeFontName();
     this.appendGlyphPane();
+    this.setupPreviewCanvas();
+  }
+
+  private setupPreviewCanvas(): void {
+    let input = document.getElementById("preview-text")! as HTMLInputElement;
+    let canvas = document.getElementById("preview")! as HTMLCanvasElement;
+    let project = new Project("preview");
+    canvas.height = PREVIEW_CANVAS_HEIGHT;
+    input.addEventListener("input", () => {
+      this.updatePreviewCanvas(project, input);
+    });
+    this.updatePreviewCanvas(project, input);
+  }
+
+  private updatePreviewCanvas(project: Project, input: HTMLInputElement): void {
+    let generator = this.font.generator;
+    let scale = PREVIEW_CANVAS_HEIGHT / generator.metrics.em;
+    project.activeLayer.removeChildren();
+    let scaledAscent = Math.floor(generator.metrics.ascent * scale);
+    let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(10000, scaledAscent)], insert: true});
+    baselinePath.strokeColor = new Color({hue: 0, saturation: 0, lightness: 0.9});
+    baselinePath.strokeWidth = 2;
+    let position = 0;
+    for (let char of Array.from(input.value)) {
+      let glyph = generator.glyph(char);
+      if (glyph !== null) {
+        let item = glyph.part;
+        item.scale(scale, new Point(0, 0));
+        item.translate(new Point(position, 0));
+        project.activeLayer.addChild(item);
+        position += glyph.width * scale;
+      }
+    }
   }
 
   private appendGlyphPane(): void {

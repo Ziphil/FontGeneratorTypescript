@@ -28,6 +28,10 @@ h2 {
   font-weight: bold;
 }
 
+#preview {
+  width: 100%;
+}
+
 #glyph-list {
   margin: 0px -5px;
   display: flex;
