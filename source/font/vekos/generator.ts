@@ -265,6 +265,63 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return glyph;
   }
 
+  @glyph("p", "P")
+  public glyphPal(): Glyph {
+    let part = Part.union(
+      this.partLes().rotateHalfTurnZero().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("b", "B")
+  public glyphBol(): Glyph {
+    let part = Part.union(
+      this.partLes().rotateHalfTurnZero().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("c", "C")
+  public glyphCal(): Glyph {
+    let part = Part.union(
+      this.partLes().reflectHorZero().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("q", "Q")
+  public glyphQol(): Glyph {
+    let part = Part.union(
+      this.partLes().reflectHorZero().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("k", "K")
+  public glyphKal(): Glyph {
+    let part = Part.union(
+      this.partLes().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("g", "G")
+  public glyphGol(): Glyph {
+    let part = Part.union(
+      this.partLes().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
   // y の文字の下半分の内側に曲がる部分について、その最下部の外側の端と丸い部分の端との水平距離を表します。
   // 曲線の外側の曲がり具合を指定しているので、線の太さが大きくなるとより内側に曲がることに注意してください。
   private get yesLegBend(): number {
