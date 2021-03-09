@@ -199,10 +199,67 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return part;
   }
 
+  private get transphoneThicknessRatio(): number {
+    return 0.95;
+  }
+
+  // 変音符が左側もしくは右側に曲がる水平距離を表します。
+  private get transphoneBend(): number {
+    return this.bowlWidth * 0.15;
+  }
+
+  private get transphoneGap(): number {
+    return this.bowlWidth * 0.18;
+  }
+
+  // 変音符の右に飛び出るように曲がる曲線の上半分を、下端から上端への向きで生成します。
+  @part()
+  public partTransphoneSegment(): Part {
+    let bend = this.transphoneBend;
+    let height = this.mean / 2;
+    let rightCont = height * 0.6;
+    let part = Part.bezier($(0, 0), null, $(0, -rightCont), $(bend, height));
+    return part;
+  }
+
+  // 変音符の上下にある水平に切られた部分を、左端から右端への向きで生成します。
+  @part()
+  public partTransphoneCut(): Part {
+    let width = this.horThickness * this.transphoneThicknessRatio;
+    let part = Part.line($(0, 0), $(width, 0));
+    return part;
+  }
+
+  // 変音符と同じ形を生成します。
+  // 原点は右に飛び出る部分の左中央にあります。
+  @part()
+  public partTransphone(): Part {
+    let part = Part.seq(
+      this.partTransphoneSegment(),
+      this.partTransphoneSegment().reflectVerZero().reverseZero(),
+      this.partTransphoneCut(),
+      this.partTransphoneSegment().reflectVerZero(),
+      this.partTransphoneSegment().reverseZero(),
+      this.partTransphoneCut().reverseZero()
+    );
+    part.moveZeroTo($(this.transphoneBend, this.mean / 2));
+    return part;
+  }
+
   @glyph("l", "L")
   public glyphLes(): Glyph {
     let part = Part.union(
       this.partLes().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("r", "R")
+  public glyphRes(): Glyph {
+    let part = Part.union(
+      this.partLes().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
