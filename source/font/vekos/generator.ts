@@ -217,8 +217,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public partTransphoneSegment(): Part {
     let bend = this.transphoneBend;
     let height = this.mean / 2;
-    let rightCont = height * 0.6;
-    let part = Part.bezier($(0, 0), null, $(0, -rightCont), $(bend, height));
+    let rightHandle = height * 0.6;
+    let part = Part.bezier($(0, 0), null, $(0, -rightHandle), $(bend, height));
     return part;
   }
 
@@ -333,8 +333,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public partYesLeg(): Part {
     let bend = this.yesLegBend;
     let height = this.mean / 2;
-    let leftCont = height * 0.6;
-    let part = Part.bezier($(0, 0), $(0, leftCont), null, $(bend, height));
+    let leftHandle = height * 0.6;
+    let part = Part.bezier($(0, 0), $(0, leftHandle), null, $(bend, height));
     return part;
   }
 
@@ -413,9 +413,9 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public partOuterTalBeak(): Part {
     let width = this.talBeakWidth;
     let height = this.talBeakHeight + this.overshoot;
-    let rightCont = height * 0.05;
-    let topCont = width;
-    let part = Part.bezier($(0, 0), $(0, -rightCont), $(topCont, 0), $(-width, -height));
+    let rightHandle = height * 0.05;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
@@ -424,9 +424,9 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public partInnerTalBeak(): Part {
     let width = this.talBeakWidth - this.horThickness;
     let height = this.talBeakHeight - this.verThickness + this.overshoot;
-    let rightCont = height * 0.05;
-    let topCont = width;
-    let part = Part.bezier($(0, 0), $(0, -rightCont), $(topCont, 0), $(-width, -height));
+    let rightHandle = height * 0.05;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
@@ -483,6 +483,224 @@ export class VekosGenerator extends Generator<VekosConfig> {
     let part = Part.union(
       this.partTal().reflectHorZero().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.talWidth + this.transphoneGap, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  // x, j の文字に共通する細い丸い部分の見た目の幅を表します。
+  // 実際に作られるパーツの幅は、2 つ重ねたときに重なった部分が太く見えないよう補正されるので、この値より小さくなります。
+  private get narrowBowlVirtualWidth(): number {
+    return this.bowlWidth * 0.9;
+  }
+
+  private get narrowBowlCorrection(): number {
+    return this.horThickness * 0.15;
+  }
+
+  private get narrowBowlWidth(): number {
+    return this.narrowBowlVirtualWidth - this.narrowBowlCorrection;
+  }
+
+  private get xalWidth(): number {
+    return this.narrowBowlVirtualWidth * 2 - this.horThickness;
+  }
+
+  // x, j の文字に共通する細い丸い部分の外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
+  @part()
+  public partOuterLeftNarrowBowl(): Part {
+    let width = this.narrowBowlVirtualWidth / 2;
+    let height = this.mean / 2 + this.overshoot;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // x, j の文字に共通する細い丸い部分の外側の曲線の 4 分の 1 を、右端から上端への向きで生成します。
+  // ただし、他のトレイルと使い方を揃えるため、左右反転してあります。
+  @part()
+  public partOuterRightNarrowBowl(): Part {
+    let width = this.narrowBowlVirtualWidth / 2 - this.narrowBowlCorrection;
+    let height = this.mean / 2 + this.overshoot;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // x, j の文字に共通する細い丸い部分の内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
+  @part()
+  public partInnerNarrowBowl(): Part {
+    let width = this.narrowBowlVirtualWidth / 2 - this.horThickness;
+    let height = this.mean / 2 - this.verThickness + this.overshoot;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // x, j の文字に共通する細い丸い部分を生成します。
+  // 2 つ重ねたときに重なった部分が太く見えすぎないように、右側を少し細く補正してあります。
+  // 原点は全体の中央にあります。
+  @part()
+  public partNarrowBowl(): Part {
+    let outerPart = Part.seq(
+      this.partOuterLeftNarrowBowl().reflectVerZero(),
+      this.partOuterRightNarrowBowl().rotateHalfTurnZero().reverseZero(),
+      this.partOuterRightNarrowBowl().reflectHorZero(),
+      this.partOuterLeftNarrowBowl().reverseZero()
+    );
+    let innerPart = Part.seq(
+      this.partInnerNarrowBowl().reflectVerZero(),
+      this.partInnerNarrowBowl().rotateHalfTurnZero().reverseZero(),
+      this.partInnerNarrowBowl().reflectHorZero(),
+      this.partInnerNarrowBowl().reverseZero()
+    );
+    let part = Part.stack(
+      outerPart,
+      innerPart.reverseZero().translate($(this.horThickness, 0))
+    );
+    part.moveZeroTo($(this.narrowBowlVirtualWidth / 2, 0));
+    return part;
+  }
+
+  // x の文字と同じ形を生成します。
+  // 原点は全体の中央にあります。
+  @part()
+  public partXal(): Part {
+    let part = Part.union(
+      this.partNarrowBowl(),
+      this.partNarrowBowl().reflectHorZero().translate($(this.narrowBowlVirtualWidth - this.horThickness, 0))
+    );
+    part.moveZeroTo($(this.xalWidth / 2 - this.narrowBowlVirtualWidth / 2, 0));
+    return part;
+  }
+
+  @glyph("x", "X")
+  public glyphXal(): Glyph {
+    let part = Part.union(
+      this.partXal().translate($(this.xalWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("j", "J")
+  public glyphJol(): Glyph {
+    let part = Part.union(
+      this.partXal().translate($(this.xalWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.xalWidth + this.transphoneGap, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  // n の文字の書き終わりと書き始めの箇所について、その先端の外側の端と丸い部分の端との水平距離を表します。
+  // 曲線の外側の曲がり具合を指定しているので、線の太さが大きくなるとより内側に曲がることに注意してください。
+  private get nesLegBend(): number {
+    return this.yesLegBend;
+  }
+
+  private get spineWidth(): number {
+    return this.bowlWidth * 0.5;
+  }
+
+  private get nesWidth(): number {
+    return this.narrowBowlVirtualWidth + this.spineWidth;
+  }
+
+  private calcSpineError(innerHandle: number, outerHandle: number, bend: number, width: number): number {
+    let path = PathUtil.bezier($(0, 0), $(innerHandle, 0), $(-outerHandle, 0), $(width, -bend));
+    let basePoint = $(width / 2, -bend / 2 + this.verThickness / 2);
+    let nearestPoint = path.getNearestPoint(basePoint);
+    let angle = nearestPoint.subtract(basePoint).getAngle($(1, 0)) - 90;
+    let error = Math.abs(nearestPoint.getDistance(basePoint) - this.calcIdealThickness(angle) / 2);
+    return error;
+  }
+
+  private searchSpineInnerHandle(outerHandle: number, bend: number, width: number): number {
+    let interval = 0.5;
+    let resultHandle = 0;
+    let minimumError = 10000;
+    for (let innerHandle = 0 ; innerHandle <= width ; innerHandle += interval) {
+      let error = this.calcSpineError(innerHandle, outerHandle, bend, width);
+      if (error < minimumError) {
+        minimumError = error;
+        resultHandle = innerHandle;
+      }
+    }
+    return resultHandle;
+  }
+
+  // n の文字の書き終わりの箇所にある曲線を、上端から下端への向きで生成します。
+  @part()
+  public partNesLeg(): Part {
+    let bend = this.nesLegBend;
+    let height = this.mean / 2;
+    let rightHandle = height * 0.6;
+    let part = Part.bezier($(0, 0), $(0, rightHandle), null, $(-bend, height));
+    return part;
+  }
+
+  // n の文字の中央部分の上側の曲線を、下端から上端への向きで生成します。
+  @part()
+  public partTopSpine(): Part {
+    let width = this.spineWidth;
+    let bend = this.mean - this.verThickness + this.overshoot * 2;
+    let rightHandle = width * 1.05;
+    let leftHandle = this.searchSpineInnerHandle(rightHandle, bend, width);
+    let part = Part.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0) , $(width, -bend));
+    return part;
+  }
+
+  // n の文字の中央部分の下側の曲線を、下端から上端への向きで生成します。
+  @part()
+  public partBottomSpine(): Part {
+    let width = this.spineWidth;
+    let bend = this.mean - this.verThickness + this.overshoot * 2;
+    let leftHandle = width * 1.05;
+    let rightHandle = this.searchSpineInnerHandle(leftHandle, bend, width);
+    let part = Part.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0) , $(width, -bend));
+    return part;
+  }
+
+  // n の文字と同じ形を生成します。
+  // 原点は全体の中央にあります。
+  @part()
+  public partNes(): Part {
+    let part = Part.seq(
+      this.partOuterLeftNarrowBowl().reflectVerZero(),
+      this.partBottomSpine(),
+      this.partInnerNarrowBowl().reflectHorZero().reverseZero(),
+      this.partNesLeg(),
+      this.partCut(),
+      this.partNesLeg().reverseZero(),
+      this.partOuterLeftNarrowBowl().reflectHorZero(),
+      this.partTopSpine().reverseZero(),
+      this.partInnerNarrowBowl().reflectVerZero().reverseZero(),
+      this.partNesLeg().rotateHalfTurnZero(),
+      this.partCut().reverseZero(),
+      this.partNesLeg().rotateHalfTurnZero().reverseZero()
+    );
+    part.moveZeroTo($(this.nesWidth / 2, 0));
+    return part;
+  }
+
+  @glyph("n", "N")
+  public glyphNes(): Glyph {
+    let part = Part.union(
+      this.partNes().translate($(this.nesWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("m", "M")
+  public glyphMes(): Glyph {
+    let part = Part.union(
+      this.partNes().translate($(this.nesWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.nesWidth + this.transphoneGap, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
