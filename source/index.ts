@@ -31,7 +31,8 @@ export class Main {
   private async debug(): Promise<void> {
     let generator = new VekosGenerator({weightConst: 1, stretchConst: 1, contrastRatio: 0.75});
     let font = new Font(generator, "Vekos", {weight: "regular", slope: "upright", stretch: "normal"});
-    await FontWriter.generateFont(font);
+    let writer = new FontWriter(font);
+    await writer.generate();
   }
 
 }
