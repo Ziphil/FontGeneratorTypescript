@@ -5,10 +5,10 @@ import {
   Size
 } from "paper";
 import {
-  VekosGenerator
-} from "./font/vekos/generator";
+  VekosFont
+} from "./font/vekos/font";
 import {
-  Font
+  FontStyle
 } from "./module";
 import {
   FontWriter
@@ -29,8 +29,7 @@ export class Main {
   }
 
   private async debug(): Promise<void> {
-    let generator = new VekosGenerator({weightConst: 1, stretchConst: 1, contrastRatio: 0.75});
-    let font = new Font(generator, "Vekos", {weight: "regular", slope: "upright", stretch: "normal"});
+    let font = VekosFont.create(new FontStyle("regular", "upright", "normal"), false);
     let writer = new FontWriter(font);
     await writer.generate();
   }

@@ -11,9 +11,6 @@ import {
 import {
   Font
 } from "./font";
-import {
-  Glyph
-} from "./glyph";
 
 
 export class FontWriter {
@@ -40,9 +37,9 @@ export class FontWriter {
     code = code.replace("__familyname__", "\"" + this.font.extendedFamilyName + "\"");
     code = code.replace("__fontname__", "\"" + this.font.postScriptName + "\"");
     code = code.replace("__fullname__", "\"" + this.font.fullName + "\"");
-    code = code.replace("__weight__", "\"" + Font.stringifyFontWeight(this.font.style.weight) + "\"");
-    code = code.replace("__version__", "\"" + this.font.version + "\"");
-    code = code.replace("__copyright__", "\"" + this.font.copyright + "\"");
+    code = code.replace("__weight__", "\"" + this.font.style.getWeightString() + "\"");
+    code = code.replace("__version__", "\"" + this.font.info.version + "\"");
+    code = code.replace("__copyright__", "\"" + this.font.info.copyright + "\"");
     code = code.replace("__em__", this.font.generator.metrics.em.toString());
     code = code.replace("__ascent__", this.font.generator.metrics.ascent.toString());
     code = code.replace("__descent__", this.font.generator.metrics.descent.toString());
