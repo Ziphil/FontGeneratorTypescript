@@ -121,7 +121,12 @@ export class Part extends CompoundPath {
 
   public reverseZero(): this {
     if (this.children.length === 1 && this.firstChild instanceof Path) {
-      return this.reverse().translate(this.firstChild.firstSegment.point.multiply(-1));
+      if (this.firstChild.closed) {
+        return this.reverse();
+      } else {
+        let point = this.firstChild.lastSegment.point;
+        return this.reverse().translate(point.multiply(-1));
+      }
     } else {
       throw new Error("unsupported operation");
     }
