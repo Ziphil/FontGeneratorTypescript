@@ -74,7 +74,7 @@ export class FontRenderer {
   private appendGlyphPane(): void {
     let listElement = document.getElementById("glyph-list")!;
     let chars = this.font.generator.getChars();
-    chars.sort((firstChar, secondChar) => firstChar.charCodeAt(0) - secondChar.charCodeAt(0));
+    chars.sort((firstChar, secondChar) => firstChar.codePointAt(0)! - secondChar.codePointAt(0)!);
     for (let char of chars) {
       listElement.append(this.createGlyphPane(char));
       this.renderGlyph(char);
@@ -87,7 +87,7 @@ export class FontRenderer {
   }
 
   private renderGlyph(char: string): void {
-    let project = new Project(`glyph-${char.charCodeAt(0)}`);
+    let project = new Project(`glyph-${char.codePointAt(0)}`);
     let generator = this.font.generator;
     let glyph = generator.glyph(char);
     if (glyph !== null) {
@@ -116,24 +116,38 @@ export class FontRenderer {
     let glyphPane = document.createElement("div");
     let canvas = document.createElement("canvas");
     glyphPane.classList.add("glyph-pane");
-    canvas.id = `glyph-${char.charCodeAt(0)}`;
+    canvas.id = `glyph-${char.codePointAt(0)}`;
     canvas.width = GLYPH_CANVAS_WIDTH;
     canvas.height = GLYPH_CANVAS_HEIGHT;
     glyphPane.append(this.createInfoPane(char));
     glyphPane.append(canvas);
+    glyphPane.append(this.createBottomInfoPane(char));
     return glyphPane;
   }
 
   private createInfoPane(char: string): HTMLElement {
     let infoPane = document.createElement("div");
     let charPane = document.createElement("div");
-    let codepointPane = document.createElement("div");
+    let codePointPane = document.createElement("div");
+    let codePoint = char.codePointAt(0)!;
     infoPane.classList.add("info");
     charPane.classList.add("char");
-    codepointPane.classList.add("codepoint");
+    codePointPane.classList.add("codepoint");
     charPane.textContent = char;
-    codepointPane.textContent = "U+" + ("000" + char.charCodeAt(0).toString(16)).slice(-4).toUpperCase();
-    infoPane.append(charPane, codepointPane);
+    codePointPane.textContent = `U+${("000" + codePoint.toString(16)).slice(-4).toUpperCase()} · ${codePoint}`;
+    infoPane.append(charPane, codePointPane);
+    return infoPane;
+  }
+
+  private createBottomInfoPane(char: string): HTMLElement {
+    let infoPane = document.createElement("div");
+    let widthPane = document.createElement("div");
+    let width = this.font.generator.glyph(char)!.width;
+    let em = this.font.generator.metrics.em;
+    infoPane.classList.add("bottom-info");
+    widthPane.classList.add("width");
+    widthPane.textContent = `↔${Math.round(width)} · ↕${Math.round(em)}`;
+    infoPane.append(widthPane);
     return infoPane;
   }
 

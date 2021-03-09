@@ -75,11 +75,19 @@ h2 {
   margin: 0px;
 }
 
+.glyph-pane .bottom-info {
+  margin: 5px 0px 0px 0px;
+}
+
 .glyph-pane .char {
   font-weight: bold;
 }
 
 .glyph-pane .codepoint {
+  font-size: 75%;
+}
+
+.glyph-pane .width {
   font-size: 75%;
 }
 
