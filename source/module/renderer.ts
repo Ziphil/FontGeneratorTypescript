@@ -14,7 +14,7 @@ import {
 
 const GLYPH_CANVAS_WIDTH = 80;
 const GLYPH_CANVAS_HEIGHT = 80;
-const PREVIEW_CANVAS_WIDTH = 984;
+const PREVIEW_CANVAS_WIDTH = 834;
 const PREVIEW_CANVAS_HEIGHT = 150;
 
 
@@ -60,6 +60,12 @@ export class FontRenderer {
         item.scale(scale, new Point(0, 0));
         item.translate(new Point(position, 0));
         project.activeLayer.addChild(item);
+        item.onMouseEnter = function (): void {
+          item.selected = true;
+        };
+        item.onMouseLeave = function (): void {
+          item.selected = false;
+        };
         position += glyph.width * scale;
       }
     }
