@@ -16,7 +16,6 @@
     "removeComments": true
   },
   "include": [
-    "source/**/*",
-    "test/**/*"
+    "source/**/*"
   ]
 }
