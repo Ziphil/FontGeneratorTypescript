@@ -28,14 +28,15 @@ h2 {
 }
 
 #glyph-list {
+  margin: 0px -5px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: start;
 }
 
 .glyph-pane {
-  margin: 0px 0px 15px 0px;
+  margin: 0px 5px 10px 5px;
   padding: 8px;
   background-color: hsl(0, 0%, 90%);
   border-radius: 8px;
