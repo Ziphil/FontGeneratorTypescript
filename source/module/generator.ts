@@ -1,14 +1,15 @@
 //
 
 import {
-  Glyph
+  Glyph,
+  Metrics
 } from "./glyph";
 import {
   Part
 } from "./part";
 
 
-export class Generator<C = unknown> {
+export abstract class Generator<C = unknown> {
 
   protected config: C;
   protected partCache: Map<string | symbol, Part>;
@@ -25,6 +26,8 @@ export class Generator<C = unknown> {
   public getChars(): Array<string> {
     return [];
   }
+
+  public abstract get metrics(): Metrics;
 
   public glyph(char: string): Glyph | null {
     return null;

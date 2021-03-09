@@ -27,7 +27,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return this.bowlWidth * 0.09;
   }
 
-  private get metrics(): Metrics {
+  public get metrics(): Metrics {
     let ascent = this.mean + this.descent + this.extraAscent;
     let descent = this.descent + this.extraDescent;
     let em = descent + ascent;

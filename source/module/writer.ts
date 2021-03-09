@@ -1,5 +1,6 @@
 //
 
+import execa from "execa";
 import {
   promises as fs
 } from "fs";
@@ -16,6 +17,33 @@ import {
 
 
 export class FontWriter {
+
+  public static async generateFont(font: Font): Promise<void> {
+    let directory = "out/" + font.fullName.replace(/\s+/g, "-").toLowerCase();
+    let codePath = directory + "/generate.py";
+    await FontWriter.createCode(font);
+    await execa("ffpython", [codePath]);
+  }
+
+  private static async createCode(font: Font): Promise<void> {
+    let directory = "out/" + font.fullName.replace(/\s+/g, "-").toLowerCase();
+    let fontPath = directory + ".ttf";
+    let codePath = directory + "/generate.py";
+    let code = await fs.readFile("resource/generate.py", "utf-8");
+    code = code.replace("__familyname__", "\"" + font.extendedFamilyName + "\"");
+    code = code.replace("__fontname__", "\"" + font.postScriptName + "\"");
+    code = code.replace("__fullname__", "\"" + font.fullName + "\"");
+    code = code.replace("__weight__", "\"" + Font.stringifyFontWeight(font.style.weight) + "\"");
+    code = code.replace("__version__", "\"" + font.version + "\"");
+    code = code.replace("__copyright__", "\"" + font.copyright + "\"");
+    code = code.replace("__em__", font.generator.metrics.em.toString());
+    code = code.replace("__ascent__", font.generator.metrics.ascent.toString());
+    code = code.replace("__descent__", font.generator.metrics.descent.toString());
+    code = code.replace("__autohint__", "True");
+    code = code.replace("__svgdir__", "\"" + directory + "\"");
+    code = code.replace("__fontfilename__", "\"" + fontPath + "\"");
+    await fs.writeFile(codePath, code);
+  }
 
   public static async writeFont(font: Font): Promise<void> {
     let directory = "out/" + font.fullName.replace(/\s+/g, "-").toLowerCase();

@@ -44,11 +44,11 @@ export class Font {
     return filteredModifiers;
   }
 
-  private static stringifyFontWeight(weight: FontWeight): string {
+  public static stringifyFontWeight(weight: FontWeight): string {
     return weight.charAt(0).toUpperCase() + weight.slice(1);
   }
 
-  private static stringifyFontSlope(slope: FontSlope): string {
+  public static stringifyFontSlope(slope: FontSlope): string {
     if (slope === "upright") {
       return "";
     } else {
@@ -56,7 +56,7 @@ export class Font {
     }
   }
 
-  private static stringifyFontStretch(stretch: FontStretch): string {
+  public static stringifyFontStretch(stretch: FontStretch): string {
     if (stretch === "normal") {
       return "";
     } else {
