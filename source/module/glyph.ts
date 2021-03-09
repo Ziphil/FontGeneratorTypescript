@@ -21,7 +21,8 @@ export class Glyph {
   public static byBearings(part: PathItem, metrics: Metrics, bearings: Bearings): Glyph {
     let clonedPart = part.clone();
     let width = part.bounds.width + bearings.left + bearings.right;
-    clonedPart.translate(new Point(bearings.left, metrics.ascent));
+    let delta = new Point(bearings.left, metrics.ascent);
+    clonedPart.translate(delta);
     let glyph = new Glyph(clonedPart, metrics, width);
     return glyph;
   }
