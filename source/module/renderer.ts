@@ -2,6 +2,7 @@
 
 
 import {
+  Color,
   Path,
   Point,
   Project,
@@ -15,7 +16,7 @@ import {
 } from "./glyph";
 
 
-const GLYPH_CANVAS_SIZE = 150;
+const GLYPH_CANVAS_SIZE = 80;
 
 
 export class FontRenderer {
@@ -27,6 +28,7 @@ export class FontRenderer {
   }
 
   public render(): void {
+    this.changeFontName();
     this.appendGlyphPane();
   }
 
@@ -40,18 +42,32 @@ export class FontRenderer {
     }
   }
 
+  private changeFontName(): void {
+    let nameElement = document.getElementById("name")!;
+    nameElement.textContent = this.font.fullName;
+  }
+
   private renderGlyph(char: string): void {
     let project = new Project(`glyph-${char.charCodeAt(0)}`);
     let generator = this.font.generator;
     let glyph = generator.glyph(char);
     if (glyph !== null) {
+      let scale = GLYPH_CANVAS_SIZE / generator.metrics.em;
+      let scaledWidth = Math.floor(glyph.width * scale) + 0.5;
+      let scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
+      let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(GLYPH_CANVAS_SIZE, scaledAscent)], insert: true});
+      let widthPath = new Path({segments: [new Point(scaledWidth, 0), new Point(scaledWidth, GLYPH_CANVAS_SIZE)], insert: true});
+      baselinePath.strokeColor = new Color({hue: 0, saturation: 0, lightness: 0.9});
+      widthPath.strokeColor = new Color({hue: 0, saturation: 0, lightness: 0.9});
+      baselinePath.strokeWidth = 1;
+      widthPath.strokeWidth = 1;
       let item = glyph.part;
-      item.scale(GLYPH_CANVAS_SIZE / generator.metrics.em, new Point(0, 0));
+      item.scale(scale, new Point(0, 0));
       project.activeLayer.addChild(item);
-      project.activeLayer.onMouseEnter = function (): void {
+      item.onMouseEnter = function (): void {
         item.selected = true;
       };
-      project.activeLayer.onMouseLeave = function (): void {
+      item.onMouseLeave = function (): void {
         item.selected = false;
       };
     }
@@ -72,10 +88,13 @@ export class FontRenderer {
   private createInfoPane(char: string): HTMLElement {
     let infoPane = document.createElement("div");
     let charPane = document.createElement("div");
+    let codepointPane = document.createElement("div");
     infoPane.classList.add("info");
     charPane.classList.add("char");
+    codepointPane.classList.add("codepoint");
     charPane.textContent = char;
-    infoPane.append(charPane);
+    codepointPane.textContent = "U+" + ("000" + char.charCodeAt(0).toString(16)).slice(-4).toUpperCase();
+    infoPane.append(charPane, codepointPane);
     return infoPane;
   }
 
