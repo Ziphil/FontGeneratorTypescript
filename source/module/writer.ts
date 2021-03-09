@@ -21,6 +21,7 @@ export class FontWriter {
   public static async generateFont(font: Font): Promise<void> {
     let directory = "out/" + font.fullName.replace(/\s+/g, "-").toLowerCase();
     let codePath = directory + "/generate.py";
+    await FontWriter.writeFont(font);
     await FontWriter.writeCode(font);
     await execa("ffpython", [codePath]);
   }
