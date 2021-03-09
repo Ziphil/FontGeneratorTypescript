@@ -8,7 +8,7 @@
   "main": "dist/index.js",
   "scripts": {
     "develop": "ts-node ./source/index.ts",
-    "build": "tsc"
+    "generate": "ts-node ./source/index.ts"
   },
   "eslintConfig": {
     "extends": "ziphil",
