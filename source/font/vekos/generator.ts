@@ -367,6 +367,127 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return glyph;
   }
 
+  @glyph("h", "H")
+  public glyphHes(): Glyph {
+    let part = Part.union(
+      this.partYes().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("s", "S")
+  public glyphSal(): Glyph {
+    let part = Part.union(
+      this.partYes().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("z", "Z")
+  public glyphZol(): Glyph {
+    let part = Part.union(
+      this.partYes().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  private get talBeakWidth(): number {
+    return this.bowlWidth / 2 * 0.95;
+  }
+
+  private get talBeakHeight(): number {
+    return this.mean * 0.35;
+  }
+
+  private get talWidth(): number {
+    return this.bowlWidth / 2 + this.talBeakWidth;
+  }
+
+  // t の文字の右上にある部分の外側の曲線を、右端から上端への向きで生成します。
+  @part()
+  public partOuterTalBeak(): Part {
+    let width = this.talBeakWidth;
+    let height = this.talBeakHeight + this.overshoot;
+    let rightCont = height * 0.05;
+    let topCont = width;
+    let part = Part.bezier($(0, 0), $(0, -rightCont), $(topCont, 0), $(-width, -height));
+    return part;
+  }
+
+  // t の文字の右上にある部分の内側の曲線を、右端から上端への向きで生成します。
+  @part()
+  public partInnerTalBeak(): Part {
+    let width = this.talBeakWidth - this.horThickness;
+    let height = this.talBeakHeight - this.verThickness + this.overshoot;
+    let rightCont = height * 0.05;
+    let topCont = width;
+    let part = Part.bezier($(0, 0), $(0, -rightCont), $(topCont, 0), $(-width, -height));
+    return part;
+  }
+
+  // t の文字と同じ形を生成します。
+  // 原点は全体の中央にあるので、回転や反転で変化しません。
+  @part()
+  public partTal(): Part {
+    let part = Part.seq(
+      this.partOuterBowl().reflectVerZero(),
+      this.partOuterTalBeak().reflectVerZero().reverseZero(),
+      this.partCut().reverseZero(),
+      this.partInnerTalBeak().reflectVerZero(),
+      this.partInnerBowl().reflectVerZero().reverseZero(),
+      this.partInnerBowl(),
+      this.partInnerTalBeak().reverseZero(),
+      this.partCut(),
+      this.partOuterTalBeak(),
+      this.partOuterBowl().reverseZero()
+    );
+    part.moveZeroTo($(this.talWidth / 2, 0));
+    return part;
+  }
+
+  @glyph("t", "T")
+  public glyphTal(): Glyph {
+    let part = Part.union(
+      this.partTal().translate($(this.talWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("d", "D")
+  public glyphDol(): Glyph {
+    let part = Part.union(
+      this.partTal().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.talWidth + this.transphoneGap, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("f", "F")
+  public glyphFal(): Glyph {
+    let part = Part.union(
+      this.partTal().reflectHorZero().translate($(this.talWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("v", "V")
+  public glyphVol(): Glyph {
+    let part = Part.union(
+      this.partTal().reflectHorZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partTransphone().translate($(this.talWidth + this.transphoneGap, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
 }
 
 
