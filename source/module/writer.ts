@@ -21,11 +21,11 @@ export class FontWriter {
   public static async generateFont(font: Font): Promise<void> {
     let directory = "out/" + font.fullName.replace(/\s+/g, "-").toLowerCase();
     let codePath = directory + "/generate.py";
-    await FontWriter.createCode(font);
+    await FontWriter.writeCode(font);
     await execa("ffpython", [codePath]);
   }
 
-  private static async createCode(font: Font): Promise<void> {
+  private static async writeCode(font: Font): Promise<void> {
     let directory = "out/" + font.fullName.replace(/\s+/g, "-").toLowerCase();
     let fontPath = directory + ".ttf";
     let codePath = directory + "/generate.py";
