@@ -95,22 +95,22 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @part()
   public partBowl(): Part {
     let outerPart = Part.seq(
-      this.partOuterBowl().reflectVerZero(),
-      this.partOuterBowl().rotateHalfTurnZero().reverseZero(),
-      this.partOuterBowl().reflectHorZero(),
-      this.partOuterBowl().reverseZero()
+      this.partOuterBowl().reflectVer(),
+      this.partOuterBowl().rotateHalfTurn().reverse(),
+      this.partOuterBowl().reflectHor(),
+      this.partOuterBowl().reverse()
     );
     let innerPart = Part.seq(
-      this.partInnerBowl().reflectVerZero(),
-      this.partInnerBowl().rotateHalfTurnZero().reverseZero(),
-      this.partInnerBowl().reflectHorZero(),
-      this.partInnerBowl().reverseZero()
+      this.partInnerBowl().reflectVer(),
+      this.partInnerBowl().rotateHalfTurn().reverse(),
+      this.partInnerBowl().reflectHor(),
+      this.partInnerBowl().reverse()
     );
     let part = Part.stack(
       outerPart,
-      innerPart.reverseZero().translate($(this.horThickness, 0))
+      innerPart.reverse().translate($(this.horThickness, 0))
     );
-    part.moveZeroTo($(this.bowlWidth / 2, 0));
+    part.moveOrigin($(this.bowlWidth / 2, 0));
     return part;
   }
 
@@ -195,10 +195,10 @@ export class VekosGenerator extends Generator<VekosConfig> {
     let part = Part.seq(
       this.partLeftLesTail(),
       this.partCut(),
-      this.partRightLesTail().reverseZero(),
+      this.partRightLesTail().reverse(),
       Part.line($(0, 0), $(-this.horThickness + this.lesTailCorrection, 0))
     );
-    part.moveZeroTo($(-this.lesTailCorrection, 0));
+    part.moveOrigin($(-this.lesTailCorrection, 0));
     return part;
   }
 
@@ -250,13 +250,13 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public partTransphone(): Part {
     let part = Part.seq(
       this.partTransphoneSegment(),
-      this.partTransphoneSegment().reflectVerZero().reverseZero(),
+      this.partTransphoneSegment().reflectVer().reverse(),
       this.partTransphoneCut(),
-      this.partTransphoneSegment().reflectVerZero(),
-      this.partTransphoneSegment().reverseZero(),
-      this.partTransphoneCut().reverseZero()
+      this.partTransphoneSegment().reflectVer(),
+      this.partTransphoneSegment().reverse(),
+      this.partTransphoneCut().reverse()
     );
-    part.moveZeroTo($(this.transphoneBend, this.mean / 2));
+    part.moveOrigin($(this.transphoneBend, this.mean / 2));
     return part;
   }
 
@@ -282,7 +282,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("p", "P")
   public glyphPal(): Glyph {
     let part = Part.union(
-      this.partLes().rotateHalfTurnZero().translate($(this.bowlWidth / 2, -this.mean / 2))
+      this.partLes().rotateHalfTurn().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -291,7 +291,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("b", "B")
   public glyphBol(): Glyph {
     let part = Part.union(
-      this.partLes().rotateHalfTurnZero().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partLes().rotateHalfTurn().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
@@ -301,7 +301,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("c", "C")
   public glyphCal(): Glyph {
     let part = Part.union(
-      this.partLes().reflectHorZero().translate($(this.bowlWidth / 2, -this.mean / 2))
+      this.partLes().reflectHor().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -310,7 +310,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("q", "Q")
   public glyphQol(): Glyph {
     let part = Part.union(
-      this.partLes().reflectHorZero().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partLes().reflectHor().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
@@ -320,7 +320,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("k", "K")
   public glyphKal(): Glyph {
     let part = Part.union(
-      this.partLes().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean / 2))
+      this.partLes().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -329,7 +329,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("g", "G")
   public glyphGol(): Glyph {
     let part = Part.union(
-      this.partLes().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partLes().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
@@ -359,16 +359,16 @@ export class VekosGenerator extends Generator<VekosConfig> {
     let part = Part.seq(
       this.partYesLeg(),
       this.partCut(),
-      this.partYesLeg().reverseZero(),
+      this.partYesLeg().reverse(),
       this.partInnerBowl(),
-      this.partInnerBowl().reflectHorZero().reverseZero(),
-      this.partYesLeg().reflectHorZero(),
+      this.partInnerBowl().reflectHor().reverse(),
+      this.partYesLeg().reflectHor(),
       this.partCut(),
-      this.partYesLeg().reflectHorZero().reverseZero(),
-      this.partOuterBowl().reflectHorZero(),
-      this.partOuterBowl().reverseZero()
+      this.partYesLeg().reflectHor().reverse(),
+      this.partOuterBowl().reflectHor(),
+      this.partOuterBowl().reverse()
     );
-    part.moveZeroTo($(this.bowlWidth / 2, 0));
+    part.moveOrigin($(this.bowlWidth / 2, 0));
     return part;
   }
 
@@ -394,7 +394,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("s", "S")
   public glyphSal(): Glyph {
     let part = Part.union(
-      this.partYes().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean / 2))
+      this.partYes().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -403,7 +403,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("z", "Z")
   public glyphZol(): Glyph {
     let part = Part.union(
-      this.partYes().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partYes().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
@@ -449,18 +449,18 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @part()
   public partTal(): Part {
     let part = Part.seq(
-      this.partOuterBowl().reflectVerZero(),
-      this.partOuterTalBeak().reflectVerZero().reverseZero(),
-      this.partCut().reverseZero(),
-      this.partInnerTalBeak().reflectVerZero(),
-      this.partInnerBowl().reflectVerZero().reverseZero(),
+      this.partOuterBowl().reflectVer(),
+      this.partOuterTalBeak().reflectVer().reverse(),
+      this.partCut().reverse(),
+      this.partInnerTalBeak().reflectVer(),
+      this.partInnerBowl().reflectVer().reverse(),
       this.partInnerBowl(),
-      this.partInnerTalBeak().reverseZero(),
+      this.partInnerTalBeak().reverse(),
       this.partCut(),
       this.partOuterTalBeak(),
-      this.partOuterBowl().reverseZero()
+      this.partOuterBowl().reverse()
     );
-    part.moveZeroTo($(this.talWidth / 2, 0));
+    part.moveOrigin($(this.talWidth / 2, 0));
     return part;
   }
 
@@ -486,7 +486,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("f", "F")
   public glyphFal(): Glyph {
     let part = Part.union(
-      this.partTal().reflectHorZero().translate($(this.talWidth / 2, -this.mean / 2))
+      this.partTal().reflectHor().translate($(this.talWidth / 2, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -495,7 +495,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("v", "V")
   public glyphVol(): Glyph {
     let part = Part.union(
-      this.partTal().reflectHorZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partTal().reflectHor().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.talWidth + this.transphoneGap, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
@@ -560,22 +560,22 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @part()
   public partNarrowBowl(): Part {
     let outerPart = Part.seq(
-      this.partOuterLeftNarrowBowl().reflectVerZero(),
-      this.partOuterRightNarrowBowl().rotateHalfTurnZero().reverseZero(),
-      this.partOuterRightNarrowBowl().reflectHorZero(),
-      this.partOuterLeftNarrowBowl().reverseZero()
+      this.partOuterLeftNarrowBowl().reflectVer(),
+      this.partOuterRightNarrowBowl().rotateHalfTurn().reverse(),
+      this.partOuterRightNarrowBowl().reflectHor(),
+      this.partOuterLeftNarrowBowl().reverse()
     );
     let innerPart = Part.seq(
-      this.partInnerNarrowBowl().reflectVerZero(),
-      this.partInnerNarrowBowl().rotateHalfTurnZero().reverseZero(),
-      this.partInnerNarrowBowl().reflectHorZero(),
-      this.partInnerNarrowBowl().reverseZero()
+      this.partInnerNarrowBowl().reflectVer(),
+      this.partInnerNarrowBowl().rotateHalfTurn().reverse(),
+      this.partInnerNarrowBowl().reflectHor(),
+      this.partInnerNarrowBowl().reverse()
     );
     let part = Part.stack(
       outerPart,
-      innerPart.reverseZero().translate($(this.horThickness, 0))
+      innerPart.reverse().translate($(this.horThickness, 0))
     );
-    part.moveZeroTo($(this.narrowBowlVirtualWidth / 2, 0));
+    part.moveOrigin($(this.narrowBowlVirtualWidth / 2, 0));
     return part;
   }
 
@@ -585,9 +585,9 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public partXal(): Part {
     let part = Part.union(
       this.partNarrowBowl(),
-      this.partNarrowBowl().reflectHorZero().translate($(this.narrowBowlVirtualWidth - this.horThickness, 0))
+      this.partNarrowBowl().reflectHor().translate($(this.narrowBowlVirtualWidth - this.horThickness, 0))
     );
-    part.moveZeroTo($(this.xalWidth / 2 - this.narrowBowlVirtualWidth / 2, 0));
+    part.moveOrigin($(this.xalWidth / 2 - this.narrowBowlVirtualWidth / 2, 0));
     return part;
   }
 
@@ -684,20 +684,20 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @part()
   public partNes(): Part {
     let part = Part.seq(
-      this.partOuterLeftNarrowBowl().reflectVerZero(),
+      this.partOuterLeftNarrowBowl().reflectVer(),
       this.partBottomSpine(),
-      this.partInnerNarrowBowl().reflectHorZero().reverseZero(),
+      this.partInnerNarrowBowl().reflectHor().reverse(),
       this.partNesLeg(),
       this.partCut(),
-      this.partNesLeg().reverseZero(),
-      this.partOuterLeftNarrowBowl().reflectHorZero(),
-      this.partTopSpine().reverseZero(),
-      this.partInnerNarrowBowl().reflectVerZero().reverseZero(),
-      this.partNesLeg().rotateHalfTurnZero(),
-      this.partCut().reverseZero(),
-      this.partNesLeg().rotateHalfTurnZero().reverseZero()
+      this.partNesLeg().reverse(),
+      this.partOuterLeftNarrowBowl().reflectHor(),
+      this.partTopSpine().reverse(),
+      this.partInnerNarrowBowl().reflectVer().reverse(),
+      this.partNesLeg().rotateHalfTurn(),
+      this.partCut().reverse(),
+      this.partNesLeg().rotateHalfTurn().reverse()
     );
-    part.moveZeroTo($(this.nesWidth / 2, 0));
+    part.moveOrigin($(this.nesWidth / 2, 0));
     return part;
   }
 
@@ -776,12 +776,12 @@ export class VekosGenerator extends Generator<VekosConfig> {
     let part = Part.seq(
       this.partAcuteCut(),
       this.partInnerAcute(),
-      this.partInnerAcute().reflectHorZero().reverseZero(),
+      this.partInnerAcute().reflectHor().reverse(),
       this.partAcuteCut(),
-      this.partOuterAcute().reflectHorZero(),
-      this.partOuterAcute().reverseZero()
+      this.partOuterAcute().reflectHor(),
+      this.partOuterAcute().reverse()
     );
-    part.moveZeroTo($(this.acuteWidth / 2, 0));
+    part.moveOrigin($(this.acuteWidth / 2, 0));
     return part;
   }
 
@@ -828,22 +828,22 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @part()
   public partCircumflex(): Part {
     let outerPart = Part.seq(
-      this.partOuterCircumflex().reflectVerZero(),
-      this.partOuterCircumflex().rotateHalfTurnZero().reverseZero(),
-      this.partOuterCircumflex().reflectHorZero(),
-      this.partOuterCircumflex().reverseZero()
+      this.partOuterCircumflex().reflectVer(),
+      this.partOuterCircumflex().rotateHalfTurn().reverse(),
+      this.partOuterCircumflex().reflectHor(),
+      this.partOuterCircumflex().reverse()
     );
     let innerPart = Part.seq(
-      this.partInnerCircumflex().reflectVerZero(),
-      this.partInnerCircumflex().rotateHalfTurnZero().reverseZero(),
-      this.partInnerCircumflex().reflectHorZero(),
-      this.partInnerCircumflex().reverseZero()
+      this.partInnerCircumflex().reflectVer(),
+      this.partInnerCircumflex().rotateHalfTurn().reverse(),
+      this.partInnerCircumflex().reflectHor(),
+      this.partInnerCircumflex().reverse()
     );
     let part = Part.stack(
       outerPart,
-      innerPart.reverseZero().translate($(this.circumflexHorThickness, 0))
+      innerPart.reverse().translate($(this.circumflexHorThickness, 0))
     );
-    part.moveZeroTo($(this.circumflexWidth / 2, this.circumflexHeight / 2));
+    part.moveOrigin($(this.circumflexWidth / 2, this.circumflexHeight / 2));
     return part;
   }
 
@@ -870,7 +870,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public glyphAtGrave(): Glyph {
     let part = Part.union(
       this.partBowl().translate($(this.bowlWidth / 2, -this.mean / 2)),
-      this.partAcute().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
+      this.partAcute().reflectVer().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -924,14 +924,14 @@ export class VekosGenerator extends Generator<VekosConfig> {
     let part = Part.seq(
       this.partLeftItTail(),
       this.partCut(),
-      this.partRightItTail().reverseZero(),
+      this.partRightItTail().reverse(),
       this.partInnerBowl(),
-      this.partInnerTalBeak().reverseZero(),
+      this.partInnerTalBeak().reverse(),
       this.partCut(),
       this.partOuterTalBeak(),
-      this.partOuterBowl().reverseZero()
+      this.partOuterBowl().reverse()
     );
-    part.moveZeroTo($(this.talWidth / 2, 0));
+    part.moveOrigin($(this.talWidth / 2, 0));
     return part;
   }
 
@@ -958,7 +958,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public glyphItGrave(): Glyph {
     let part = Part.union(
       this.partIt().translate($(this.talWidth / 2, -this.mean / 2)),
-      this.partAcute().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
+      this.partAcute().reflectVer().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -977,7 +977,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("e", "E")
   public glyphEt(): Glyph {
     let part = Part.union(
-      this.partIt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2))
+      this.partIt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -986,8 +986,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("é", "É")
   public glyphEtAcute(): Glyph {
     let part = Part.union(
-      this.partIt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
-      this.partAcute().reflectVerZero().translate($(this.talBeakWidth, this.diacriticGap))
+      this.partIt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().reflectVer().translate($(this.talBeakWidth, this.diacriticGap))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -996,7 +996,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("è", "È")
   public glyphEtGrave(): Glyph {
     let part = Part.union(
-      this.partIt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partIt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().translate($(this.talBeakWidth, this.acuteHeight + this.diacriticGap))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
@@ -1006,7 +1006,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("ê", "Ê")
   public glyphEtCircumflex(): Glyph {
     let part = Part.union(
-      this.partIt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partIt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partCircumflex().translate($(this.talBeakWidth, this.circumflexHeight + this.diacriticGap))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
@@ -1078,14 +1078,14 @@ export class VekosGenerator extends Generator<VekosConfig> {
     let part = Part.seq(
       this.partOuterLink(),
       Part.line($(0, 0), $(0, -this.verThickness + this.linkLowerCorrection)),
-      this.partInnerLink().reverseZero(),
+      this.partInnerLink().reverse(),
       this.partInnerBowl(),
-      this.partInnerTalBeak().reverseZero(),
+      this.partInnerTalBeak().reverse(),
       this.partCut(),
       this.partOuterTalBeak(),
-      this.partOuterBowl().reverseZero()
+      this.partOuterBowl().reverse()
     );
-    part.moveZeroTo($(this.talWidth / 2, 0));
+    part.moveOrigin($(this.talWidth / 2, 0));
     return part;
   }
 
@@ -1095,7 +1095,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @part()
   public partUtTail(): Part {
     let part  = Part.seq(
-      this.partLeftUtTail().reverseZero(),
+      this.partLeftUtTail().reverse(),
       this.partCut(),
       this.partRightUtTail(),
       Part.line($(0, 0), $(0, -this.verThickness + this.linkUpperCorrection))
@@ -1137,7 +1137,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public glyphUtGrave(): Glyph {
     let part = Part.union(
       this.partUt().translate($(this.talWidth / 2, -this.mean / 2)),
-      this.partAcute().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
+      this.partAcute().reflectVer().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -1156,7 +1156,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("o", "O")
   public glyphOt(): Glyph {
     let part = Part.union(
-      this.partUt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2))
+      this.partUt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -1165,8 +1165,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("ó", "Ó")
   public glyphOtAcute(): Glyph {
     let part = Part.union(
-      this.partUt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
-      this.partAcute().reflectVerZero().translate($(this.talBeakWidth, this.diacriticGap))
+      this.partUt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().reflectVer().translate($(this.talBeakWidth, this.diacriticGap))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -1175,7 +1175,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("ò", "Ò")
   public glyphOtGrave(): Glyph {
     let part = Part.union(
-      this.partUt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partUt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().translate($(this.talBeakWidth, this.acuteHeight + this.diacriticGap))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
@@ -1185,7 +1185,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @glyph("ô", "Ô")
   public glyphOtCircumflex(): Glyph {
     let part = Part.union(
-      this.partUt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partUt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partCircumflex().translate($(this.talBeakWidth, this.circumflexHeight + this.diacriticGap))
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);

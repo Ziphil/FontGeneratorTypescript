@@ -60,7 +60,7 @@ export class FontRenderer {
     for (let char of Array.from(input.value)) {
       let glyph = generator.glyph(char);
       if (glyph !== null) {
-        let item = glyph.part;
+        let item = glyph.item;
         item.scale(scale, new Point(0, 0));
         item.translate(new Point(position, 0));
         project.activeLayer.addChild(item);
@@ -105,7 +105,7 @@ export class FontRenderer {
       widthPath.strokeColor = new Color({hue: 0, saturation: 0, lightness: 0.9});
       baselinePath.strokeWidth = 1;
       widthPath.strokeWidth = 1;
-      let item = glyph.part;
+      let item = glyph.item;
       item.scale(scale, new Point(0, 0));
       project.activeLayer.addChild(item);
       item.onMouseEnter = function (): void {

@@ -10,23 +10,25 @@ import {
 } from "paper";
 
 
-export class Part extends CompoundPath {
+export class Part {
 
-  public constructor(object: object) {
-    super(object);
-    this.fillColor = new Color(0, 0, 0);
-    this.strokeColor = null;
+  public item: PathItem;
+
+  private constructor(item: PathItem) {
+    this.item = item;
+    item.fillColor = new Color(0, 0, 0);
+    item.strokeColor = null;
   }
 
   public static line(startPoint: Point, endPoint: Point): Part {
     let path = PathUtil.line(startPoint, endPoint);
-    let part = new Part({children: [path]});
+    let part = new Part(path);
     return part;
   }
 
   public static bezier(startPoint: Point, startHandle: Point | null, endHandle: Point | null, endPoint: Point): Part {
     let path = PathUtil.bezier(startPoint, startHandle, endHandle, endPoint);
-    let part = new Part({children: [path]});
+    let part = new Part(path);
     return part;
   }
 
@@ -34,109 +36,110 @@ export class Part extends CompoundPath {
     let point = new Point(0, 0);
     let segments = new Array<Segment>();
     for (let part of parts) {
-      if (part.children.length === 1 && part.firstChild instanceof Path) {
-        let child = part.firstChild;
-        child.translate(point);
+      let partPath = part.getPath();
+      if (partPath !== undefined) {
+        partPath.translate(point);
         let lastSegment = segments.pop();
         if (lastSegment) {
-          let firstSegment = child.segments[0];
+          let firstSegment = partPath.segments[0];
           let concatSegment = new Segment(firstSegment.point, lastSegment.handleIn, firstSegment.handleOut);
-          segments.push(concatSegment, ...child.segments.slice(1));
+          segments.push(concatSegment, ...partPath.segments.slice(1));
         } else {
-          segments.push(...child.segments);
+          segments.push(...partPath.segments);
         }
-        point = child.lastSegment.point;
+        point = partPath.lastSegment.point;
       } else {
         throw new Error("unsupported operation");
       }
     }
     let path = new Path({segments});
     path.closePath();
-    let resultPart = new Part({children: [path]});
+    let resultPart = new Part(path);
     return resultPart;
   }
 
-  public static stack(...parts: Array<PathItem>): Part {
-    let resultPart = new Part({children: parts});
+  public static stack(...parts: Array<Part | PathItem>): Part {
+    let children = parts.map((part) => (part instanceof Part) ? part.item : part);
+    let item = new CompoundPath({children});
+    let resultPart = new Part(item);
     return resultPart;
   }
 
-  public static union(...parts: Array<PathItem>): Part {
-    let unitedPart = parts.reduce((previousPart, part) => previousPart.unite(part));
-    let resultPart = new Part({children: [unitedPart]});
+  public static union(...parts: Array<Part | PathItem>): Part {
+    let items = parts.map((part) => (part instanceof Part) ? part.item : part);
+    let unitedItem = items.reduce((previousPart, part) => previousPart.unite(part));
+    let resultPart = new Part(unitedItem);
     return resultPart;
+  }
+
+  public clone(): Part {
+    let clonedItem = this.item.clone();
+    let clonedPart = new Part(clonedItem);
+    return clonedPart;
   }
 
   public translate(delta: Point): this {
-    super.translate(delta);
+    this.item.translate(delta);
     return this;
   }
 
-  public moveZeroTo(point: Point): this {
+  public moveOrigin(point: Point): this {
     return this.translate(point.multiply(-1));
   }
 
-  public rotate(angle: number, center?: Point): this {
-    super.rotate(angle, center);
+  public rotate(angle: number): this {
+    this.item.rotate(angle, new Point(0, 0));
     return this;
   }
 
-  public rotateZero(angle: number): this {
-    return this.rotate(angle, new Point(0, 0));
+  public rotateHalfTurn(): this {
+    return this.rotate(180);
   }
 
-  public rotateHalfTurnZero(): this {
-    return this.rotateZero(180);
+  public rotateQuarterTurn(): this {
+    return this.rotate(90);
   }
 
-  public rotateQuarterTurnZero(): this {
-    return this.rotateZero(90);
-  }
-
-  public scale(scale: number, center?: Point): this;
-  public scale(hor: number, ver: number, center?: Point): this;
-  public scale(...args: [any, any?, any?]): this {
-    super.scale(...args);
+  public scale(hor: number, ver: number): this {
+    this.item.scale(hor, ver, new Point(0, 0));
     return this;
   }
 
-  public scaleZero(scale: number): this;
-  public scaleZero(hor: number, ver: number): this;
-  public scaleZero(...args: [any, any?]): this {
-    return this.scale(...args, new Point(0, 0));
+  public reflectHor(): this {
+    return this.scale(-1, 1);
   }
 
-  public reflectHor(center?: Point): this {
-    return this.scale(-1, 1, center);
-  }
-
-  public reflectHorZero(): this {
-    return this.reflectHor(new Point(0, 0));
-  }
-
-  public reflectVer(center?: Point): this {
-    return this.scale(1, -1, center);
-  }
-
-  public reflectVerZero(): this {
-    return this.reflectVer(new Point(0, 0));
+  public reflectVer(): this {
+    return this.scale(1, -1);
   }
 
   public reverse(): this {
-    super.reverse();
-    return this;
-  }
-
-  public reverseZero(): this {
-    if (this.children.length === 1 && this.firstChild instanceof Path) {
-      if (this.firstChild.closed) {
-        return this.reverse();
+    let path = this.getPath();
+    if (path !== undefined) {
+      if (path.closed) {
+        this.item.reverse();
       } else {
-        let point = this.firstChild.lastSegment.point;
-        return this.reverse().translate(point.multiply(-1));
+        let point = path.lastSegment.point;
+        this.item.reverse();
+        this.item.translate(point.multiply(-1));
       }
     } else {
       throw new Error("unsupported operation");
+    }
+    return this;
+  }
+
+  private getPath(): Path | undefined {
+    if (this.item instanceof Path) {
+      return this.item;
+    } else if (this.item instanceof CompoundPath) {
+      if (this.item.children.length === 1 && this.item.firstChild instanceof Path) {
+        return this.item.firstChild;
+      } else {
+        return undefined;
+      }
+    } else {
+      throw new Error("cannot happen");
     }
   }
 

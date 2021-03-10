@@ -64,7 +64,7 @@ export class FontWriter {
     if (glyph !== null) {
       let size = new Size(glyph.metrics.em, glyph.metrics.em);
       let project = new Project(size);
-      project.activeLayer.addChild(glyph.part);
+      project.activeLayer.addChild(glyph.item);
       let svgString = project.exportSVG({asString: true}) as string;
       let addedSvgString = svgString.replace(/<svg(.+?)>/, `<svg$1 glyph-width="${glyph.width}">`);
       await fs.writeFile(glyphPath, addedSvgString);

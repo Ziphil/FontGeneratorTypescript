@@ -4,26 +4,30 @@ import {
   PathItem,
   Point
 } from "paper";
+import {
+  Part
+} from "./part";
 
 
 export class Glyph {
 
-  public part: PathItem;
+  public item: PathItem;
   public metrics: Metrics;
   public width: number;
 
-  protected constructor(part: PathItem, metrics: Metrics, width: number) {
-    this.part = part;
+  private constructor(item: PathItem, metrics: Metrics, width: number) {
+    this.item = item;
     this.metrics = metrics;
     this.width = width;
   }
 
-  public static byBearings(part: PathItem, metrics: Metrics, bearings: Bearings): Glyph {
-    let clonedPart = part.clone();
-    let width = part.bounds.width + bearings.left + bearings.right;
+  public static byBearings(part: Part | PathItem, metrics: Metrics, bearings: Bearings): Glyph {
+    let item = (part instanceof Part) ? part.item : part;
+    let clonedItem = item.clone();
+    let width = item.bounds.width + bearings.left + bearings.right;
     let delta = new Point(bearings.left, metrics.ascent);
-    clonedPart.translate(delta);
-    let glyph = new Glyph(clonedPart, metrics, width);
+    clonedItem.translate(delta);
+    let glyph = new Glyph(clonedItem, metrics, width);
     return glyph;
   }
 
