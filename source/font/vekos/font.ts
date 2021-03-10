@@ -3,7 +3,9 @@
 import {
   Font,
   FontInfo,
-  FontStyle
+  FontStretch,
+  FontStyle,
+  FontWeight
 } from "../../module";
 import {
   VekosGenerator
@@ -12,7 +14,8 @@ import {
 
 export class VekosFont extends Font {
 
-  public static create(style: FontStyle, high: boolean): Font {
+  public static create(weight: FontWeight, stretch: FontStretch, high: boolean): Font {
+    let style = new FontStyle(weight, "upright", stretch);
     let weightNumber = style.getWeightNumber();
     let stretchNumber = style.getStretchNumber();
     let weightConst = (weightNumber * 0.5 + 100) / 300;

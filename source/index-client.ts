@@ -5,11 +5,8 @@ import {
   Size
 } from "paper";
 import {
-  VekosFont
-} from "./font/vekos/font";
-import {
-  FontStyle
-} from "./module";
+  FONTS
+} from "./font";
 import {
   FontRenderer
 } from "./module/renderer";
@@ -29,7 +26,7 @@ export class Main {
   }
 
   private render(): void {
-    let font = VekosFont.create(new FontStyle("regular", "upright", "normal"), false);
+    let font = FONTS.vkr();
     let renderer = new FontRenderer(font);
     renderer.render();
   }
