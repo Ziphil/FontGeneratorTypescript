@@ -38,6 +38,7 @@ export function generator(): GeneratorDecorator {
         return null;
       }
     };
+    cacheGetters(clazz);
   };
   return decorator;
 }
@@ -71,4 +72,26 @@ export function part(): PartMethodDecorator {
     };
   };
   return decorator;
+}
+
+function cacheGetters(clazz: new(...args: any) => Generator): void {
+  let descriptors = Object.getOwnPropertyDescriptors(clazz.prototype);
+  for (let [name, descriptor] of Object.entries(descriptors)) {
+    if (typeof descriptor.get === "function") {
+      let original = descriptor.get;
+      descriptor.get = function (this: Generator): any {
+        let cachedValue = this.getterCache.get(name);
+        if (cachedValue === undefined) {
+          let value = original.apply(this);
+          if (typeof value === "number") {
+            this.getterCache.set(name, value);
+          }
+          return value;
+        } else {
+          return cachedValue;
+        }
+      };
+      Object.defineProperty(clazz.prototype, name, descriptor);
+    }
+  }
 }
