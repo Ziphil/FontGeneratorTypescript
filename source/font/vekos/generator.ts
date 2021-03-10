@@ -706,6 +706,478 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return glyph;
   }
 
+  private get acuteHorThickness(): number {
+    return Math.min(this.config.weightConst * 90, this.config.weightConst * 40 + 35);
+  }
+
+  private get acuteVerThickness(): number {
+    return this.acuteHorThickness * this.config.contrastRatio;
+  }
+
+  private get acuteWidth(): number {
+    return this.bowlWidth * 0.6;
+  }
+
+  private get acuteHeight(): number {
+    return this.descent * 0.55;
+  }
+
+  private get diacriticGap(): number {
+    return this.descent * 0.25;
+  }
+
+  // アキュートアクセントの丸い部分の外側の曲線の半分を、左下端から上端への向きで生成します。
+  @part()
+  public partOuterAcute(): Part {
+    let width = this.acuteWidth / 2;
+    let height = this.acuteHeight;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // アキュートアクセントの丸い部分の内側の曲線の半分を、左下端から上端への向きで生成します。
+  @part()
+  public partInnerAcute(): Part {
+    let width = this.acuteWidth / 2 - this.acuteHorThickness;
+    let height = this.acuteHeight - this.acuteVerThickness;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // アキュートアクセントの下部にある水平に切られた部分を、左端から右端への向きで生成します。
+  @part()
+  public partAcuteCut(): Part {
+    let part = Part.line($(0, 0), $(this.acuteHorThickness, 0));
+    return part;
+  }
+
+  // アキュートアクセントと同じ形を生成します。
+  // 原点は下部中央にあります。
+  @part()
+  public partAcute(): Part {
+    let part = Part.seq(
+      this.partAcuteCut(),
+      this.partInnerAcute(),
+      this.partInnerAcute().reflectHorZero().reverseZero(),
+      this.partAcuteCut(),
+      this.partOuterAcute().reflectHorZero(),
+      this.partOuterAcute().reverseZero()
+    );
+    part.moveZeroTo($(this.acuteWidth / 2, 0));
+    return part;
+  }
+
+  private get circumflexHorThickness(): number {
+    return Math.min(this.config.weightConst * 90, this.config.weightConst * 40 + 35);
+  }
+
+  private get circumflexVerThickness(): number {
+    return this.circumflexHorThickness * this.config.contrastRatio;
+  }
+
+  private get circumflexWidth(): number {
+    return this.bowlWidth * 0.5;
+  }
+
+  private get circumflexHeight(): number {
+    return this.descent * 0.75;
+  }
+
+  // サーカムフレックスアクセントの外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
+  @part()
+  public partOuterCircumflex(): Part {
+    let width = this.circumflexWidth / 2;
+    let height = this.circumflexHeight / 2;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // サーカムフレックスアクセントの内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
+  @part()
+  public partInnerCircumflex(): Part {
+    let width = this.circumflexWidth / 2 - this.circumflexHorThickness;
+    let height = this.circumflexHeight / 2 - this.circumflexVerThickness;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // サーカムフレックスアクセントと同じ形を生成します。
+  // 原点は下部中央にあります。
+  @part()
+  public partCircumflex(): Part {
+    let outerPart = Part.seq(
+      this.partOuterCircumflex().reflectVerZero(),
+      this.partOuterCircumflex().rotateHalfTurnZero().reverseZero(),
+      this.partOuterCircumflex().reflectHorZero(),
+      this.partOuterCircumflex().reverseZero()
+    );
+    let innerPart = Part.seq(
+      this.partInnerCircumflex().reflectVerZero(),
+      this.partInnerCircumflex().rotateHalfTurnZero().reverseZero(),
+      this.partInnerCircumflex().reflectHorZero(),
+      this.partInnerCircumflex().reverseZero()
+    );
+    let part = Part.stack(
+      outerPart,
+      innerPart.reverseZero().translate($(this.circumflexHorThickness, 0))
+    );
+    part.moveZeroTo($(this.circumflexWidth / 2, this.circumflexHeight / 2));
+    return part;
+  }
+
+  @glyph("a", "A")
+  public glyphAt(): Glyph {
+    let part = Part.union(
+      this.partBowl().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("á", "Á")
+  public glyphAtAcute(): Glyph {
+    let part = Part.union(
+      this.partBowl().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partAcute().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("à", "À")
+  public glyphAtGrave(): Glyph {
+    let part = Part.union(
+      this.partBowl().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partAcute().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("â", "Â")
+  public glyphAtCircumflex(): Glyph {
+    let part = Part.union(
+      this.partBowl().translate($(this.bowlWidth / 2, -this.mean / 2)),
+      this.partCircumflex().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  // i の文字のディセンダー部分について、その先端の中央と上にある丸い部分の左端との水平距離を表します。
+  private get itTailBend(): number {
+    return this.bowlWidth * 0.6;
+  }
+
+  private get linkWidth(): number {
+    return this.bowlWidth * 0.8;
+  }
+
+  // i の文字のディセンダーの左側の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partLeftItTail(): Part {
+    let bend = this.itTailBend - this.horThickness / 2;
+    let height = this.mean / 2 + this.descent;
+    let topHandle = this.descent * 1.2;
+    let bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
+    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
+    return part;
+  }
+
+  // i の文字のディセンダーの右側の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partRightItTail(): Part {
+    let bend = this.itTailBend - this.horThickness / 2;
+    let height = this.mean / 2 + this.descent;
+    let bottomHandle = this.descent * 1.2;
+    let topHandle = this.searchTailInnerHandle(bottomHandle, bend, height);
+    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
+    return part;
+  }
+
+  // i の文字と同じ形を生成します。
+  // 原点は上部の丸い部分の中央にあるので、回転や反転で変化しません。
+  @part()
+  public partIt(): Part {
+    let part = Part.seq(
+      this.partLeftItTail(),
+      this.partCut(),
+      this.partRightItTail().reverseZero(),
+      this.partInnerBowl(),
+      this.partInnerTalBeak().reverseZero(),
+      this.partCut(),
+      this.partOuterTalBeak(),
+      this.partOuterBowl().reverseZero()
+    );
+    part.moveZeroTo($(this.talWidth / 2, 0));
+    return part;
+  }
+
+  @glyph("i", "I")
+  public glyphIt(): Glyph {
+    let part = Part.union(
+      this.partIt().translate($(this.talWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("í", "Í")
+  public glyphItAcute(): Glyph {
+    let part = Part.union(
+      this.partIt().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("ì", "Ì")
+  public glyphItGrave(): Glyph {
+    let part = Part.union(
+      this.partIt().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("î", "Î")
+  public glyphItCircumflex(): Glyph {
+    let part = Part.union(
+      this.partIt().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partCircumflex().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("e", "E")
+  public glyphEt(): Glyph {
+    let part = Part.union(
+      this.partIt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("é", "É")
+  public glyphEtAcute(): Glyph {
+    let part = Part.union(
+      this.partIt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().reflectVerZero().translate($(this.talBeakWidth, this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("è", "È")
+  public glyphEtGrave(): Glyph {
+    let part = Part.union(
+      this.partIt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().translate($(this.talBeakWidth, this.acuteHeight + this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("ê", "Ê")
+  public glyphEtCircumflex(): Glyph {
+    let part = Part.union(
+      this.partIt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partCircumflex().translate($(this.talBeakWidth, this.circumflexHeight + this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  // u の文字のディセンダー部分について、その先端の中央と上にある折れ曲がる部分の右端との水平距離を表します。
+  private get utTailBend(): number {
+    return this.bowlWidth * 0.45;
+  }
+
+  private get linkUpperCorrection(): number {
+    return this.verThickness * 0.1;
+  }
+
+  private get linkLowerCorrection(): number {
+    return this.verThickness * 0.1;
+  }
+
+  // u の文字のディセンダーと接続する部分の外側の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partOuterLink(): Part {
+    let width = this.linkWidth;
+    let height = this.mean / 2 - this.linkLowerCorrection;
+    let leftHandle = height * 0.02;
+    let bottomHandle = width;
+    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
+    return part;
+  }
+
+  // u の文字のディセンダーと接続する部分の内側の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partInnerLink(): Part {
+    let width = this.linkWidth - this.horThickness;
+    let height = this.mean / 2 - this.verThickness;
+    let leftHandle = height * 0.02;
+    let bottomHandle = width;
+    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
+    return part;
+  }
+
+  // u の文字のディセンダーの左側の曲線を、下端から上端への向きで生成します。
+  @part()
+  public partLeftUtTail(): Part {
+    let bend = this.utTailBend + this.horThickness / 2;
+    let height = this.descent + this.verThickness - this.linkUpperCorrection;
+    let leftHandle = height * 0.1;
+    let topHandle = bend;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
+    return part;
+  }
+
+  // u の文字のディセンダーの右側の曲線を、下端から上端への向きで生成します。
+  @part()
+  public partRightUtTail(): Part {
+    let bend = this.utTailBend - this.horThickness / 2;
+    let height = this.descent;
+    let leftHandle = height * 0.1;
+    let topHandle = bend;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
+    return part;
+  }
+
+  // u の文字のベースラインより上にある丸い部分を生成します。
+  // ディセンダーと重ねたときに太く見えすぎないように、下側を少し細く補正してあります。
+  // 原点は全体の中央にあるので、回転や反転で変化しません。
+  @part()
+  public partUpperUt(): Part {
+    let part = Part.seq(
+      this.partOuterLink(),
+      Part.line($(0, 0), $(0, -this.verThickness + this.linkLowerCorrection)),
+      this.partInnerLink().reverseZero(),
+      this.partInnerBowl(),
+      this.partInnerTalBeak().reverseZero(),
+      this.partCut(),
+      this.partOuterTalBeak(),
+      this.partOuterBowl().reverseZero()
+    );
+    part.moveZeroTo($(this.talWidth / 2, 0));
+    return part;
+  }
+
+  // u の文字のディセンダーを生成します。
+  // ベースラインより上の部分と重ねたときに太く見えすぎないように、上側を少し細く補正してあります。
+  // 原点は右上の角にあります。
+  @part()
+  public partUtTail(): Part {
+    let part  = Part.seq(
+      this.partLeftUtTail().reverseZero(),
+      this.partCut(),
+      this.partRightUtTail(),
+      Part.line($(0, 0), $(0, -this.verThickness + this.linkUpperCorrection))
+    );
+    return part;
+  }
+
+  // u の文字と同じ形を生成します。
+  // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
+  @part()
+  public partUt(): Part {
+    let part = Part.union(
+      this.partUpperUt(),
+      this.partUtTail().translate($(-this.talWidth / 2 + this.linkWidth, this.mean / 2 - this.verThickness + this.linkUpperCorrection))
+    );
+    return part;
+  }
+
+  @glyph("u", "U")
+  public glyphUt(): Glyph {
+    let part = Part.union(
+      this.partUt().translate($(this.talWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("ú", "Ú")
+  public glyphUtAcute(): Glyph {
+    let part = Part.union(
+      this.partUt().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("ù", "Ù")
+  public glyphUtGrave(): Glyph {
+    let part = Part.union(
+      this.partUt().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().reflectVerZero().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("û", "Û")
+  public glyphUtCircumflex(): Glyph {
+    let part = Part.union(
+      this.partUt().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partCircumflex().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("o", "O")
+  public glyphOt(): Glyph {
+    let part = Part.union(
+      this.partUt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("ó", "Ó")
+  public glyphOtAcute(): Glyph {
+    let part = Part.union(
+      this.partUt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().reflectVerZero().translate($(this.talBeakWidth, this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("ò", "Ò")
+  public glyphOtGrave(): Glyph {
+    let part = Part.union(
+      this.partUt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partAcute().translate($(this.talBeakWidth, this.acuteHeight + this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("ô", "Ô")
+  public glyphOtCircumflex(): Glyph {
+    let part = Part.union(
+      this.partUt().rotateHalfTurnZero().translate($(this.talWidth / 2, -this.mean / 2)),
+      this.partCircumflex().translate($(this.talBeakWidth, this.circumflexHeight + this.diacriticGap))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
 }
 
 
