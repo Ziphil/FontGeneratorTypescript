@@ -32,7 +32,7 @@ h2 {
 #preview-wrapper {
   margin: 0px;
   padding: 8px;
-  background-color: hsl(0, 0%, 90%);
+  background-color: hsl(0, 0%, 85%);
   border-radius: 8px;
 }
 
@@ -67,7 +67,7 @@ h2 {
 .glyph-pane {
   margin: 0px 5px 10px 5px;
   padding: 8px;
-  background-color: hsl(0, 0%, 90%);
+  background-color: hsl(0, 0%, 85%);
   border-radius: 8px;
 }
 

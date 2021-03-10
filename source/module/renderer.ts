@@ -19,7 +19,7 @@ const GLYPH_CANVAS_HEIGHT = 80;
 const PREVIEW_CANVAS_WIDTH = 834;
 const PREVIEW_CANVAS_HEIGHT = 150;
 
-const GRAY_COLOR = new Color({hue: 0, saturation: 0, lightness: 0.9});
+const GRAY_COLOR = new Color({hue: 0, saturation: 0, lightness: 0.85});
 const SELECTED_COLOR = new Color({hue: 200, saturation: 0.8, lightness: 0.5});
 const METRICS_COLOR = new Color({hue: 200, saturation: 0.8, lightness: 0.95});
 
@@ -59,40 +59,51 @@ export class FontRenderer {
     project.activate();
     project.activeLayer.removeChildren();
     let scaledAscent = Math.floor(generator.metrics.ascent * scale);
-    let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(10000, scaledAscent)], insert: true});
+    let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(10000, scaledAscent)]});
     baselinePath.strokeColor = GRAY_COLOR;
     baselinePath.strokeWidth = 2;
     let position = 0;
+    let items = [];
+    let frontInfoGroups = [];
+    let backInfoGroups = [];
     for (let char of Array.from(input.value)) {
       let glyph = generator.glyph(char);
       if (glyph !== null) {
         let item = glyph.item;
-        let metricsRectangle = new Path({segments: [new Point(0, 0), new Point(glyph.width, 0), new Point(glyph.width, generator.metrics.em), new Point(0, generator.metrics.em)]});
+        let metricsRectangle = new Path.Rectangle({point: new Point(0, 0), size: new Point(glyph.width, generator.metrics.em)});
         let widthText = new PointText({point: new Point(glyph.width * scale - 5, 15), content: Math.round(glyph.width).toString()});
-        let infoGroup = new Group([metricsRectangle, widthText]);
-        let group = new Group([infoGroup, item]);
+        let frontInfoGroup = new Group([widthText]);
+        let backInfoGroup = new Group([metricsRectangle]);
+        items.push(item);
+        frontInfoGroups.push(frontInfoGroup);
+        backInfoGroups.push(backInfoGroup);
         item.scale(scale, new Point(0, 0));
         metricsRectangle.scale(scale, new Point(0, 0));
-        group.translate(new Point(position, 0));
-        project.activeLayer.addChild(group);
+        item.translate(new Point(position, 0));
+        frontInfoGroup.translate(new Point(position, 0));
+        backInfoGroup.translate(new Point(position, 0));
         item.selectedColor = SELECTED_COLOR;
         metricsRectangle.fillColor = METRICS_COLOR;
         widthText.fontFamily = "Alegreya Sans";
         widthText.fontSize = 16 * 0.75;
         widthText.fillColor = SELECTED_COLOR;
         widthText.justification = "right";
-        infoGroup.visible = false;
+        frontInfoGroup.visible = false;
+        backInfoGroup.visible = false;
         item.onMouseEnter = function (): void {
           item.selected = true;
-          infoGroup.visible = true;
+          frontInfoGroup.visible = true;
+          backInfoGroup.visible = true;
         };
         item.onMouseLeave = function (): void {
           item.selected = false;
-          infoGroup.visible = false;
+          frontInfoGroup.visible = false;
+          backInfoGroup.visible = false;
         };
         position += glyph.width * scale;
       }
     }
+    project.activeLayer.addChildren([...backInfoGroups, baselinePath, ...items, ...frontInfoGroups]);
   }
 
   private appendGlyphPane(): void {
@@ -119,22 +130,22 @@ export class FontRenderer {
     if (glyph !== null) {
       let scaledWidth = Math.floor(glyph.width * scale) + 0.5;
       let scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
+      let item = glyph.item;
       let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
       let widthPath = new Path({segments: [new Point(scaledWidth, 0), new Point(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
+      item.scale(scale, new Point(0, 0));
+      item.selectedColor = SELECTED_COLOR;
       baselinePath.strokeColor = GRAY_COLOR;
       widthPath.strokeColor = GRAY_COLOR;
       baselinePath.strokeWidth = 1;
       widthPath.strokeWidth = 1;
-      let item = glyph.item;
-      item.scale(scale, new Point(0, 0));
-      project.activeLayer.addChild(item);
-      item.selectedColor = SELECTED_COLOR;
       item.onMouseEnter = function (): void {
         item.selected = true;
       };
       item.onMouseLeave = function (): void {
         item.selected = false;
       };
+      project.activeLayer.addChild(item);
     }
   }
 
