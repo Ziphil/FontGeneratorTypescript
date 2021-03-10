@@ -17,11 +17,25 @@ import {
 @generator()
 export class VekosGenerator extends Generator<VekosConfig> {
 
-  private readonly descent: number = 250;
-  private readonly mean: number = 500;
-  private readonly extraDescent: number = 40;
-  private readonly extraAscent: number = 10;
-  private readonly overshoot: number = 10;
+  private get descent(): number {
+    return 250;
+  }
+
+  private get mean(): number {
+    return 500;
+  }
+
+  private get extraDescent(): number {
+    return 40;
+  }
+
+  private get extraAscent(): number {
+    return 10;
+  }
+
+  private get overshoot(): number {
+    return 10;
+  }
 
   private get bearing(): number {
     return this.bowlWidth * 0.09;
