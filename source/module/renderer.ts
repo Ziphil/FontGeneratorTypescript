@@ -1,12 +1,12 @@
 //
 
-
 import {
   Color,
   Path,
   Point,
   Project
 } from "paper";
+import queryParser from "query-string";
 import {
   Font
 } from "./font";
@@ -38,8 +38,11 @@ export class FontRenderer {
     canvas.width = PREVIEW_CANVAS_WIDTH;
     canvas.height = PREVIEW_CANVAS_HEIGHT;
     let project = new Project("preview");
+    let previewString = queryParser.parse(location.search)["preview"] as string;
+    input.value = previewString ?? "";
     this.renderPreview(project, input);
     input.addEventListener("input", () => {
+      history.replaceState("", document.title, location.pathname + "?preview=" + encodeURIComponent(input.value));
       this.renderPreview(project, input);
     });
   }
