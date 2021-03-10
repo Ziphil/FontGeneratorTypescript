@@ -27,9 +27,9 @@ export class FontRenderer {
   }
 
   public render(): void {
-    this.changeFontName();
-    this.appendGlyphPane();
     this.setupPreviewCanvas();
+    this.setupFontName();
+    this.appendGlyphPane();
   }
 
   private setupPreviewCanvas(): void {
@@ -38,15 +38,16 @@ export class FontRenderer {
     canvas.width = PREVIEW_CANVAS_WIDTH;
     canvas.height = PREVIEW_CANVAS_HEIGHT;
     let project = new Project("preview");
+    this.renderPreview(project, input);
     input.addEventListener("input", () => {
-      this.updatePreviewCanvas(project, input);
+      this.renderPreview(project, input);
     });
-    this.updatePreviewCanvas(project, input);
   }
 
-  private updatePreviewCanvas(project: Project, input: HTMLInputElement): void {
+  private renderPreview(project: Project, input: HTMLInputElement): void {
     let generator = this.font.generator;
     let scale = PREVIEW_CANVAS_HEIGHT / generator.metrics.em;
+    project.activate();
     project.activeLayer.removeChildren();
     let scaledAscent = Math.floor(generator.metrics.ascent * scale);
     let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(10000, scaledAscent)], insert: true});
@@ -77,21 +78,22 @@ export class FontRenderer {
     chars.sort((firstChar, secondChar) => firstChar.codePointAt(0)! - secondChar.codePointAt(0)!);
     for (let char of chars) {
       listElement.append(this.createGlyphPane(char));
-      this.renderGlyph(char);
+      let project = new Project(`glyph-${char.codePointAt(0)}`);
+      this.renderGlyph(project, char);
     }
   }
 
-  private changeFontName(): void {
+  private setupFontName(): void {
     let nameElement = document.getElementById("name")!;
     nameElement.textContent = this.font.fullName;
   }
 
-  private renderGlyph(char: string): void {
-    let project = new Project(`glyph-${char.codePointAt(0)}`);
+  private renderGlyph(project: Project, char: string): void {
     let generator = this.font.generator;
+    let scale = GLYPH_CANVAS_HEIGHT / generator.metrics.em;
+    project.activate();
     let glyph = generator.glyph(char);
     if (glyph !== null) {
-      let scale = GLYPH_CANVAS_HEIGHT / generator.metrics.em;
       let scaledWidth = Math.floor(glyph.width * scale) + 0.5;
       let scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
       let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
