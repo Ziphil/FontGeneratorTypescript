@@ -30,8 +30,10 @@ FontForge をインストールした場所の `bin` フォルダ内にある `f
 ### フォントファイルの生成
 以下のコマンドを実行すると、`out` ディレクトリにフォントが出力されます。
 ```
-npm run generate
+npm run generate -- --python (Pythonのコマンド名)
 ```
+Python のコマンド名には、`import fontforge` が通るものを指定してください。
+Windows 環境で実行する場合で、上に述べた方法で FontForge をインストールしてある場合は、`ffpython` を指定してください。
 
 ### Web プレビュー
 以下のコマンドを実行すると、プレビュー用のサーバーが起動します。

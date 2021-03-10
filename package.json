@@ -25,6 +25,7 @@
     "exec": "ts-node ./source/index.ts"
   },
   "devDependencies": {
+    "@types/command-line-args": "^5.0.0",
     "@types/jsdom": "^16.2.6",
     "@types/mini-css-extract-plugin": "^1.2.2",
     "@types/node": "^14.14.32",
@@ -41,6 +42,7 @@
   "dependencies": {
     "babel-loader": "^8.2.2",
     "babel-polyfill": "^6.26.0",
+    "command-line-args": "^5.1.1",
     "css-loader": "^3.2.0",
     "execa": "^5.0.0",
     "html-webpack-plugin": "^4.5.0",

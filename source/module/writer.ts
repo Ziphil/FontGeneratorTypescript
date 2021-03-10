@@ -16,22 +16,27 @@ import {
 export class FontWriter {
 
   private font: Font;
+  private config: FontWriterConfig;
   private path: string;
 
-  public constructor(font: Font) {
+  public constructor(font: Font, config: FontWriterConfig = {}) {
     this.font = font;
+    this.config = config;
     this.path = "out/" + font.fullName.replace(/\s+/g, "-").toLowerCase();
   }
 
   public async generate(): Promise<void> {
     let codePath = this.path + "/generate.py";
+    let pythonCommand = this.config.pythonCommand ?? "python";
     await this.writeFont();
     await this.writeCode();
-    await execa("ffpython", [codePath]);
+    await execa(pythonCommand, [codePath]);
   }
 
   private async writeCode(): Promise<void> {
-    let fontPath = this.path + ".ttf";
+    let extension = this.config.extension ?? "ttf";
+    let autoHint = this.config.autoHint ?? true;
+    let fontPath = this.path + "." + extension;
     let codePath = this.path + "/generate.py";
     let code = await fs.readFile("resource/generate.py", "utf-8");
     code = code.replace("__familyname__", "\"" + this.font.extendedFamilyName + "\"");
@@ -43,7 +48,7 @@ export class FontWriter {
     code = code.replace("__em__", this.font.generator.getMetrics().em.toString());
     code = code.replace("__ascent__", this.font.generator.getMetrics().ascent.toString());
     code = code.replace("__descent__", this.font.generator.getMetrics().descent.toString());
-    code = code.replace("__autohint__", "True");
+    code = code.replace("__autohint__", (autoHint) ? "True" : "False");
     code = code.replace("__svgdir__", "\"" + this.path + "\"");
     code = code.replace("__fontfilename__", "\"" + fontPath + "\"");
     await fs.writeFile(codePath, code);
@@ -73,3 +78,10 @@ export class FontWriter {
   }
 
 }
+
+
+export type FontWriterConfig = {
+  extension?: string,
+  autoHint?: boolean,
+  pythonCommand?: string
+};

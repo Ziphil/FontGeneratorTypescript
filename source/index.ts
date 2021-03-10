@@ -1,5 +1,6 @@
 //
 
+import argsParser from "command-line-args";
 import paper from "paper";
 import {
   Size
@@ -26,9 +27,11 @@ export class Main {
   }
 
   private async generate(): Promise<void> {
+    let options = argsParser([{name: "python", alias: "p"}]);
+    let pythonCommand = options["python"];
     let fonts = FontManager.getAll();
     let promises = fonts.map(async (font) => {
-      let writer = new FontWriter(font);
+      let writer = new FontWriter(font, {pythonCommand});
       await writer.generate();
     });
     await Promise.all(promises);
