@@ -29,11 +29,11 @@ export abstract class Generator<C = unknown> {
     this.getterCache = new Map();
   }
 
+  public abstract getMetrics(): Metrics;
+
   public getChars(): Array<string> {
     return [];
   }
-
-  public abstract get metrics(): Metrics;
 
   public glyph(char: string): Glyph | null {
     return null;

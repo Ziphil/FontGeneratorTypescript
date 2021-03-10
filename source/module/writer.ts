@@ -40,9 +40,9 @@ export class FontWriter {
     code = code.replace("__weight__", "\"" + this.font.style.getWeightString() + "\"");
     code = code.replace("__version__", "\"" + this.font.info.version + "\"");
     code = code.replace("__copyright__", "\"" + this.font.info.copyright + "\"");
-    code = code.replace("__em__", this.font.generator.metrics.em.toString());
-    code = code.replace("__ascent__", this.font.generator.metrics.ascent.toString());
-    code = code.replace("__descent__", this.font.generator.metrics.descent.toString());
+    code = code.replace("__em__", this.font.generator.getMetrics().em.toString());
+    code = code.replace("__ascent__", this.font.generator.getMetrics().ascent.toString());
+    code = code.replace("__descent__", this.font.generator.getMetrics().descent.toString());
     code = code.replace("__autohint__", "True");
     code = code.replace("__svgdir__", "\"" + this.path + "\"");
     code = code.replace("__fontfilename__", "\"" + fontPath + "\"");

@@ -55,10 +55,10 @@ export class FontRenderer {
 
   private renderPreview(project: Project, input: HTMLInputElement): void {
     let generator = this.font.generator;
-    let scale = PREVIEW_CANVAS_HEIGHT / generator.metrics.em;
+    let scale = PREVIEW_CANVAS_HEIGHT / generator.getMetrics().em;
     project.activate();
     project.activeLayer.removeChildren();
-    let scaledAscent = Math.floor(generator.metrics.ascent * scale);
+    let scaledAscent = Math.floor(generator.getMetrics().ascent * scale);
     let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(10000, scaledAscent)]});
     baselinePath.strokeColor = GRAY_COLOR;
     baselinePath.strokeWidth = 2;
@@ -70,7 +70,7 @@ export class FontRenderer {
       let glyph = generator.glyph(char);
       if (glyph !== null) {
         let item = glyph.item;
-        let metricsRectangle = new Path.Rectangle({point: new Point(0, 0), size: new Point(glyph.width, generator.metrics.em)});
+        let metricsRectangle = new Path.Rectangle({point: new Point(0, 0), size: new Point(glyph.width, generator.getMetrics().em)});
         let widthText = new PointText({point: new Point(glyph.width * scale - 5, 15), content: Math.round(glyph.width).toString()});
         let frontInfoGroup = new Group([widthText]);
         let backInfoGroup = new Group([metricsRectangle]);
@@ -124,12 +124,12 @@ export class FontRenderer {
 
   private renderGlyph(project: Project, char: string): void {
     let generator = this.font.generator;
-    let scale = GLYPH_CANVAS_HEIGHT / generator.metrics.em;
+    let scale = GLYPH_CANVAS_HEIGHT / generator.getMetrics().em;
     project.activate();
     let glyph = generator.glyph(char);
     if (glyph !== null) {
       let scaledWidth = Math.floor(glyph.width * scale) + 0.5;
-      let scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
+      let scaledAscent = Math.floor(generator.getMetrics().ascent * scale) + 0.5;
       let item = glyph.item;
       let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
       let widthPath = new Path({segments: [new Point(scaledWidth, 0), new Point(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
@@ -180,7 +180,7 @@ export class FontRenderer {
     let infoPane = document.createElement("div");
     let widthPane = document.createElement("div");
     let width = this.font.generator.glyph(char)!.width;
-    let em = this.font.generator.metrics.em;
+    let em = this.font.generator.getMetrics().em;
     infoPane.classList.add("bottom-info");
     widthPane.classList.add("width");
     widthPane.textContent = `↔${Math.round(width)} · ↕${Math.round(em)}`;
