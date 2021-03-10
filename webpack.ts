@@ -51,7 +51,6 @@ let config = {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".css"]
   },
   devServer: {
-    port: 3003,
     historyApiFallback: true,
     contentBase: path.join(__dirname, "dist", "client")
   },
