@@ -52,6 +52,7 @@ let config = {
   },
   devServer: {
     port: 3003,
+    historyApiFallback: true,
     contentBase: path.join(__dirname, "dist", "client")
   },
   plugins: [

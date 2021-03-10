@@ -1,11 +1,14 @@
 //
 
 import {
+  Font
+} from "../module";
+import {
   VekosFont
 } from "./vekos/font";
 
 
-export const FONTS = {
+const FONTS = {
   vkr: VekosFont.create("regular", "normal", false),
   vkb: VekosFont.create("bold", "normal", false),
   vkt: VekosFont.create("thin", "normal", false),
@@ -18,3 +21,19 @@ export const FONTS = {
   vkhr: VekosFont.create("regular", "normal", true),
   vkhb: VekosFont.create("bold", "normal", true)
 };
+
+
+export class FontManager {
+
+  public static getAll(): Array<Font> {
+    let fonts = Object.values(FONTS);
+    return fonts;
+  }
+
+  public static getById(id: string): Font | undefined {
+    let anyFonts = FONTS as any;
+    let font = anyFonts[id];
+    return font;
+  }
+
+}
