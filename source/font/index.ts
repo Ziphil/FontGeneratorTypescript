@@ -12,9 +12,9 @@ export const FONTS = {
   vkcr: () => VekosFont.create("regular", "condensed", false),
   vkcb: () => VekosFont.create("bold", "condensed", false),
   vkct: () => VekosFont.create("thin", "condensed", false),
-  vker: () => VekosFont.create("regular", "extended", false),
-  vkeb: () => VekosFont.create("bold", "extended", false),
-  vket: () => VekosFont.create("thin", "extended", false),
+  vker: () => VekosFont.create("regular", "expanded", false),
+  vkeb: () => VekosFont.create("bold", "expanded", false),
+  vket: () => VekosFont.create("thin", "expanded", false),
   vkhr: () => VekosFont.create("regular", "normal", true),
   vkhb: () => VekosFont.create("bold", "normal", true)
 };

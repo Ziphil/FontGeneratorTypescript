@@ -40,14 +40,24 @@ export class FontStyle {
 
   public getStretchNumber(): number {
     let stretch = this.stretch;
-    if (stretch === "compressed") {
-      return 100;
+    if (stretch === "ultraCondensed") {
+      return 50;
+    } else if (stretch === "extraCondensed") {
+      return 62.5;
     } else if (stretch === "condensed") {
-      return 200;
+      return 75;
+    } else if (stretch === "semiCondensed") {
+      return 87.5;
     } else if (stretch === "normal") {
-      return 300;
-    } else if (stretch === "extended") {
-      return 400;
+      return 100;
+    } else if (stretch === "semiExpanded") {
+      return 112.5;
+    } else if (stretch === "expanded") {
+      return 125;
+    } else if (stretch === "extraExpanded") {
+      return 150;
+    } else if (stretch === "ultraExpanded") {
+      return 200;
     } else {
       throw new Error("cannot happen");
     }
@@ -81,4 +91,4 @@ export class FontStyle {
 
 export type FontWeight = "thin" | "extraLight" | "light" | "regular" | "medium" | "semiBold" | "bold" | "extraBold" | "heavy";
 export type FontSlope = "upright" | "oblique" | "italic";
-export type FontStretch = "compressed" | "condensed" | "normal" | "extended";
+export type FontStretch = "ultraCondensed" | "extraCondensed" | "condensed" | "semiCondensed" | "normal" | "semiExpanded" | "expanded" | "extraExpanded" | "ultraExpanded";
