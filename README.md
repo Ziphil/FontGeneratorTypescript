@@ -27,7 +27,33 @@ FontForge をインストールした場所の `bin` フォルダ内にある `f
 このフォルダにパスを通してください。
 
 ## 実行
+### フォントファイルの生成
 以下のコマンドを実行すると、`out` ディレクトリにフォントが出力されます。
 ```
 npm run generate
 ```
+
+### Web プレビュー
+以下のコマンドを実行すると、プレビュー用のサーバーがポート 3003 で起動します。
+```
+npm run develop
+```
+この状態でブラウザから `localhost:3003/(フォントID)` にアクセスすると、該当フォントのプレビューが表示されます。
+フォント ID は以下を参照してください。
+
+## フォント一覧
+現在生成できるフォントは以下の通りです。
+
+| ID | フォント名 |
+|:------:|:----------:|
+| `vkr` | Vekos Regular |
+| `vkb` | Vekos Bold |
+| `vkt` | Vekos Thin |
+| `vkcr` | Vekos Condensed Regular |
+| `vkcb` | Vekos Condensed Bold |
+| `vkct` | Vekos Condensed Thin |
+| `vker` | Vekos Expanded Regular |
+| `vkeb` | Vekos Expanded Bold |
+| `vket` | Vekos Expanded Thin |
+| `vkhr` | Vekos High Regular |
+| `vkhb` | Vekos High Bold |
