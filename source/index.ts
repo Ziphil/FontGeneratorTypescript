@@ -26,9 +26,8 @@ export class Main {
   }
 
   private async generate(): Promise<void> {
-    let fontFunctions = Object.values(FONTS);
-    let promises = fontFunctions.map(async (fontFunction) => {
-      let font = fontFunction();
+    let fonts = Object.values(FONTS);
+    let promises = fonts.map(async (font) => {
       let writer = new FontWriter(font);
       await writer.generate();
     });

@@ -26,7 +26,7 @@ export class Main {
   }
 
   private render(): void {
-    let font = FONTS.vkr();
+    let font = FONTS.vkr;
     let renderer = new FontRenderer(font);
     renderer.render();
   }
