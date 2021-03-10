@@ -32,17 +32,25 @@ export class Part extends CompoundPath {
 
   public static seq(...parts: Array<Part>): Part {
     let point = new Point(0, 0);
-    let path = new Path();
+    let segments = new Array<Segment>();
     for (let part of parts) {
       if (part.children.length === 1 && part.firstChild instanceof Path) {
         let child = part.firstChild;
         child.translate(point);
+        let lastSegment = segments.pop();
+        if (lastSegment) {
+          let firstSegment = child.segments[0];
+          let concatSegment = new Segment(firstSegment.point, lastSegment.handleIn, firstSegment.handleOut);
+          segments.push(concatSegment, ...child.segments.slice(1));
+        } else {
+          segments.push(...child.segments);
+        }
         point = child.lastSegment.point;
-        path.addSegments(child.segments);
       } else {
         throw new Error("unsupported operation");
       }
     }
+    let path = new Path({segments});
     path.closePath();
     let resultPart = new Part({children: [path]});
     return resultPart;
