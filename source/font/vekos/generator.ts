@@ -110,9 +110,9 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   private calcIdealThickness(angle: number): number {
-    let horWeight = angle / 90;
-    let verWeight = 1 - angle / 90;
     if (angle >= 0 && angle <= 90) {
+      let horWeight = angle / 90;
+      let verWeight = 1 - angle / 90;
       return horWeight * this.horThickness + verWeight * this.verThickness;
     } else {
       return 1 / 0;
