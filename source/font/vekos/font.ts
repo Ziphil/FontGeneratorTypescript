@@ -23,7 +23,8 @@ export class VekosFont extends Font {
     let contrastRatio = (high) ? 0.2 : 0.75;
     let generator = new VekosGenerator({weightConst, stretchConst, contrastRatio});
     let info = new FontInfo("Copyright 2019 Ziphil", "1.2.0");
-    let font = new Font(generator, "Vekos", style, info);
+    let familyName = "Vekos" + ((high) ? " High" : "");
+    let font = new Font(generator, familyName, style, info);
     return font;
   }
 
