@@ -70,7 +70,7 @@ export class FontRenderer {
       let glyph = generator.glyph(char);
       if (glyph !== null) {
         let item = glyph.item;
-        let metricsRectangle = new Path.Rectangle({point: new Point(0, 0), size: new Point(glyph.width, generator.getMetrics().em)});
+        let metricsRectangle = new Path.Rectangle({point: new Point(0, 0), size: new Point(glyph.width * scale, generator.getMetrics().em * scale)});
         let widthText = new PointText({point: new Point(glyph.width * scale - 5, 15), content: Math.round(glyph.width).toString()});
         let frontInfoGroup = new Group([widthText]);
         let backInfoGroup = new Group([metricsRectangle]);
@@ -78,7 +78,6 @@ export class FontRenderer {
         frontInfoGroups.push(frontInfoGroup);
         backInfoGroups.push(backInfoGroup);
         item.scale(scale, new Point(0, 0));
-        metricsRectangle.scale(scale, new Point(0, 0));
         item.translate(new Point(position, 0));
         frontInfoGroup.translate(new Point(position, 0));
         backInfoGroup.translate(new Point(position, 0));
