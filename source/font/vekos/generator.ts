@@ -1192,6 +1192,128 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return glyph;
   }
 
+  // 6 の文字と同じ形を生成します。
+  // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
+  @part()
+  public partRac(): Part {
+    let part = Part.union(
+      this.partYes().rotateHalfTurn(),
+      this.partLesTail().translate($(this.bowlWidth / 2 - this.horThickness, 0))
+    );
+    return part;
+  }
+
+  @glyph("6")
+  public glyphRac(): Glyph {
+    let part = Part.union(
+      this.partRac().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("4")
+  public glyphPav(): Glyph {
+    let part = Part.union(
+      this.partRac().rotateHalfTurn().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("2")
+  public glyphQic(): Glyph {
+    let part = Part.union(
+      this.partRac().reflectHor().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("8")
+  public glyphKeq(): Glyph {
+    let part = Part.union(
+      this.partRac().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  // 0 の文字の斜線の部分の太さに乗算する係数を表します。
+  private get solidusThicknessRatio(): number {
+    return Math.min(-this.config.weightConst * 0.12 + 1.084, 1);
+  }
+
+  private get solidusGrade(): number {
+    return this.mean / 2 * 0.8;
+  }
+
+  private get solidusLength(): number {
+    let line = PathUtil.line($(0, 0), $(this.bowlWidth / 2, -this.solidusGrade));
+    let rawLength = line.getIntersections(this.partBowl().item)[1].point.getDistance($(0, 0));
+    let length = rawLength * 2 - this.horThickness;
+    return length;
+  }
+
+  private get solidusThickness(): number {
+    return this.calcIdealThickness(-this.solidusAngle) * this.solidusThicknessRatio;
+  }
+
+  private get solidusAngle(): number {
+    return -$(this.bowlWidth / 2, -this.solidusGrade).getAngle($(1, 0));
+  }
+
+  // 0 の文字の斜線の部分の長い方の直線を、左端から右端への向きで生成します。
+  // パーツを構成した後に回転することを想定しているので、このトレイルは水平です。
+  @part()
+  public partSolidusSegment(): Part {
+    let part = Part.line($(0, 0), $(this.solidusLength, 0));
+    return part;
+  }
+
+  // 0 の文字の斜線の部分の短い方の直線を、上端から下端への向きで生成します。
+  // パーツを構成した後に回転することを想定しているので、このトレイルは鉛直です。
+  @part()
+  public partSolidusCut(): Part {
+    let part = Part.line($(0, 0), $(0, this.solidusThickness));
+    return part;
+  }
+
+  // 0 の文字の斜線の部分を生成します。
+  // 原点は全体の中央にあります。
+  @part()
+  public partSolidus(): Part {
+    let part = Part.seq(
+      this.partSolidusCut(),
+      this.partSolidusSegment(),
+      this.partSolidusCut().reverse(),
+      this.partSolidusSegment().reverse()
+    );
+    part.moveOrigin($(this.solidusLength / 2, this.solidusThickness / 2));
+    part.rotate(this.solidusAngle);
+    return part;
+  }
+
+  // 0 の文字と同じ形を生成します。
+  // 原点は全体の中央にあります。
+  @part()
+  public partNuf(): Part {
+    let part = Part.union(
+      this.partBowl(),
+      this.partSolidus()
+    );
+    return part;
+  }
+
+  @glyph("0")
+  public glyphNuf(): Glyph {
+    let part = Part.union(
+      this.partNuf().translate($(this.bowlWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
   public getMetrics(): Metrics {
     return this.metrics;
   }
