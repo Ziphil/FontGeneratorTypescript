@@ -71,8 +71,9 @@ export class FontRenderer {
       if (glyph !== null) {
         let item = glyph.item;
         let metricsRectangle = new Path.Rectangle({point: new Point(0, 0), size: new Point(glyph.width * scale, generator.getMetrics().em * scale)});
+        let metricsOverlay = metricsRectangle.clone();
         let widthText = new PointText({point: new Point(glyph.width * scale - 5, 15), content: Math.round(glyph.width).toString()});
-        let frontInfoGroup = new Group([widthText]);
+        let frontInfoGroup = new Group([widthText, metricsOverlay]);
         let backInfoGroup = new Group([metricsRectangle]);
         items.push(item);
         frontInfoGroups.push(frontInfoGroup);
@@ -83,21 +84,23 @@ export class FontRenderer {
         backInfoGroup.translate(new Point(position, 0));
         item.selectedColor = SELECTED_COLOR;
         metricsRectangle.fillColor = METRICS_COLOR;
+        metricsOverlay.fillColor = METRICS_COLOR;
+        metricsOverlay.opacity = 0;
         widthText.fontFamily = "Alegreya Sans";
         widthText.fontSize = 16 * 0.75;
         widthText.fillColor = SELECTED_COLOR;
         widthText.justification = "right";
-        frontInfoGroup.visible = false;
-        backInfoGroup.visible = false;
-        item.onMouseEnter = function (): void {
+        frontInfoGroup.opacity = 0;
+        backInfoGroup.opacity = 0;
+        metricsOverlay.onMouseEnter = function (): void {
           item.selected = true;
-          frontInfoGroup.visible = true;
-          backInfoGroup.visible = true;
+          frontInfoGroup.opacity = 1;
+          backInfoGroup.opacity = 1;
         };
-        item.onMouseLeave = function (): void {
+        metricsOverlay.onMouseLeave = function (): void {
           item.selected = false;
-          frontInfoGroup.visible = false;
-          backInfoGroup.visible = false;
+          frontInfoGroup.opacity = 0;
+          backInfoGroup.opacity = 0;
         };
         position += glyph.width * scale;
       }
