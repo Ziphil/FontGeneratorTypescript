@@ -1,6 +1,19 @@
 @charset "utf-8";
 
 
+@mixin large {
+  @media screen and (min-width: 1201px) {
+    @content;
+  }
+}
+
+@mixin small {
+  @media screen and (max-width: 1200px) {
+    @content;
+  }
+}
+
+
 body {
   margin: 0px;
   padding: 0px;
@@ -12,23 +25,49 @@ body {
 #root {
   margin: 40px 0px;
   display: flex;
-  justify-content: center;
+  @include large {
+    justify-content: center;
+  }
+  @include small {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 #menu {
-  width: 200px;
-  flex: 0 0 200px;
-  margin: 0px 50px 0px 0px;
-  padding: 0px 50px 0px 0px;
-  border-right: 1px hsl(0, 0%, 85%) solid;
+  @include large {
+    width: 200px;
+    flex: 0 0 200px;
+    margin: 0px 50px 0px 0px;
+    padding: 0px 50px 0px 0px;
+    border-right: 1px hsl(0, 0%, 85%) solid;
+  }
+  @include small {
+    width: 850px;
+    flex: 0 0 auto;
+    margin: 0px 0px 30px 0px;
+    padding: 0px 0px 27px 0px;
+    border-bottom: 1px hsl(0, 0%, 85%) solid;
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
 #menu .item {
-  margin: 3px 0px;
-  padding: 2px 5px;
+  padding: 3px 0px 3px 0px;
   border-radius: 4px;
-  border: 1px transparent solid;
+  box-sizing: border-box;
   cursor: pointer;
+  @include large {
+    margin: 0px 0px 3px 0px;
+  }
+  @include small {
+    margin: 0px 20px 3px 0px;
+    width: calc((100% - 20px * 3) / 4);
+    &:nth-child(4n) {
+      margin: 0px 0px 3px 0px;
+    }
+  }
 }
 
 #menu .item.current {
@@ -37,7 +76,7 @@ body {
 }
 
 #menu .item:hover {
-  border: 1px hsl(0, 0%, 85%) solid;
+  background-color: hsl(0, 0%, 85%);
 }
 
 #menu .item::before {
@@ -49,8 +88,10 @@ body {
 
 #content {
   width: 850px;
-  flex: 0 0 850px;
   padding: 0px;
+  @include large {
+    flex: 0 0 850px;
+  }
 }
 
 h1 {
