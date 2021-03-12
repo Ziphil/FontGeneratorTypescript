@@ -17,6 +17,7 @@ body {
 
 #menu {
   width: 200px;
+  flex: 0 0 200px;
   margin: 0px 50px 0px 0px;
   padding: 0px 50px 0px 0px;
   border-right: 1px hsl(0, 0%, 85%) solid;
@@ -48,6 +49,7 @@ body {
 
 #content {
   width: 850px;
+  flex: 0 0 850px;
   padding: 0px;
 }
 
