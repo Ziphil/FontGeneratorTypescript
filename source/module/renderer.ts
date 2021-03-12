@@ -31,15 +31,18 @@ export class FontRenderer {
 
   private fontManager: FontManager;
   private font: Font | undefined;
+  private id: string;
 
   public constructor(fontManager: FontManager, id: string) {
     this.fontManager = fontManager;
     this.font = fontManager.findById(id);
+    this.id = id;
   }
 
   public render(): void {
     this.setupMenu();
     if (this.font !== undefined) {
+      this.setupMenuItem();
       this.setupPreviewCanvas();
       this.setupFontName();
       this.appendGlyphPane();
@@ -52,12 +55,18 @@ export class FontRenderer {
     for (let [id, font] of fonts) {
       let itemPane = document.createElement("div");
       itemPane.classList.add("item");
+      itemPane.id = "item-" + id;
       itemPane.textContent = font.fullName;
       itemPane.addEventListener("click", () => {
         location.href = "/" + id + location.search;
       });
       menuPane.append(itemPane);
     }
+  }
+
+  private setupMenuItem(): void {
+    let itemPane = document.getElementById("item-" + this.id);
+    itemPane?.classList.add("current");
   }
 
   private setupPreviewCanvas(): void {
