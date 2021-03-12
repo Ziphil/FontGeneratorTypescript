@@ -1,12 +1,14 @@
 //
 
 import {
-  PathItem,
-  Point
+  PathItem
 } from "paper";
 import {
   Part
 } from "./part";
+import {
+  $
+} from "./point";
 
 
 export class Glyph {
@@ -25,8 +27,7 @@ export class Glyph {
     let item = (part instanceof Part) ? part.item : part;
     let clonedItem = item.clone();
     let width = item.bounds.width + bearings.left + bearings.right;
-    let delta = new Point(bearings.left, metrics.ascent);
-    clonedItem.translate(delta);
+    clonedItem.translate($(bearings.left, metrics.ascent));
     let glyph = new Glyph(clonedItem, metrics, width);
     return glyph;
   }

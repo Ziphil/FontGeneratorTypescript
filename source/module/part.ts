@@ -8,6 +8,9 @@ import {
   Point,
   Segment
 } from "paper";
+import {
+  $
+} from "./point";
 
 
 export class Part {
@@ -33,7 +36,7 @@ export class Part {
   }
 
   public static seq(...parts: Array<Part>): Part {
-    let point = new Point(0, 0);
+    let point = $(0, 0);
     let segments = new Array<Segment>();
     for (let part of parts) {
       let partPath = part.getPath();
@@ -88,7 +91,7 @@ export class Part {
   }
 
   public rotate(angle: number): this {
-    this.item.rotate(angle, new Point(0, 0));
+    this.item.rotate(angle, $(0, 0));
     return this;
   }
 
@@ -101,7 +104,7 @@ export class Part {
   }
 
   public scale(hor: number, ver: number): this {
-    this.item.scale(hor, ver, new Point(0, 0));
+    this.item.scale(hor, ver, $(0, 0));
     return this;
   }
 

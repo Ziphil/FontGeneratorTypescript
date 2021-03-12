@@ -4,7 +4,6 @@ import {
   Color,
   Group,
   Path,
-  Point,
   PointText,
   Project
 } from "paper";
@@ -15,6 +14,9 @@ import {
 import {
   FontManager
 } from "./font-manager";
+import {
+  $
+} from "./point";
 
 
 const GLYPH_CANVAS_WIDTH = 80;
@@ -90,7 +92,7 @@ export class FontRenderer {
     project.activate();
     project.activeLayer.removeChildren();
     let scaledAscent = Math.floor(generator.getMetrics().ascent * scale);
-    let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(10000, scaledAscent)]});
+    let baselinePath = new Path({segments: [$(0, scaledAscent), $(10000, scaledAscent)]});
     baselinePath.strokeColor = GRAY_COLOR;
     baselinePath.strokeWidth = 2;
     let position = 0;
@@ -101,18 +103,18 @@ export class FontRenderer {
       let glyph = generator.glyph(char);
       if (glyph !== null) {
         let item = glyph.item;
-        let metricsRectangle = new Path.Rectangle({point: new Point(0, 0), size: new Point(glyph.width * scale, generator.getMetrics().em * scale)});
+        let metricsRectangle = new Path.Rectangle({point: $(0, 0), size: $(glyph.width * scale, generator.getMetrics().em * scale)});
         let metricsOverlay = metricsRectangle.clone();
-        let widthText = new PointText({point: new Point(glyph.width * scale - 5, 15), content: Math.round(glyph.width).toString()});
+        let widthText = new PointText({point: $(glyph.width * scale - 5, 15), content: Math.round(glyph.width).toString()});
         let frontInfoGroup = new Group([widthText, metricsOverlay]);
         let backInfoGroup = new Group([metricsRectangle]);
         items.push(item);
         frontInfoGroups.push(frontInfoGroup);
         backInfoGroups.push(backInfoGroup);
-        item.scale(scale, new Point(0, 0));
-        item.translate(new Point(position, 0));
-        frontInfoGroup.translate(new Point(position, 0));
-        backInfoGroup.translate(new Point(position, 0));
+        item.scale(scale, $(0, 0));
+        item.translate($(position, 0));
+        frontInfoGroup.translate($(position, 0));
+        backInfoGroup.translate($(position, 0));
         item.selectedColor = SELECTED_COLOR;
         metricsRectangle.fillColor = METRICS_COLOR;
         metricsOverlay.fillColor = METRICS_COLOR;
@@ -123,16 +125,16 @@ export class FontRenderer {
         widthText.justification = "right";
         frontInfoGroup.opacity = 0;
         backInfoGroup.opacity = 0;
-        metricsOverlay.onMouseEnter = function (): void {
+        metricsOverlay.on("mouseenter", () => {
           item.selected = true;
           frontInfoGroup.opacity = 1;
           backInfoGroup.opacity = 1;
-        };
-        metricsOverlay.onMouseLeave = function (): void {
+        });
+        metricsOverlay.on("mouseleave", () => {
           item.selected = false;
           frontInfoGroup.opacity = 0;
           backInfoGroup.opacity = 0;
-        };
+        });
         position += glyph.width * scale;
       }
     }
@@ -164,20 +166,20 @@ export class FontRenderer {
       let scaledWidth = Math.floor(glyph.width * scale) + 0.5;
       let scaledAscent = Math.floor(generator.getMetrics().ascent * scale) + 0.5;
       let item = glyph.item;
-      let baselinePath = new Path({segments: [new Point(0, scaledAscent), new Point(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
-      let widthPath = new Path({segments: [new Point(scaledWidth, 0), new Point(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
-      item.scale(scale, new Point(0, 0));
+      let baselinePath = new Path({segments: [$(0, scaledAscent), $(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
+      let widthPath = new Path({segments: [$(scaledWidth, 0), $(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
+      item.scale(scale, $(0, 0));
       item.selectedColor = SELECTED_COLOR;
       baselinePath.strokeColor = GRAY_COLOR;
       widthPath.strokeColor = GRAY_COLOR;
       baselinePath.strokeWidth = 1;
       widthPath.strokeWidth = 1;
-      item.onMouseEnter = function (): void {
+      item.on("mouseenter", () => {
         item.selected = true;
-      };
-      item.onMouseLeave = function (): void {
+      });
+      item.on("mouseleave", () => {
         item.selected = false;
-      };
+      });
       project.activeLayer.addChild(item);
     }
   }
