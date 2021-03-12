@@ -6,7 +6,7 @@ import path from "path";
 
 
 let config = {
-  entry: ["babel-polyfill", "./source/index-client.ts", "./resource/style.css"],
+  entry: ["babel-polyfill", "./source/index-client.ts", "./resource/style.scss"],
   output: {
     path: path.join(__dirname, "dist", "client"),
     publicPath: "/",
@@ -35,13 +35,16 @@ let config = {
         loader: "source-map-loader"
       },
       {
-        test: /\.css$/,
+        test: /\.scss$/,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
           },
           {
             loader: "css-loader"
+          },
+          {
+            loader: "sass-loader"
           }
         ]
       }
