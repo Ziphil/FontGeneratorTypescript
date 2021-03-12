@@ -10,13 +10,44 @@ body {
 }
 
 #root {
+  margin: 40px 0px;
+  display: flex;
+  justify-content: center;
+}
+
+#menu {
+  width: 200px;
+  margin: 0px 50px 0px 0px;
+  padding: 0px 50px 0px 0px;
+  border-right: 1px hsl(0, 0%, 85%) solid;
+}
+
+#menu .item {
+  margin: 0px 0px;
+  padding: 4px 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#menu .item:hover {
+  background-color: hsl(0, 0%, 85%);
+}
+
+#menu .item::before {
+  margin: 0em 0.3em 0em 0em;
+  color: hsl(0, 0%, 85%);
+  font-weight: normal;
+  text-decoration: none;
+  content: "❥";
+}
+
+#content {
   width: 850px;
-  margin: 50px auto;
   padding: 0px;
 }
 
 h1 {
-  margin: 0px 0px;
+  margin: 0px 0px -8px 0px;
   padding: 0px;
   font-size: 200%;
   font-weight: bold;
@@ -57,7 +88,7 @@ h2 {
 }
 
 #glyph-list {
-  margin: 0px -5px;
+  margin: -5px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -65,7 +96,7 @@ h2 {
 }
 
 .glyph-pane {
-  margin: 0px 5px 10px 5px;
+  margin: 5px;
   padding: 8px;
   background-color: hsl(0, 0%, 85%);
   border-radius: 8px;
