@@ -1,7 +1,7 @@
 //
 
 import {
-  Font
+  FontManager
 } from "../module";
 import {
   VekosFont
@@ -22,18 +22,4 @@ const FONTS = {
   vkhb: VekosFont.create("bold", "normal", true)
 };
 
-
-export class FontManager {
-
-  public static getAll(): Array<Font> {
-    let fonts = Object.values(FONTS);
-    return fonts;
-  }
-
-  public static getById(id: string): Font | undefined {
-    let anyFonts = FONTS as any;
-    let font = anyFonts[id];
-    return font;
-  }
-
-}
+export const FONT_MANAGER = new FontManager(FONTS);

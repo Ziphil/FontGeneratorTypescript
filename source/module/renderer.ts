@@ -12,6 +12,9 @@ import queryParser from "query-string";
 import {
   Font
 } from "./font";
+import {
+  FontManager
+} from "./font-manager";
 
 
 const GLYPH_CANVAS_WIDTH = 80;
@@ -26,16 +29,35 @@ const METRICS_COLOR = new Color({hue: 200, saturation: 0.8, lightness: 0.95});
 
 export class FontRenderer {
 
-  private font: Font;
+  private fontManager: FontManager;
+  private font: Font | undefined;
 
-  public constructor(font: Font) {
-    this.font = font;
+  public constructor(fontManager: FontManager, id: string) {
+    this.fontManager = fontManager;
+    this.font = fontManager.findById(id);
   }
 
   public render(): void {
-    this.setupPreviewCanvas();
-    this.setupFontName();
-    this.appendGlyphPane();
+    this.setupMenu();
+    if (this.font !== undefined) {
+      this.setupPreviewCanvas();
+      this.setupFontName();
+      this.appendGlyphPane();
+    }
+  }
+
+  private setupMenu(): void {
+    let menuPane = document.getElementById("menu")! as HTMLDivElement;
+    let fonts = this.fontManager.getAll();
+    for (let [id, font] of fonts) {
+      let itemPane = document.createElement("div");
+      itemPane.classList.add("item");
+      itemPane.textContent = font.fullName;
+      itemPane.addEventListener("click", () => {
+        location.href = "/" + id + location.search;
+      });
+      menuPane.append(itemPane);
+    }
   }
 
   private setupPreviewCanvas(): void {
@@ -54,7 +76,7 @@ export class FontRenderer {
   }
 
   private renderPreview(project: Project, input: HTMLInputElement): void {
-    let generator = this.font.generator;
+    let generator = this.font!.generator;
     let scale = PREVIEW_CANVAS_HEIGHT / generator.getMetrics().em;
     project.activate();
     project.activeLayer.removeChildren();
@@ -110,7 +132,7 @@ export class FontRenderer {
 
   private appendGlyphPane(): void {
     let listElement = document.getElementById("glyph-list")!;
-    let chars = this.font.generator.getChars();
+    let chars = this.font!.generator.getChars();
     chars.sort((firstChar, secondChar) => firstChar.codePointAt(0)! - secondChar.codePointAt(0)!);
     for (let char of chars) {
       listElement.append(this.createGlyphPane(char));
@@ -121,11 +143,11 @@ export class FontRenderer {
 
   private setupFontName(): void {
     let nameElement = document.getElementById("name")!;
-    nameElement.textContent = this.font.fullName;
+    nameElement.textContent = this.font!.fullName;
   }
 
   private renderGlyph(project: Project, char: string): void {
-    let generator = this.font.generator;
+    let generator = this.font!.generator;
     let scale = GLYPH_CANVAS_HEIGHT / generator.getMetrics().em;
     project.activate();
     let glyph = generator.glyph(char);
@@ -181,8 +203,8 @@ export class FontRenderer {
   private createBottomInfoPane(char: string): HTMLElement {
     let infoPane = document.createElement("div");
     let widthPane = document.createElement("div");
-    let width = this.font.generator.glyph(char)!.width;
-    let em = this.font.generator.getMetrics().em;
+    let width = this.font!.generator.glyph(char)!.width;
+    let em = this.font!.generator.getMetrics().em;
     infoPane.classList.add("bottom-info");
     widthPane.classList.add("width");
     widthPane.textContent = `↔${Math.round(width)} · ↕${Math.round(em)}`;

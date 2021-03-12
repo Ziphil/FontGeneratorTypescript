@@ -6,7 +6,7 @@ import {
   Size
 } from "paper";
 import {
-  FontManager
+  FONT_MANAGER
 } from "./font";
 import {
   FontWriter
@@ -29,8 +29,8 @@ export class Main {
   private async generate(): Promise<void> {
     let options = argsParser([{name: "python", alias: "p"}]);
     let pythonCommand = options["python"];
-    let fonts = FontManager.getAll();
-    let promises = fonts.map(async (font) => {
+    let fonts = FONT_MANAGER.getAll();
+    let promises = fonts.map(async ([, font]) => {
       let writer = new FontWriter(font, {pythonCommand});
       await writer.generate();
     });

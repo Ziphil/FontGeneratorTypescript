@@ -5,7 +5,7 @@ import {
   Size
 } from "paper";
 import {
-  FontManager
+  FONT_MANAGER
 } from "./font";
 import {
   FontRenderer
@@ -27,11 +27,9 @@ export class Main {
 
   private render(): void {
     let id = location.pathname.substring(1);
-    let font = FontManager.getById(id);
-    if (font !== undefined) {
-      let renderer = new FontRenderer(font);
-      renderer.render();
-    }
+    let fontManager = FONT_MANAGER;
+    let renderer = new FontRenderer(fontManager, id);
+    renderer.render();
   }
 
 }
