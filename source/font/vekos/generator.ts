@@ -1314,6 +1314,402 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return glyph;
   }
 
+  private get xefBeakWidth(): number {
+    return this.narrowBowlVirtualWidth / 2 * 0.95;
+  }
+
+  private get xefBeakHeight(): number {
+    return this.mean * 0.35;
+  }
+
+  private get xefHalfVirtualWidth(): number {
+    return this.narrowBowlVirtualWidth / 2 + this.xefBeakWidth;
+  }
+
+  private get xefWidth(): number {
+    return this.xefHalfVirtualWidth * 2 - this.horThickness;
+  }
+
+  // 5 の文字の左上にある部分の外側の曲線を、右端から上端への向きで生成します。
+  @part()
+  public partOuterXefBeak(): Part {
+    let width = this.xefBeakWidth;
+    let height = this.xefBeakHeight + this.overshoot;
+    let leftHandle = height * 0.05;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // 5 の文字の左上にある部分の内側の曲線を、右端から上端への向きで生成します。
+  @part()
+  public partInnerXefBeak(): Part {
+    let width = this.xefBeakWidth - this.horThickness;
+    let height = this.xefBeakHeight - this.verThickness + this.overshoot;
+    let leftHandle = height * 0.05;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // 5 の文字の左半分を生成します。
+  // 2 つ重ねたときに重なった部分が太く見えすぎないように、右側を少し細く補正してあります。
+  // 原点は全体の中央にあります。
+  @part()
+  public partXefHalf(): Part {
+    let part = Part.seq(
+      this.partOuterRightNarrowBowl().reflectHor(),
+      this.partOuterXefBeak().reverse(),
+      this.partCut(),
+      this.partInnerXefBeak(),
+      this.partInnerNarrowBowl().reflectHor().reverse(),
+      this.partInnerNarrowBowl().rotateHalfTurn(),
+      this.partInnerXefBeak().reflectVer().reverse(),
+      this.partCut().reverse(),
+      this.partOuterXefBeak().reflectVer(),
+      this.partOuterRightNarrowBowl().rotateHalfTurn().reverse()
+    );
+    part.moveOrigin($(-this.xefHalfVirtualWidth / 2 + this.narrowBowlCorrection, 0));
+    return part;
+  }
+
+  // 5 の文字と同じ形を生成します。
+  // 原点は全体の中央にあります。
+  @part()
+  public partXef(): Part {
+    let part = Part.union(
+      this.partXefHalf(),
+      this.partXefHalf().reflectHor().translate($(this.xefHalfVirtualWidth - this.horThickness, 0))
+    );
+    part.moveOrigin($(this.xefWidth / 2 - this.xefHalfVirtualWidth / 2, 0));
+    return part;
+  }
+
+  @glyph("5")
+  public glyphXef(): Glyph {
+    let part = Part.union(
+      this.partXef().translate($(this.xefWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  private get tasBeakWidth(): number {
+    return this.talBeakWidth;
+  }
+
+  private get tasBeakHeight(): number {
+    return this.mean * 0.3;
+  }
+
+  private get tasShoulderWidth(): number {
+    return this.bowlWidth / 2 * 1;
+  }
+
+  // 1 の文字の右下にある中央の横線と繋がる部分に含まれる直線部分の長さを表します。
+  // この部分のアウトラインを単純に 1 つの曲線としてしまうと尖って見えてしまうため、途中から垂直な直線に連結させています。
+  // その垂直な直線部分の長さを指定します。
+  private get tasShoulderStraightHeight(): number {
+    return this.verThickness * 0.5;
+  }
+
+  // 1 の文字の横棒について、その鉛直方向中央とベースラインとの鉛直距離を表します。
+  private get tasCrossbarAltitude(): number {
+    return this.mean * 0.45;
+  }
+
+  private get tasWidth(): number {
+    return this.bowlWidth / 2 + Math.max(this.tasShoulderWidth, this.tasBeakWidth);
+  }
+
+  // 1 の文字の右上にある部分の外側の曲線を、右端から上端への向きで生成します。
+  @part()
+  public partOuterTasBeak(): Part {
+    let width = this.tasBeakWidth;
+    let height = this.tasBeakHeight + this.overshoot;
+    let rightHandle = height * 0.05;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    return part;
+  }
+
+  // 1 の文字の右上にある部分の内側の曲線を、右端から上端への向きで生成します。
+  @part()
+  public partInnerTasBeak(): Part {
+    let width = this.tasBeakWidth - this.horThickness;
+    let height = this.tasBeakHeight - this.verThickness + this.overshoot;
+    let rightHandle = height * 0.05;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    return part;
+  }
+
+  // 1 の文字の右下にある部分の外側の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partOuterTasShoulder(): Part {
+    let width = this.tasShoulderWidth;
+    let height = this.tasCrossbarAltitude + this.verThickness / 2 - this.tasShoulderStraightHeight + this.overshoot;
+    let rightHandle = height * 0.1;
+    let bottomHandle = width;
+    let part = Part.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
+    return part;
+  }
+
+  // 1 の文字の右下にある部分の内側の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partInnerTasShoulder(): Part {
+    let width = this.tasShoulderWidth - this.horThickness;
+    let height = this.tasCrossbarAltitude - this.verThickness / 2 - this.tasShoulderStraightHeight + this.overshoot;
+    let rightHandle = height * 0.1;
+    let bottomHandle = width;
+    let part = Part.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
+    return part;
+  }
+
+  // 1 の文字の右下にある部分に含まれる直線を、上端から下端への向きで生成します。
+  @part()
+  public partTasShoulderStraight(): Part {
+    let part = Part.line($(0, 0), $(0, -this.tasShoulderStraightHeight));
+    return part;
+  }
+
+  // 1 の文字の横線以外の部分を生成します。
+  // 原点は全体の中央にあるので、回転や反転で変化しません。
+  @part()
+  public partTasFrame(): Part {
+    let part = Part.seq(
+      this.partOuterBowl().reflectVer(),
+      this.partOuterTasShoulder().reverse(),
+      this.partTasShoulderStraight(),
+      this.partCut().reverse(),
+      this.partTasShoulderStraight().reverse(),
+      this.partInnerTasShoulder(),
+      this.partInnerBowl().reflectVer().reverse(),
+      this.partInnerBowl(),
+      this.partInnerTasBeak().reverse(),
+      this.partCut(),
+      this.partOuterTasBeak(),
+      this.partOuterBowl().reverse()
+    );
+    part.moveOrigin($(this.tasWidth / 2, 0));
+    return part;
+  }
+
+  // 1 の文字の横線の部分の直線を、左端から右端への向きで生成します。
+  @part()
+  public partTasCrossbarSegment(): Part {
+    let part = Part.line($(0, 0), $(this.bowlWidth / 2 + this.tasShoulderWidth - this.horThickness, 0));
+    return part;
+  }
+
+  // 文字の書き始めや書き終わりの位置にある垂直に切られた部分を、上端から下端への向きで生成します。
+  @part()
+  public partVerticalCut(): Part {
+    let part = Part.line($(0, 0), $(0, this.verThickness));
+    return part;
+  }
+
+  // 1 の文字の横線の部分を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partTasCrossbar(): Part {
+    let part = Part.seq(
+      this.partVerticalCut(),
+      this.partTasCrossbarSegment(),
+      this.partVerticalCut().reverse(),
+      this.partTasCrossbarSegment().reverse()
+    );
+    return part;
+  }
+
+  // 1 の文字と同じ形を生成します。
+  // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
+  @part()
+  public partTas(): Part {
+    let part = Part.union(
+      this.partTasFrame(),
+      this.partTasCrossbar().translate($(this.horThickness / 2 - this.tasWidth / 2, -this.tasCrossbarAltitude + this.mean / 2 - this.verThickness / 2))
+    );
+    return part;
+  }
+
+  @glyph("1")
+  public glyphTas(): Glyph {
+    let part = Part.union(
+      this.partTas().translate($(this.tasWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("9")
+  public glyphVun(): Glyph {
+    let part = Part.union(
+      this.partTas().rotateHalfTurn().translate($(this.tasWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  private get yusWidth(): number {
+    return this.bowlWidth * 1.3;
+  }
+
+  private get yusLegBend(): number {
+    return this.yesLegBend;
+  }
+
+  private get yusShoulderStraightWidth(): number {
+    return this.horThickness * this.yusCrossbarThicknessRatio * 0.7;
+  }
+
+  private get yusCrossbarThicknessRatio(): number {
+    return 1;
+  }
+
+  private get yusCrossbarLatitude(): number {
+    return this.yusWidth / 2 * 0.95;
+  }
+
+  // 3 の文字の左上にある丸い部分の外側の曲線を、左端から上端への向きで生成します。
+  @part()
+  public partOuterYusBowl(): Part {
+    let width = this.yusWidth / 2;
+    let height = this.mean / 2 + this.overshoot;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // 3 の文字の左上にある丸い部分の内側の曲線を、左端から上端への向きで生成します。
+  @part()
+  public partInnerYusBowl(): Part {
+    let width = this.yusWidth / 2 - this.horThickness;
+    let height = this.mean / 2 - this.verThickness + this.overshoot;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    return part;
+  }
+
+  // 3 の文字の右下にある曲線を、上端から下端への向きで生成します。
+  @part()
+  public partYusLeg(): Part {
+    let bend = this.yusLegBend;
+    let height = this.mean / 2;
+    let leftHandle = height * 0.6;
+    let part = Part.bezier($(0, 0), $(0, leftHandle), null, $(-bend, height));
+    return part;
+  }
+
+  // 3 の文字の左下にある部分の外側の曲線を、左端から下端への向きで生成します。
+  @part()
+  public partOuterYusShoulder(): Part {
+    let width = this.yusCrossbarLatitude + this.horThickness * this.yusCrossbarThicknessRatio / 2 - this.yusShoulderStraightWidth;
+    let height = this.mean / 2;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
+    return part;
+  }
+
+  // 3 の文字の左下にある部分の内側の曲線を、左端から下端への向きで生成します。
+  @part()
+  public partInnerYusShoulder(): Part {
+    let width = this.yusCrossbarLatitude + this.horThickness * (this.yusCrossbarThicknessRatio - 2) / 2 - this.yusShoulderStraightWidth;
+    let height = this.mean / 2 - this.verThickness;
+    let leftHandle = height * 0.1;
+    let topHandle = width;
+    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
+    return part;
+  }
+
+  // 3 の文字の左下にある部分に含まれる直線を、左端から右端への向きで生成します。
+  @part()
+  public partYusShoulderStraight(): Part {
+    let part = Part.line($(0, 0), $(this.yusShoulderStraightWidth, 0));
+    return part;
+  }
+
+  // 3 の文字の縦線以外の部分を生成します。
+  // 原点は全体の中央にあるので、回転や反転で変化しません。
+  @part()
+  public partYusFrame(): Part {
+    let part = Part.seq(
+      this.partOuterYusShoulder(),
+      this.partYusShoulderStraight(),
+      this.partVerticalCut().reverse(),
+      this.partYusShoulderStraight().reverse(),
+      this.partInnerYusShoulder().reverse(),
+      this.partInnerYusBowl(),
+      this.partInnerYusBowl().reflectHor().reverse(),
+      this.partYusLeg(),
+      this.partCut(),
+      this.partYusLeg().reverse(),
+      this.partOuterYusBowl().reflectHor(),
+      this.partOuterYusBowl().reverse()
+    );
+    part.moveOrigin($(this.yusWidth / 2, 0));
+    return part;
+  }
+
+  // 3 の文字の縦線の部分の直線を、上端から下端への向きで生成します。
+  @part()
+  public partYusCrossbarSegment(): Part {
+    let part = Part.line($(0, 0), $(0, this.mean - this.verThickness));
+    return part;
+  }
+
+  // 3 の文字の縦線の部分の水平に切られた部分を、左端から右端への向きで生成します。
+  @part()
+  public partYusCrossbarCut(): Part {
+    let part = Part.line($(0, 0), $(this.horThickness * this.yusCrossbarThicknessRatio, 0));
+    return part;
+  }
+
+  // 3 の文字と縦線の部分を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partYusCrossbar(): Part {
+    let part = Part.seq(
+      this.partYusCrossbarSegment(),
+      this.partYusCrossbarCut(),
+      this.partYusCrossbarSegment().reverse(),
+      this.partYusCrossbarCut().reverse()
+    );
+    return part;
+  }
+
+  // 3 の文字と同じ形を生成します。
+  // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
+  @part()
+  public partYus(): Part {
+    let part = Part.union(
+      this.partYusFrame(),
+      this.partYusCrossbar().translate($(this.yusCrossbarLatitude - this.yusWidth / 2 - this.horThickness * this.yusCrossbarThicknessRatio / 2, -this.mean / 2 + this.verThickness / 2))
+    );
+    return part;
+  }
+
+  @glyph("3")
+  public glyphYus(): Glyph {
+    let part = Part.union(
+      this.partYus().translate($(this.yusWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("7")
+  public glyphSiz(): Glyph {
+    let part = Part.union(
+      this.partYus().rotateHalfTurn().translate($(this.yusWidth / 2, -this.mean / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
   public getMetrics(): Metrics {
     return this.metrics;
   }
