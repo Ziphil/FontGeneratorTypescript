@@ -15,6 +15,7 @@ import {
 const KEY = Symbol("key");
 
 type Metadata = Map<string, string | symbol>;
+
 type GeneratorDecorator = (clazz: new(...args: any) => Generator) => void;
 type GlyphMethodDecorator = (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<GlyphMethod>) => void;
 type PartMethodDecorator = (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>) => void;
