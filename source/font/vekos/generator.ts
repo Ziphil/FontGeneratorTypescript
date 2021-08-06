@@ -2146,6 +2146,18 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return glyph;
   }
 
+  private get spaceWidth(): number {
+    return this.bowlWidth * 0.55;
+  }
+
+  @glyph(" ")
+  public glyphSpace(): Glyph {
+    let part = Part.empty();
+    let bearings = {left: this.spaceWidth, right: 0};
+    let glyph = Glyph.byBearings(part, this.metrics, bearings);
+    return glyph;
+  }
+
   public getMetrics(): Metrics {
     return this.metrics;
   }
