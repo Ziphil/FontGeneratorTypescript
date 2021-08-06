@@ -29,6 +29,12 @@ export class Part {
     return part;
   }
 
+  public static circle(centerPoint: Point, radius: number): Part {
+    let path = PathUtil.circle(centerPoint, radius);
+    let part = new Part(path);
+    return part;
+  }
+
   public static bezier(startPoint: Point, startHandle: Point | null, endHandle: Point | null, endPoint: Point): Part {
     let path = PathUtil.bezier(startPoint, startHandle, endHandle, endPoint);
     let part = new Part(path);
@@ -153,6 +159,11 @@ export class PathUtil {
 
   public static line(startPoint: Point, endPoint: Point): Path {
     let path = new Path({segments: [startPoint, endPoint]});
+    return path;
+  }
+
+  public static circle(centerPoint: Point, radius: number): Path {
+    let path = new Path.Circle(centerPoint, radius);
     return path;
   }
 
