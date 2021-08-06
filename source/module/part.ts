@@ -41,6 +41,12 @@ export class Part {
     return part;
   }
 
+  public static empty(): Part {
+    let path = PathUtil.empty();
+    let part = new Part(path);
+    return part;
+  }
+
   public static seq(...parts: Array<Part>): Part {
     let point = $(0, 0);
     let segments = new Array<Segment>();
@@ -171,6 +177,11 @@ export class PathUtil {
     let startSegment = new Segment(startPoint, undefined, startHandle ?? undefined);
     let endSegment = new Segment(endPoint, endHandle ?? undefined, undefined);
     let path = new Path({segments: [startSegment, endSegment]});
+    return path;
+  }
+
+  public static empty(): Path {
+    let path = new Path();
     return path;
   }
 
