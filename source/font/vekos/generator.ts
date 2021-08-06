@@ -1710,6 +1710,442 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return glyph;
   }
 
+  private get dotWidth(): number {
+    return Math.min(this.config.weightConst * 150, this.config.weightConst * 100 + 30);
+  }
+
+  private get dotGap(): number {
+    return this.bowlWidth * 0.09;
+  }
+
+  // デックやパデックなどに含まれる円を生成します。
+  // 原点は円に外接する矩形の左下の角からオーバーシュート分だけ上に移動した位置にあります。
+  @part()
+  public partDot(): Part {
+    let part = Part.seq(
+      Part.circle($(0, 0), this.dotWidth / 2)
+    );
+    part.moveOrigin($(-this.dotWidth / 2, this.dotWidth / 2 - this.overshoot));
+    return part;
+  }
+
+  @glyph(",")
+  public glyphTadek(): Glyph {
+    let part = Part.union(
+      this.partDot()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph(".")
+  public glyphDek(): Glyph {
+    let part = Part.union(
+      this.partDot(),
+      this.partDot().translate($(this.dotWidth + this.dotGap, 0))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  private get kaltakBearing(): number {
+    return this.bearing * 1.8;
+  }
+
+  private get upperKaltakAltitude(): number {
+    return this.mean * 0.7;
+  }
+
+  private get middotAltitude(): number {
+    return this.mean / 2;
+  }
+
+  // カルタックなどに含まれるベースラインより上に浮いた円を生成します。
+  // partDot が返すパーツと形は同じですが、原点の位置が異なります。
+  // 原点は左端にあります。
+  @part()
+  public partFloatingDot(): Part {
+    let part = Part.seq(
+      Part.circle($(0, 0), this.dotWidth / 2)
+    );
+    part.moveOrigin($(-this.dotWidth / 2, 0));
+    return part;
+  }
+
+  @glyph(":")
+  public glyphKaltak(): Glyph {
+    let part = Part.union(
+      this.partDot(),
+      this.partFloatingDot().translate($(0, -this.upperKaltakAltitude))
+    );
+    let bearings = {left: this.kaltakBearing, right: this.kaltakBearing};
+    let glyph = Glyph.byBearings(part, this.metrics, bearings);
+    return glyph;
+  }
+
+  @glyph("·")
+  public glyphMiddot(): Glyph {
+    let part = Part.union(
+      this.partFloatingDot().translate($(0, -this.middotAltitude))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  private get badekLeftBearing(): number {
+    return this.bearing * 1.8;
+  }
+
+  private get badekGap(): number {
+    return (this.mean + this.descent) * 0.13;
+  }
+
+  // バデックの棒状の部分の直線を、上端から下端への向きで生成します。
+  @part()
+  public partBadekStemSegment(): Part {
+    let part = Part.line($(0, 0), $(0, this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot));
+    return part;
+  }
+
+  // バデックの棒状の部分を生成します。
+  // 原点は左下の角にあります。
+  @part()
+  public partBadekStem(): Part {
+    let part = Part.seq(
+      this.partCut(),
+      this.partBadekStemSegment().reverse(),
+      this.partCut().reverse(),
+      this.partBadekStemSegment()
+    );
+    return part;
+  }
+
+  @glyph("!")
+  public glyphBadek(): Glyph {
+    let part = Part.union(
+      this.partDot(),
+      this.partDot().translate($(this.dotWidth + this.dotGap, 0)),
+      this.partBadekStem().translate($(this.dotWidth / 2 - this.horThickness / 2, -this.dotWidth - this.badekGap + this.overshoot))
+    );
+    let bearings = {left: this.badekLeftBearing, right: this.bearing};
+    let glyph = Glyph.byBearings(part, this.metrics, bearings);
+    return glyph;
+  }
+
+  private get padekBend(): number {
+    return Math.min(this.dotWidth + this.dotGap, this.bowlWidth * 0.3);
+  }
+
+  // パデックの棒状の部分の左側の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partLeftPadekStem(): Part {
+    let bend = this.padekBend;
+    let height = this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot;
+    let bottomHandle = height * 0.55;
+    let topHandle = this.searchTailInnerHandle(bottomHandle, bend, height);
+    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    return part;
+  }
+
+  // パデックの棒状の部分の右側の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partRightPadekStem(): Part {
+    let bend = this.padekBend;
+    let height = this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot;
+    let topHandle = height * 0.55;
+    let bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
+    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    return part;
+  }
+
+  // パデックの棒状の部分を生成します。
+  // 原点は左下の角にあります。
+  @part()
+  public partPadekStem(): Part {
+    let part = Part.seq(
+      this.partCut(),
+      this.partRightPadekStem().reverse(),
+      this.partCut().reverse(),
+      this.partLeftPadekStem()
+    );
+    return part;
+  }
+
+  @glyph("?")
+  public glyphPadek(): Glyph {
+    let part = Part.union(
+      this.partDot(),
+      this.partDot().translate($(this.dotWidth + this.dotGap, 0)),
+      this.partPadekStem().translate($(this.dotWidth / 2 - this.horThickness / 2, -this.dotWidth - this.badekGap + this.overshoot))
+    );
+    let bearings = {left: this.badekLeftBearing, right: this.bearing};
+    let glyph = Glyph.byBearings(part, this.metrics, bearings);
+    return glyph;
+  }
+
+  private get nokHeight(): number {
+    return (this.mean + this.descent) * 0.3;
+  }
+
+  // ノークの棒状の部分の縦の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partNokStem(): Part {
+    let part = Part.line($(0, 0), $(0, this.nokHeight));
+    return part;
+  }
+
+  // ノークと同じ形を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partNok(): Part {
+    let part = Part.seq(
+      this.partNokStem(),
+      this.partCut(),
+      this.partNokStem().reverse(),
+      this.partCut().reverse()
+    );
+    return part;
+  }
+
+  @glyph("'")
+  public glyphNok(): Glyph {
+    let part = Part.union(
+      this.partNok().translate($(0, -this.mean - this.descent))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  private get dikakRightBearing(): number {
+    return -this.bearing * 0.5;
+  }
+
+  private get dikakBend(): number {
+    return this.bowlWidth * 0.15;
+  }
+
+  private get dikakHeight(): number {
+    return (this.mean + this.descent) * 0.3;
+  }
+
+  // ディカックの棒状の部分の曲線を、上端から下端への向きで生成します。
+  @part()
+  public partDikakStem(): Part {
+    let bend = this.dikakBend;
+    let height = this.dikakHeight;
+    let leftHandle = height * 0.6;
+    let part = Part.bezier($(0, 0), null, $(0, -leftHandle), $(-bend, height));
+    return part;
+  }
+
+  // ディカックと同じ形を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partDikak(): Part {
+    let part = Part.seq(
+      this.partDikakStem(),
+      this.partCut(),
+      this.partDikakStem().reverse(),
+      this.partCut().reverse()
+    );
+    return part;
+  }
+
+  @glyph("ʻ")
+  public glyphDikak(): Glyph {
+    let part = Part.union(
+      this.partDikak().translate($(this.dikakBend, -this.mean - this.descent))
+    );
+    let bearings = {left: this.bearing, right: this.dikakRightBearing};
+    let glyph = Glyph.byBearings(part, this.metrics, bearings);
+    return glyph;
+  }
+
+  // フェークの鉛直方向中央とベースラインとの鉛直距離を表します。
+  private get fekAltitude(): number {
+    return this.mean / 2;
+  }
+
+  private get fekWidth(): number {
+    return this.bowlWidth * 0.6;
+  }
+
+  // フェークの直線を、左端から右端への向きで生成します。
+  @part()
+  public partFekHorizontal(): Part {
+    let part = Part.line($(0, 0), $(this.fekWidth, 0));
+    return part;
+  }
+
+  // フェークと同じ形を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partFek(): Part {
+    let part = Part.seq(
+      this.partVerticalCut(),
+      this.partFekHorizontal(),
+      this.partVerticalCut().reverse(),
+      this.partFekHorizontal().reverse()
+    );
+    return part;
+  }
+
+  @glyph("-")
+  public glyphFek(): Glyph {
+    let part = Part.union(
+      this.partFek().translate($(0, -this.fekAltitude - this.verThickness / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  private get fohakWidth(): number {
+    return this.bowlWidth * 1.5;
+  }
+
+  // フォーハックの直線を、左端から右端への向きで生成します。
+  @part()
+  public partFohakHorizontal(): Part {
+    let part = Part.line($(0, 0), $(this.fohakWidth, 0));
+    return part;
+  }
+
+  // フォーハックと同じ形を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partFohak(): Part {
+    let part = Part.seq(
+      this.partVerticalCut(),
+      this.partFohakHorizontal(),
+      this.partVerticalCut().reverse(),
+      this.partFohakHorizontal().reverse()
+    );
+    return part;
+  }
+
+  @glyph("…")
+  public glyphFohak(): Glyph {
+    let part = Part.union(
+      this.partFohak().translate($(0, -this.verThickness))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  private get dashAltitude(): number {
+    return this.mean / 2;
+  }
+
+  private get dashWidth(): number {
+    return this.bowlWidth * 2;
+  }
+
+  // ダッシュの直線を、左端から右端への向きで生成します。
+  @part()
+  public partDashHorizontal(): Part {
+    let part = Part.line($(0, 0), $(this.dashWidth, 0));
+    return part;
+  }
+
+  // ダッシュと同じ形を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partDash(): Part {
+    let part = Part.seq(
+      this.partVerticalCut(),
+      this.partDashHorizontal(),
+      this.partVerticalCut().reverse(),
+      this.partDashHorizontal().reverse()
+    );
+    return part;
+  }
+
+  @glyph("—")
+  public glyphDash(): Glyph {
+    let part = Part.union(
+      this.partDash().translate($(0, -this.dashAltitude - this.verThickness / 2))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  private get rakutWidth(): number {
+    return this.bowlWidth * 0.55;
+  }
+
+  private get rakutHeight(): number {
+    return (this.mean + this.descent) * 0.6;
+  }
+
+  // ラクットの縦向きの棒状の部分の直線を、上端から下端への向きで生成します。
+  @part()
+  public partRakutVerticalSegment(): Part {
+    let part = Part.line($(0, 0), $(0, this.rakutHeight));
+    return part;
+  }
+
+  // ラクットの横向きの棒状の部分の直線を、左端から右端への向きで生成します。
+  @part()
+  public partRakutHorizontalSegment(): Part {
+    let part = Part.line($(0, 0), $(this.rakutWidth, 0));
+    return part;
+  }
+
+  // ラクットの縦向きの棒状の部分を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partRakutVertical(): Part {
+    let part = Part.seq(
+      this.partRakutVerticalSegment(),
+      this.partCut(),
+      this.partRakutVerticalSegment().reverse(),
+      this.partCut().reverse()
+    );
+    return part;
+  }
+
+  // ラクットの横向きの棒状の部分を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partRakutHorizontal(): Part {
+    let part = Part.seq(
+      this.partVerticalCut(),
+      this.partRakutHorizontalSegment(),
+      this.partVerticalCut().reverse(),
+      this.partRakutHorizontalSegment().reverse()
+    );
+    return part;
+  }
+
+  // 開きラクットと同じ形を生成します。
+  // 原点は左上の角にあります。
+  @part()
+  public partOpeningRakut(): Part {
+    let part = Part.union(
+      this.partRakutVertical(),
+      this.partRakutHorizontal()
+    );
+    return part;
+  }
+
+  @glyph("[", "«")
+  public glyphOpeningRakut(): Glyph {
+    let part = Part.union(
+      this.partOpeningRakut().translate($(0, -this.mean - this.descent))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("]", "»")
+  public glyphClosingRakut(): Glyph {
+    let part = Part.union(
+      this.partOpeningRakut().reflectHor().translate($(this.rakutWidth, -this.mean - this.descent))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
   public getMetrics(): Metrics {
     return this.metrics;
   }
