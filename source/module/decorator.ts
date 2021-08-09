@@ -20,7 +20,7 @@ type GeneratorDecorator = (clazz: new(...args: any) => Generator) => void;
 type GlyphMethodDecorator = (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<GlyphMethod>) => void;
 type PartMethodDecorator = (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>) => void;
 type GlyphMethod = () => Glyph;
-type PartMethod = () => Part;
+type PartMethod = (...args: Array<any>) => Part;
 
 export function generator(): GeneratorDecorator {
   let decorator = function (clazz: new(...args: any) => Generator): void {
@@ -61,14 +61,18 @@ export function glyph(...chars: Array<string>): GlyphMethodDecorator {
 export function part(): PartMethodDecorator {
   let decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>): void {
     let original = descriptor.value!;
-    descriptor.value = function (this: Generator): Part {
-      let cachedPart = this.partCache.get(name);
-      if (cachedPart === undefined) {
-        let part = original.apply(this);
-        this.partCache.set(name, part.clone());
-        return part;
+    descriptor.value = function (this: Generator, ...args: Array<any>): Part {
+      if (args.length === 0) {
+        let cachedPart = this.partCache.get(name);
+        if (cachedPart === undefined) {
+          let part = original.call(this, ...args);
+          this.partCache.set(name, part.clone());
+          return part;
+        } else {
+          return cachedPart.clone();
+        }
       } else {
-        return cachedPart.clone();
+        return original.call(this, ...args);
       }
     };
   };
