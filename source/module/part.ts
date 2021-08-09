@@ -145,11 +145,12 @@ export class Part {
   }
 
   private getPath(): Path | undefined {
-    if (this.item instanceof Path) {
-      return this.item;
-    } else if (this.item instanceof CompoundPath) {
-      if (this.item.children.length === 1 && this.item.firstChild instanceof Path) {
-        return this.item.firstChild;
+    let item = this.item;
+    if (item instanceof Path) {
+      return item;
+    } else if (item instanceof CompoundPath) {
+      if (item.children.length === 1 && item.firstChild instanceof Path) {
+        return item.firstChild;
       } else {
         return undefined;
       }
