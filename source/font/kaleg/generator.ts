@@ -53,7 +53,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   private get horThickness(): number {
-    return this.config.horThickness;
+    return this.config.weightConst * 100;
   }
 
   private get verThickness(): number {
@@ -64,6 +64,14 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return this.bowlWidth;
   }
 
+  private get edgeWidth(): number {
+    return this.horThickness * this.config.edgeRatio;
+  }
+
+  private get edgeHeight(): number {
+    return this.edgeWidth * this.config.edgeContrastRatio;
+  }
+
   public getMetrics(): Metrics {
     return this.metrics;
   }
@@ -71,5 +79,5 @@ export class KalegGenerator extends Generator<KalegConfig> {
 }
 
 
-export type KalegConfig = {horThickness: number, contrastRatio: number, bowlWidth: number, edgeShape: KalegEdgeShape};
+export type KalegConfig = {weightConst: number, contrastRatio: number, edgeRatio: number, edgeContrastRatio: number, bowlWidth: number, edgeShape: KalegEdgeShape};
 export type KalegEdgeShape = "miter" | "bevel" | "round";

@@ -41,10 +41,12 @@ export class KalegFont extends Font {
 
   private static createConfig(weight: FontWeight, stretch: FontStretch, edgeShape: KalegEdgeShape): KalegConfig {
     let style = this.createStyle(weight, stretch, edgeShape);
-    let horThickness = 100;
+    let weightConst = 1;
     let contrastRatio = 0.75;
+    let edgeRatio = 1;
+    let edgeContrastRatio = 0.75;
     let bowlWidth = 500;
-    let config = {horThickness, contrastRatio, bowlWidth, edgeShape};
+    let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlWidth, edgeShape};
     return config;
   }
 
