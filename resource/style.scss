@@ -66,8 +66,8 @@ body {
   }
   @include small {
     margin: 0px 20px 3px 0px;
-    width: calc((100% - 20px * 3) / 4);
-    &:nth-child(4n) {
+    width: calc((100% - 20px * 2) / 3);
+    &:nth-child(3n) {
       margin: 0px 0px 3px 0px;
     }
   }
