@@ -14,21 +14,29 @@ import {
 export class Glyph {
 
   public item: PathItem;
+  private originalItem: PathItem;
   public metrics: Metrics;
   public width: number;
 
-  private constructor(item: PathItem, metrics: Metrics, width: number) {
+  private constructor(item: PathItem, originalItem: PathItem, metrics: Metrics, width: number) {
     this.item = item;
+    this.originalItem = originalItem;
     this.metrics = metrics;
     this.width = width;
+  }
+
+  public toPart(): Part {
+    let part = Part.of(this.originalItem);
+    return part;
   }
 
   public static byBearings(part: Part | PathItem, metrics: Metrics, bearings: Bearings): Glyph {
     let item = (part instanceof Part) ? part.item : part;
     let clonedItem = item.clone();
+    let originalItem = item.clone();
     let width = item.bounds.width + bearings.left + bearings.right;
     clonedItem.translate($(bearings.left, metrics.ascent));
-    let glyph = new Glyph(clonedItem, metrics, width);
+    let glyph = new Glyph(clonedItem, originalItem, metrics, width);
     return glyph;
   }
 

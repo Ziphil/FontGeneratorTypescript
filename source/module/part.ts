@@ -54,6 +54,11 @@ export class Part {
     return part;
   }
 
+  public static of(item: PathItem): Part {
+    let part = new Part(item);
+    return part;
+  }
+
   public static seq(...parts: Array<Part>): Part {
     let point = $(0, 0);
     let segments = new Array<Segment>();
