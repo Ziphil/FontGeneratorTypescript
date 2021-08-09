@@ -51,7 +51,8 @@ export class KalegFont extends Font {
     let bowlRatio = 0.8;
     let verBeakRatio = (beaked) ? 0.2 : 0;
     let horBeakRatio = (beaked) ? 0 : 0;
-    let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, verBeakRatio, horBeakRatio, edgeShape};
+    let tailRatio = (beaked) ? 0.3 : 0;
+    let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, verBeakRatio, horBeakRatio, tailRatio, edgeShape};
     return config;
   }
 

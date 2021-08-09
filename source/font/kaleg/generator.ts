@@ -258,6 +258,63 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return part;
   }
 
+  private get tailWidth(): number {
+    return this.bowlWidth * this.config.tailRatio;
+  }
+
+  @part()
+  public partTopLeftTailShape(): Part {
+    let tailWidth = this.tailWidth;
+    if (tailWidth === 0) {
+      let part = Part.seq(
+        Part.line($(0, 0), $(0, -this.verThickness - this.descent)),
+        Part.line($(0, 0), $(this.horThickness, 0)),
+        Part.line($(0, 0), $(0, this.verThickness + this.descent)),
+        Part.line($(0, 0), $(-this.horThickness, 0))
+      );
+      return part;
+    } else {
+      let part = Part.seq(
+        Part.line($(0, 0), $(0, -this.verThickness - this.descent + this.edgeHeight)),
+        this.partTopLeftEdgeShape(),
+        Part.line($(0, 0), $(this.horThickness - this.edgeWidth + this.tailWidth, 0)),
+        Part.line($(0, 0), $(0, this.verThickness)),
+        Part.line($(0, 0), $(-this.tailWidth, 0)),
+        Part.line($(0, 0), $(0, this.descent)),
+        Part.line($(0, 0), $(-this.horThickness, 0))
+      );
+      return part;
+    }
+  }
+
+  @part()
+  public partTopLeftTail(): Part {
+    let part = this.partTopLeftTailShape();
+    part.moveOrigin($(0, this.mean - this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partTopRightTail(): Part {
+    let part = this.partTopLeftTailShape().reflectHor();
+    part.moveOrigin($(-this.bowlWidth, this.mean - this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partBottomLeftTail(): Part {
+    let part = this.partTopLeftTailShape().reflectVer();
+    part.moveOrigin($(0, this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partBottomRightTail(): Part {
+    let part = this.partTopLeftTailShape().reflectHor().reflectVer();
+    part.moveOrigin($(-this.bowlWidth, this.verThickness));
+    return part;
+  }
+
   @part()
   public partHorizontalBarShape(): Part {
     let part = Part.seq(
@@ -455,6 +512,166 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return this.metrics;
   }
 
+  @glyph("p", "P")
+  public glyphPal(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTail(),
+      this.partTopRightTip(),
+      this.partBottomLeftTip(),
+      this.partBottomRightTip(),
+      this.partTopBar(),
+      this.partBottomBar(),
+      this.partLeftBar(),
+      this.partRightBar()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("b", "B")
+  public glyphBol(): Glyph {
+    let part = Part.union(
+      this.glyphPal().toPart(),
+      this.partTransphone()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("k", "K")
+  public glyphKal(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightTail(),
+      this.partBottomLeftTip(),
+      this.partBottomRightTip(),
+      this.partTopBar(),
+      this.partBottomBar(),
+      this.partLeftBar(),
+      this.partRightBar()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("g", "G")
+  public glyphGol(): Glyph {
+    let part = Part.union(
+      this.glyphKal().toPart(),
+      this.partTransphone()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("c", "C")
+  public glyphCal(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightTip(),
+      this.partBottomLeftTail(),
+      this.partBottomRightTip(),
+      this.partTopBar(),
+      this.partBottomBar(),
+      this.partLeftBar(),
+      this.partRightBar()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("q", "Q")
+  public glyphQol(): Glyph {
+    let part = Part.union(
+      this.glyphPal().toPart(),
+      this.partTransphone()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("l", "L")
+  public glyphLes(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightTip(),
+      this.partBottomLeftTip(),
+      this.partBottomRightTail(),
+      this.partTopBar(),
+      this.partBottomBar(),
+      this.partLeftBar(),
+      this.partRightBar()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("r", "R")
+  public glyphRes(): Glyph {
+    let part = Part.union(
+      this.glyphLes().toPart(),
+      this.partTransphone()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("e", "E")
+  public glyphEt(): Glyph {
+    let part = Part.union(
+      this.partTopRightTail(),
+      this.partBottomLeftVerBeak(),
+      this.partBottomRightTip(),
+      this.partBottomBar(),
+      this.partRightBar()
+    );
+    part.translate($(this.beakFixLength, 0));
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("i", "I")
+  public glyphIt(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightVerBeak(),
+      this.partBottomLeftTail(),
+      this.partTopBar(),
+      this.partLeftBar()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("o", "O")
+  public glyphOt(): Glyph {
+    let part = Part.union(
+      this.partTopRightTail(),
+      this.partBottomLeftVerBeak(),
+      this.partBottomRightTip(),
+      this.partTopBar(),
+      this.partBottomBar(),
+      this.partRightBar()
+    );
+    part.translate($(this.beakFixLength, 0));
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("u", "U")
+  public glyphUt(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightVerBeak(),
+      this.partBottomLeftTail(),
+      this.partTopBar(),
+      this.partBottomBar(),
+      this.partLeftBar()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
 }
 
 
@@ -466,6 +683,7 @@ export type KalegConfig = {
   bowlRatio: number,
   verBeakRatio: number,
   horBeakRatio: number,
+  tailRatio: number,
   edgeShape: KalegEdgeShape
 };
 export type KalegEdgeShape = "miter" | "bevel" | "round";
