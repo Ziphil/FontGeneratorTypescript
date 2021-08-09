@@ -673,7 +673,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   private get spaceWidth(): number {
-    return this.bowlWidth * 0.5;
+    return this.bowlWidth * 0.7;
   }
 
   @glyph(" ")
