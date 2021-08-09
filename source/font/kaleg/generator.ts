@@ -672,6 +672,18 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return glyph;
   }
 
+  private get spaceWidth(): number {
+    return this.bowlWidth * 0.5;
+  }
+
+  @glyph(" ")
+  public glyphSpace(): Glyph {
+    let part = Part.empty();
+    let bearings = {left: this.spaceWidth, right: 0};
+    let glyph = Glyph.byBearings(part, this.metrics, bearings);
+    return glyph;
+  }
+
 }
 
 
