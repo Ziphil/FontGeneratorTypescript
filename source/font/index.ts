@@ -4,6 +4,9 @@ import {
   FontManager
 } from "../module";
 import {
+  KalegFont
+} from "./kaleg/font";
+import {
   VekosFont
 } from "./vekos/font";
 
@@ -19,7 +22,10 @@ const FONTS = {
   vkeb: VekosFont.create("bold", "expanded", false),
   vket: VekosFont.create("thin", "expanded", false),
   vkhr: VekosFont.create("regular", "normal", true),
-  vkhb: VekosFont.create("bold", "normal", true)
+  vkhb: VekosFont.create("bold", "normal", true),
+  klmr: KalegFont.create("regular", "normal", "miter"),
+  klbr: KalegFont.create("regular", "normal", "bevel"),
+  klrr: KalegFont.create("regular", "normal", "round")
 };
 
 export const FONT_MANAGER = new FontManager(FONTS);
