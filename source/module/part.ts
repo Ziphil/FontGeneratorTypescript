@@ -9,7 +9,8 @@ import {
   Segment
 } from "paper";
 import {
-  $
+  $,
+  PointUtil
 } from "./point";
 
 
@@ -31,6 +32,12 @@ export class Part {
 
   public static circle(centerPoint: Point, radius: number): Part {
     let path = PathUtil.circle(centerPoint, radius);
+    let part = new Part(path);
+    return part;
+  }
+
+  public static arc(centerPoint: Point, radius: number, fromAngle: number, toAngle: number): Part {
+    let path = PathUtil.arc(centerPoint, radius, fromAngle, toAngle);
     let part = new Part(path);
     return part;
   }
@@ -171,6 +178,15 @@ export class PathUtil {
 
   public static circle(centerPoint: Point, radius: number): Path {
     let path = new Path.Circle(centerPoint, radius);
+    return path;
+  }
+
+  public static arc(centerPoint: Point, radius: number, fromAngle: number, toAngle: number): Path {
+    let fromPoint = PointUtil.polar(radius, fromAngle);
+    let toPoint = PointUtil.polar(radius, toAngle);
+    let throughPoint = PointUtil.polar(radius, (fromAngle + toAngle) / 2);
+    let path = new Path.Arc(fromPoint, throughPoint, toPoint);
+    path.translate(centerPoint);
     return path;
   }
 
