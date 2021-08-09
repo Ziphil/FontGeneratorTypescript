@@ -45,7 +45,7 @@ export class KalegFont extends Font {
     let contrastRatio = 0.75;
     let edgeRatio = 1;
     let edgeContrastRatio = 0.75;
-    let bowlWidth = 500;
+    let bowlWidth = 400;
     let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlWidth, edgeShape};
     return config;
   }
