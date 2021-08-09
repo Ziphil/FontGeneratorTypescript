@@ -20,8 +20,8 @@ export class VekosFont extends Font {
     let generator = new VekosGenerator(config);
     let familyName = this.createFamilyName(weight, stretch, high);
     let style = this.createStyle(weight, stretch, high);
-    let info = new FontInfo("Copyright 2019 Ziphil", "1.2.0");
-    let font = new Font(generator, familyName, style, info);
+    let info = new FontInfo("Ziphil", "1.2.0");
+    let font = new VekosFont(generator, familyName, style, info);
     return font;
   }
 

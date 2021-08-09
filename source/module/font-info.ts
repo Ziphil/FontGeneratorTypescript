@@ -3,12 +3,20 @@
 
 export class FontInfo {
 
-  public copyright: string;
+  public author: string;
   public version: string;
 
-  public constructor(copyright?: string, version?: string) {
-    this.copyright = copyright ?? "None";
+  public constructor(author?: string, version?: string) {
+    this.author = author ?? "Unknown";
     this.version = version ?? "0.0.0";
+  }
+
+  public get copyright(): string {
+    let date = new Date();
+    let copyright = "Copyright";
+    copyright += " " + date.getFullYear().toString();
+    copyright += " " + this.author;
+    return copyright;
   }
 
 }
