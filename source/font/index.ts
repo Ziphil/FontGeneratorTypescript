@@ -23,9 +23,12 @@ const FONTS = {
   vket: VekosFont.create("thin", "expanded", false),
   vkhr: VekosFont.create("regular", "normal", true),
   vkhb: VekosFont.create("bold", "normal", true),
-  klmr: KalegFont.create("regular", "normal", "miter"),
-  klbr: KalegFont.create("regular", "normal", "bevel"),
-  klrr: KalegFont.create("regular", "normal", "round")
+  klmr: KalegFont.create("regular", "normal", "miter", false),
+  klbr: KalegFont.create("regular", "normal", "bevel", false),
+  klrr: KalegFont.create("regular", "normal", "round", false),
+  klmbr: KalegFont.create("regular", "normal", "miter", true),
+  klbbr: KalegFont.create("regular", "normal", "bevel", true),
+  klrbr: KalegFont.create("regular", "normal", "round", true)
 };
 
 export const FONT_MANAGER = new FontManager(FONTS);

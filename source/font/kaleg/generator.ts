@@ -61,7 +61,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   private get bowlWidth(): number {
-    return this.config.bowlWidth;
+    return this.mean * this.config.bowlRatio;
   }
 
   private get edgeWidth(): number {
@@ -134,41 +134,126 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return part;
   }
 
-  @part()
-  public partTopLeftVerticalBeakShape(): Part {
-    let part = Part.seq(
-      Part.line($(0, 0), $(0, -this.verThickness)),
-      Part.line($(0, 0), $(this.horThickness, 0)),
-      Part.line($(0, 0), $(0, this.verThickness)),
-      Part.line($(0, 0), $(-this.horThickness, 0))
-    );
-    return part;
+  private get verBeakUnbeakedWidth(): number {
+    return this.horThickness * 0.5;
+  }
+
+  private get verBeakHeight(): number {
+    return this.mean * this.config.verBeakRatio;
+  }
+
+  private get beakFixLength(): number {
+    let verBeakHeight = this.verBeakHeight;
+    if (verBeakHeight === 0) {
+      return -this.horThickness + this.verBeakUnbeakedWidth;
+    } else {
+      return 0;
+    }
   }
 
   @part()
-  public partTopLeftVerticalBeak(): Part {
-    let part = this.partTopLeftVerticalBeakShape();
+  public partTopLeftVerBeakShape(): Part {
+    let verBeakHeight = this.verBeakHeight;
+    if (verBeakHeight === 0) {
+      let part = Part.seq(
+        Part.line($(0, 0), $(0, -this.verThickness)),
+        Part.line($(0, 0), $(this.verBeakUnbeakedWidth, 0)),
+        Part.line($(0, 0), $(0, this.verThickness)),
+        Part.line($(0, 0), $(-this.verBeakUnbeakedWidth, 0))
+      );
+      part.moveOrigin($(this.beakFixLength, 0));
+      return part;
+    } else {
+      let part = Part.seq(
+        Part.line($(0, this.verBeakHeight), $(0, -this.verThickness + this.edgeHeight)),
+        this.partTopLeftEdgeShape(),
+        Part.line($(0, 0), $(this.horThickness - this.edgeWidth, 0)),
+        Part.line($(0, 0), $(0, this.verThickness + this.verBeakHeight)),
+        Part.line($(0, 0), $(-this.horThickness, 0))
+      );
+      return part;
+    }
+  }
+
+  @part()
+  public partTopLeftVerBeak(): Part {
+    let part = this.partTopLeftVerBeakShape();
     part.moveOrigin($(0, this.mean - this.verThickness));
     return part;
   }
 
   @part()
-  public partTopRightVerticalBeak(): Part {
-    let part = this.partTopLeftVerticalBeakShape().reflectHor();
+  public partTopRightVerBeak(): Part {
+    let part = this.partTopLeftVerBeakShape().reflectHor();
     part.moveOrigin($(-this.bowlWidth, this.mean - this.verThickness));
     return part;
   }
 
   @part()
-  public partBottomLeftVerticalBeak(): Part {
-    let part = this.partTopLeftVerticalBeakShape().reflectVer();
+  public partBottomLeftVerBeak(): Part {
+    let part = this.partTopLeftVerBeakShape().reflectVer();
     part.moveOrigin($(0, this.verThickness));
     return part;
   }
 
   @part()
-  public partBottomRightVerticalBeak(): Part {
-    let part = this.partTopLeftVerticalBeakShape().reflectHor().reflectVer();
+  public partBottomRightVerBeak(): Part {
+    let part = this.partTopLeftVerBeakShape().reflectHor().reflectVer();
+    part.moveOrigin($(-this.bowlWidth, this.verThickness));
+    return part;
+  }
+
+  private get horBeakWidth(): number {
+    return this.bowlWidth * this.config.horBeakRatio;
+  }
+
+  @part()
+  public partTopLeftHorBeakShape(): Part {
+    let horBeakWidth = this.horBeakWidth;
+    if (horBeakWidth === 0) {
+      let part = Part.seq(
+        Part.line($(0, 0), $(0, -this.verThickness)),
+        Part.line($(0, 0), $(this.horThickness, 0)),
+        Part.line($(0, 0), $(0, this.verThickness)),
+        Part.line($(0, 0), $(-this.horThickness, 0))
+      );
+      return part;
+    } else {
+      let part = Part.seq(
+        Part.line($(0, this.verBeakHeight), $(0, -this.verThickness + this.edgeHeight)),
+        this.partTopLeftEdgeShape(),
+        Part.line($(0, 0), $(this.horThickness - this.edgeWidth + this.horBeakWidth, 0)),
+        Part.line($(0, 0), $(0, this.verThickness)),
+        Part.line($(0, 0), $(-this.horThickness - this.horBeakWidth, 0))
+      );
+      return part;
+    }
+  }
+
+  @part()
+  public partTopLeftHorBeak(): Part {
+    let part = this.partTopLeftHorBeakShape();
+    part.moveOrigin($(0, this.mean - this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partTopRightHorBeak(): Part {
+    let part = this.partTopLeftHorBeakShape().reflectHor();
+    part.moveOrigin($(-this.bowlWidth, this.mean - this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partBottomLeftHorBeak(): Part {
+    let part = this.partTopLeftHorBeakShape().reflectVer();
+    part.moveOrigin($(0, this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partBottomRightHorBeak(): Part {
+    let part = this.partTopLeftHorBeakShape().reflectHor().reflectVer();
     part.moveOrigin($(-this.bowlWidth, this.verThickness));
     return part;
   }
@@ -199,7 +284,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   @part()
-  public partVerticalBarShape(): Part {
+  public partVerBarShape(): Part {
     let part = Part.seq(
       Part.line($(0, 0), $(0, -this.mean + this.verThickness * 2)),
       Part.line($(0, 0), $(this.horThickness, 0)),
@@ -211,20 +296,46 @@ export class KalegGenerator extends Generator<KalegConfig> {
 
   @part()
   public partLeftBar(): Part {
-    let part = this.partVerticalBarShape();
+    let part = this.partVerBarShape();
     part.moveOrigin($(0, this.verThickness));
     return part;
   }
 
   @part()
   public partRightBar(): Part {
-    let part = this.partVerticalBarShape();
+    let part = this.partVerBarShape();
     part.moveOrigin($(-this.bowlWidth + this.horThickness, this.verThickness));
     return part;
   }
 
+  private get transphoneThicknessRatio(): number {
+    return 0.92;
+  }
+
+  private get transphoneGap(): number {
+    return this.bearing * 2;
+  }
+
+  @part()
+  public partTransphoneShape(): Part {
+    let part = Part.seq(
+      Part.line($(0, 0), $(0, -this.mean)),
+      Part.line($(0, 0), $(this.horThickness * this.transphoneThicknessRatio, 0)),
+      Part.line($(0, 0), $(0, this.mean)),
+      Part.line($(0, 0), $(-this.horThickness * this.transphoneThicknessRatio, 0))
+    );
+    return part;
+  }
+
+  @part()
+  public partTransphone(): Part {
+    let part = this.partTransphoneShape();
+    part.moveOrigin($(-this.bowlWidth - this.transphoneGap, 0));
+    return part;
+  }
+
   @glyph("a", "A")
-  public [Symbol()](): Glyph {
+  public glyphAt(): Glyph {
     let part = Part.union(
       this.partTopLeftTip(),
       this.partTopRightTip(),
@@ -240,15 +351,101 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   @glyph("t", "T")
-  public [Symbol()](): Glyph {
+  public glyphTal(): Glyph {
     let part = Part.union(
       this.partTopLeftTip(),
-      this.partTopRightVerticalBeak(),
+      this.partTopRightVerBeak(),
       this.partBottomLeftTip(),
-      this.partBottomRightVerticalBeak(),
+      this.partBottomRightVerBeak(),
       this.partTopBar(),
       this.partBottomBar(),
       this.partLeftBar()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("d", "D")
+  public glyphDol(): Glyph {
+    let part = Part.union(
+      this.glyphTal().toPart(),
+      this.partTransphone().translate($(this.beakFixLength, 0))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("f", "F")
+  public glyphFal(): Glyph {
+    let part = Part.union(
+      this.partTopLeftVerBeak(),
+      this.partTopRightTip(),
+      this.partBottomLeftVerBeak(),
+      this.partBottomRightTip(),
+      this.partTopBar(),
+      this.partBottomBar(),
+      this.partRightBar()
+    );
+    part.translate($(this.beakFixLength, 0));
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("v", "V")
+  public glyphVol(): Glyph {
+    let part = Part.union(
+      this.glyphFal().toPart(),
+      this.partTransphone().translate($(this.beakFixLength, 0))
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("s", "S")
+  public glyphSal(): Glyph {
+    let part = Part.union(
+      this.partTopLeftHorBeak(),
+      this.partTopRightHorBeak(),
+      this.partBottomLeftTip(),
+      this.partBottomRightTip(),
+      this.partBottomBar(),
+      this.partLeftBar(),
+      this.partRightBar()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("z", "Z")
+  public glyphZol(): Glyph {
+    let part = Part.union(
+      this.glyphSal().toPart(),
+      this.partTransphone()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("y", "Y")
+  public glyphYes(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightTip(),
+      this.partBottomLeftHorBeak(),
+      this.partBottomRightHorBeak(),
+      this.partTopBar(),
+      this.partLeftBar(),
+      this.partRightBar()
+    );
+    let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
+    return glyph;
+  }
+
+  @glyph("h", "H")
+  public glyphHes(): Glyph {
+    let part = Part.union(
+      this.glyphYes().toPart(),
+      this.partTransphone()
     );
     let glyph = Glyph.byBearings(part, this.metrics, this.bearings);
     return glyph;
@@ -266,7 +463,9 @@ export type KalegConfig = {
   contrastRatio: number,
   edgeRatio: number,
   edgeContrastRatio: number,
-  bowlWidth: number,
+  bowlRatio: number,
+  verBeakRatio: number,
+  horBeakRatio: number,
   edgeShape: KalegEdgeShape
 };
 export type KalegEdgeShape = "miter" | "bevel" | "round";
