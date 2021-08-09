@@ -44,7 +44,9 @@ export class KalegFont extends Font {
 
   private static createConfig(weight: FontWeight, stretch: FontStretch, edgeShape: KalegEdgeShape, beaked: boolean): KalegConfig {
     let style = this.createStyle(weight, stretch, edgeShape, beaked);
-    let weightConst = 1;
+    let weightNumber = style.getWeightNumber();
+    let stretchNumber = style.getStretchNumber();
+    let weightConst = (weightNumber * 0.45 + 100) / 300;
     let contrastRatio = 0.75;
     let edgeRatio = contrastRatio;
     let edgeContrastRatio = 1;

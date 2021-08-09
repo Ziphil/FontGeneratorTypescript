@@ -134,8 +134,12 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return part;
   }
 
-  private get verBeakUnbeakedWidth(): number {
-    return this.horThickness * 0.5;
+  private get unbeakedTalWidth(): number {
+    return this.bowlWidth * 0.85;
+  }
+
+  private get unbeakedVerBeakWidth(): number {
+    return this.unbeakedTalWidth - this.bowlWidth + this.horThickness;
   }
 
   private get verBeakHeight(): number {
@@ -145,7 +149,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   private get beakFixLength(): number {
     let verBeakHeight = this.verBeakHeight;
     if (verBeakHeight === 0) {
-      return -this.horThickness + this.verBeakUnbeakedWidth;
+      return -this.horThickness + this.unbeakedVerBeakWidth;
     } else {
       return 0;
     }
@@ -157,9 +161,9 @@ export class KalegGenerator extends Generator<KalegConfig> {
     if (verBeakHeight === 0) {
       let part = Part.seq(
         Part.line($(0, 0), $(0, -this.verThickness)),
-        Part.line($(0, 0), $(this.verBeakUnbeakedWidth, 0)),
+        Part.line($(0, 0), $(this.unbeakedVerBeakWidth, 0)),
         Part.line($(0, 0), $(0, this.verThickness)),
-        Part.line($(0, 0), $(-this.verBeakUnbeakedWidth, 0))
+        Part.line($(0, 0), $(-this.unbeakedVerBeakWidth, 0))
       );
       part.moveOrigin($(this.beakFixLength, 0));
       return part;
