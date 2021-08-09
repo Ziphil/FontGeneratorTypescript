@@ -154,7 +154,11 @@ export class FontRenderer {
 
   private setupFontName(): void {
     let nameElement = document.getElementById("name")!;
+    let idElement = document.getElementById("id")!;
+    let versionElement = document.getElementById("version")!;
     nameElement.textContent = this.font!.fullName;
+    idElement.textContent = this.id;
+    versionElement.textContent = this.font!.info.version;
   }
 
   private renderGlyph(project: Project, char: string): void {

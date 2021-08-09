@@ -102,6 +102,8 @@ h1 {
   padding: 0px;
   font-size: 200%;
   font-weight: bold;
+  display: flex;
+  align-items: center;
 }
 
 h2 {
@@ -109,6 +111,19 @@ h2 {
   padding: 0px;
   font-size: 150%;
   font-weight: bold;
+}
+
+#id {
+  margin: 0px 0px 0px 15px;
+  padding: 0px 4px;
+  font-size: 70%;
+  border: 1px hsl(0, 0%, 85%) solid;
+  border-radius: 4px;
+}
+
+#version {
+  margin: 0px 0px 0px 8px;
+  font-size: 70%;
 }
 
 #preview-wrapper {
