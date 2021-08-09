@@ -2165,4 +2165,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
 }
 
 
-export type VekosConfig = {weightConst: number, stretchConst: number, contrastRatio: number};
+export type VekosConfig = {
+  weightConst: number,
+  stretchConst: number,
+  contrastRatio: number
+};

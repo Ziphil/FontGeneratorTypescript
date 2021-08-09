@@ -261,5 +261,12 @@ export class KalegGenerator extends Generator<KalegConfig> {
 }
 
 
-export type KalegConfig = {weightConst: number, contrastRatio: number, edgeRatio: number, edgeContrastRatio: number, bowlWidth: number, edgeShape: KalegEdgeShape};
+export type KalegConfig = {
+  weightConst: number,
+  contrastRatio: number,
+  edgeRatio: number,
+  edgeContrastRatio: number,
+  bowlWidth: number,
+  edgeShape: KalegEdgeShape
+};
 export type KalegEdgeShape = "miter" | "bevel" | "round";
