@@ -2,13 +2,13 @@
 
 
 @mixin large {
-  @media screen and (min-width: 1201px) {
+  @media screen and (min-width: 1221px) {
     @content;
   }
 }
 
 @mixin small {
-  @media screen and (max-width: 1200px) {
+  @media screen and (max-width: 1220px) {
     @content;
   }
 }
@@ -19,7 +19,10 @@ body {
   padding: 0px;
   font-family: "Alegreya Sans";
   font-size: 16px;
+  font-stretch: condensed;
   font-feature-settings: "lnum";
+  overflow-x: auto;
+  overflow-y: scroll;
 }
 
 #root {
@@ -36,8 +39,8 @@ body {
 
 #menu {
   @include large {
-    width: 200px;
-    flex: 0 0 200px;
+    width: 220px;
+    flex: 0 0 220px;
     margin: 0px 50px 0px 0px;
     padding: 0px 50px 0px 0px;
     border-right: 1px hsl(0, 0%, 85%) solid;
