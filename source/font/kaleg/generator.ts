@@ -74,14 +74,14 @@ export class KalegGenerator extends Generator<KalegConfig> {
 
   @part()
   public partTopLeftEdgeShape(): Part {
-    let edgeShape = this.config.edgeShape;
-    if (edgeShape === "miter") {
+    let edgeJoin = this.config.edgeJoin;
+    if (edgeJoin === "miter") {
       let part = Part.seq(
         Part.line($(0, 0), $(0, -this.edgeHeight)),
         Part.line($(0, 0), $(this.edgeWidth, 0))
       );
       return part;
-    } else if (edgeShape === "bevel") {
+    } else if (edgeJoin === "bevel") {
       let part = Part.seq(
         Part.line($(0, 0), $(this.edgeWidth, -this.edgeHeight))
       );
@@ -696,6 +696,6 @@ export type KalegConfig = {
   verBeakRatio: number,
   horBeakRatio: number,
   tailRatio: number,
-  edgeShape: KalegEdgeShape
+  edgeJoin: KalegEdgeJoin
 };
-export type KalegEdgeShape = "miter" | "bevel" | "round";
+export type KalegEdgeJoin = "miter" | "bevel" | "round";
