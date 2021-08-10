@@ -2,13 +2,13 @@
 
 
 @mixin large {
-  @media screen and (min-width: 1221px) {
+  @media screen and (min-width: 1251px) {
     @content;
   }
 }
 
 @mixin small {
-  @media screen and (max-width: 1220px) {
+  @media screen and (max-width: 1250px) {
     @content;
   }
 }
@@ -39,8 +39,8 @@ body {
 
 #menu {
   @include large {
-    width: 220px;
-    flex: 0 0 220px;
+    width: 250px;
+    flex: 0 0 250px;
     margin: 0px 50px 0px 0px;
     padding: 0px 50px 0px 0px;
     border-right: 1px hsl(0, 0%, 85%) solid;
