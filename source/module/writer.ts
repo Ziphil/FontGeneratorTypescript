@@ -45,9 +45,9 @@ export class FontWriter {
     code = code.replace("__weight__", "\"" + this.font.style.getWeightString() + "\"");
     code = code.replace("__version__", "\"" + this.font.info.version + "\"");
     code = code.replace("__copyright__", "\"" + this.font.info.copyright + "\"");
-    code = code.replace("__em__", this.font.generator.getMetrics().em.toString());
-    code = code.replace("__ascent__", this.font.generator.getMetrics().ascent.toString());
-    code = code.replace("__descent__", this.font.generator.getMetrics().descent.toString());
+    code = code.replace("__em__", this.font.generator.metrics.em.toString());
+    code = code.replace("__ascent__", this.font.generator.metrics.ascent.toString());
+    code = code.replace("__descent__", this.font.generator.metrics.descent.toString());
     code = code.replace("__autohint__", (autoHint) ? "True" : "False");
     code = code.replace("__svgdir__", "\"" + this.path + "\"");
     code = code.replace("__fontfilename__", "\"" + fontPath + "\"");
@@ -56,7 +56,7 @@ export class FontWriter {
 
   public async writeFont(): Promise<void> {
     await fs.mkdir(this.path, {recursive: true});
-    let chars = this.font.generator.getChars();
+    let chars = this.font.generator.chars;
     let promises = chars.map(async (char) => {
       await this.writeGlyph(char);
     });
@@ -64,14 +64,17 @@ export class FontWriter {
   }
 
   public async writeGlyph(char: string): Promise<void> {
-    let glyph = this.font.generator.glyph(char);
+    let generator = this.font.generator;
+    let glyph = generator.glyph(char);
     let glyphPath = this.path + "/" + char.charCodeAt(0) + ".svg";
     if (glyph !== null) {
-      let size = new Size(glyph.metrics.em, glyph.metrics.em);
+      let metrics = generator.metrics;
+      let [item, width] = glyph.createItem(metrics);
+      let size = new Size(metrics.em, metrics.em);
       let project = new Project(size);
-      project.activeLayer.addChild(glyph.item);
+      project.activeLayer.addChild(item);
       let svgString = project.exportSVG({asString: true}) as string;
-      let addedSvgString = svgString.replace(/<svg(.+?)>/, `<svg$1 glyph-width="${glyph.width}">`);
+      let addedSvgString = svgString.replace(/<svg(.+?)>/, `<svg$1 glyph-width="${width}">`);
       await fs.writeFile(glyphPath, addedSvgString);
       project.remove();
     }

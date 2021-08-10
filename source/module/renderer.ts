@@ -88,10 +88,10 @@ export class FontRenderer {
 
   private renderPreview(project: Project, input: HTMLInputElement): void {
     let generator = this.font!.generator;
-    let scale = PREVIEW_CANVAS_HEIGHT / generator.getMetrics().em;
+    let scale = PREVIEW_CANVAS_HEIGHT / generator.metrics.em;
     project.activate();
     project.activeLayer.removeChildren();
-    let scaledAscent = Math.floor(generator.getMetrics().ascent * scale);
+    let scaledAscent = Math.floor(generator.metrics.ascent * scale);
     let baselinePath = new Path({segments: [$(0, scaledAscent), $(10000, scaledAscent)]});
     baselinePath.strokeColor = GRAY_COLOR;
     baselinePath.strokeWidth = 2;
@@ -102,10 +102,10 @@ export class FontRenderer {
     for (let char of Array.from(input.value)) {
       let glyph = generator.glyph(char);
       if (glyph !== null) {
-        let item = glyph.item;
-        let metricsRectangle = new Path.Rectangle({point: $(0, 0), size: $(glyph.width * scale, generator.getMetrics().em * scale)});
+        let [item, width] = glyph.createItem(generator.metrics);
+        let metricsRectangle = new Path.Rectangle({point: $(0, 0), size: $(width * scale, generator.metrics.em * scale)});
         let metricsOverlay = metricsRectangle.clone();
-        let widthText = new PointText({point: $(glyph.width * scale - 5, 15), content: Math.round(glyph.width).toString()});
+        let widthText = new PointText({point: $(width * scale - 5, 15), content: Math.round(width).toString()});
         let frontInfoGroup = new Group([widthText, metricsOverlay]);
         let backInfoGroup = new Group([metricsRectangle]);
         items.push(item);
@@ -135,7 +135,7 @@ export class FontRenderer {
           frontInfoGroup.opacity = 0;
           backInfoGroup.opacity = 0;
         });
-        position += glyph.width * scale;
+        position += width * scale;
       }
     }
     project.activeLayer.addChildren([...backInfoGroups, baselinePath, ...items, ...frontInfoGroups]);
@@ -143,7 +143,7 @@ export class FontRenderer {
 
   private appendGlyphPane(): void {
     let listElement = document.getElementById("glyph-list")!;
-    let chars = this.font!.generator.getChars();
+    let chars = this.font!.generator.chars;
     chars.sort((firstChar, secondChar) => firstChar.codePointAt(0)! - secondChar.codePointAt(0)!);
     for (let char of chars) {
       listElement.append(this.createGlyphPane(char));
@@ -163,13 +163,13 @@ export class FontRenderer {
 
   private renderGlyph(project: Project, char: string): void {
     let generator = this.font!.generator;
-    let scale = GLYPH_CANVAS_HEIGHT / generator.getMetrics().em;
+    let scale = GLYPH_CANVAS_HEIGHT / generator.metrics.em;
     project.activate();
     let glyph = generator.glyph(char);
     if (glyph !== null) {
-      let scaledWidth = Math.floor(glyph.width * scale) + 0.5;
-      let scaledAscent = Math.floor(generator.getMetrics().ascent * scale) + 0.5;
-      let item = glyph.item;
+      let [item, width] = glyph.createItem(generator.metrics);
+      let scaledWidth = Math.floor(width * scale) + 0.5;
+      let scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
       let baselinePath = new Path({segments: [$(0, scaledAscent), $(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
       let widthPath = new Path({segments: [$(scaledWidth, 0), $(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
       item.scale(scale, $(0, 0));
@@ -216,10 +216,11 @@ export class FontRenderer {
   }
 
   private createBottomInfoPane(char: string): HTMLElement {
+    let generator = this.font!.generator;
     let infoPane = document.createElement("div");
     let widthPane = document.createElement("div");
-    let width = this.font!.generator.glyph(char)!.width;
-    let em = this.font!.generator.getMetrics().em;
+    let [, width] = generator.glyph(char)!.createItem(generator.metrics);
+    let em = this.font!.generator.metrics.em;
     infoPane.classList.add("bottom-info");
     widthPane.classList.add("width");
     widthPane.textContent = `↔${Math.round(width)} · ↕${Math.round(em)}`;

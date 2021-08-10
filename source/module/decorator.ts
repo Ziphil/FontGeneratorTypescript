@@ -25,10 +25,7 @@ type PartMethod = (...args: Array<any>) => Part;
 export function generator(): GeneratorDecorator {
   let decorator = function (clazz: new(...args: any) => Generator): void {
     let metadata = Reflect.getMetadata(KEY, clazz.prototype) as Metadata;
-    clazz.prototype.getChars = function (this: Generator): Array<string> {
-      let chars = Array.from(metadata.keys());
-      return chars;
-    };
+    clazz.prototype.chars = Array.from(metadata.keys());
     clazz.prototype.glyph = function (this: Generator, char: string): Glyph | null {
       let anyThis = this as any;
       let name = metadata.get(char);

@@ -13,16 +13,12 @@ import {
 
 export class Glyph {
 
-  public item: PathItem;
   private originalItem: PathItem;
-  public metrics: Metrics;
-  public width: number;
+  public createItem: (metrics: Metrics) => [item: PathItem, width: number];
 
-  private constructor(item: PathItem, originalItem: PathItem, metrics: Metrics, width: number) {
-    this.item = item;
+  private constructor(originalItem: PathItem, createItem: (metrics: Metrics) => [PathItem, number]) {
     this.originalItem = originalItem;
-    this.metrics = metrics;
-    this.width = width;
+    this.createItem = createItem;
   }
 
   public toPart(): Part {
@@ -30,13 +26,16 @@ export class Glyph {
     return part;
   }
 
-  public static byBearings(part: Part | PathItem, metrics: Metrics, bearings: Bearings): Glyph {
+  public static byBearings(part: Part | PathItem, bearings: Bearings): Glyph {
     let item = (part instanceof Part) ? part.item : part;
-    let clonedItem = item.clone();
     let originalItem = item.clone();
-    let width = item.bounds.width + bearings.left + bearings.right;
-    clonedItem.translate($(bearings.left, metrics.ascent));
-    let glyph = new Glyph(clonedItem, originalItem, metrics, width);
+    let createItem = function (metrics: Metrics): [PathItem, number] {
+      let clonedItem = item.clone();
+      let width = item.bounds.width + bearings.left + bearings.right;
+      clonedItem.translate($(bearings.left, metrics.ascent));
+      return [clonedItem, width];
+    };
+    let glyph = new Glyph(originalItem, createItem);
     return glyph;
   }
 
