@@ -4,6 +4,9 @@ import {
   FontManager
 } from "../module";
 import {
+  GilitFont
+} from "./gilit/font";
+import {
   KalegFont
 } from "./kaleg/font";
 import {
@@ -23,6 +26,14 @@ const FONTS = {
   vket: VekosFont.create("thin", "expanded", false),
   vkhr: VekosFont.create("regular", "normal", true),
   vkhb: VekosFont.create("bold", "normal", true),
+  glr: GilitFont.create("regular", "normal", false, false),
+  glb: GilitFont.create("bold", "normal", false, false),
+  gler: GilitFont.create("regular", "expanded", false, false),
+  gleb: GilitFont.create("bold", "expanded", false, false),
+  gltr: GilitFont.create("regular", "normal", true, false),
+  gltb: GilitFont.create("bold", "normal", true, false),
+  glser: GilitFont.create("regular", "expanded", false, true),
+  glseb: GilitFont.create("bold", "expanded", false, true),
   klmr: KalegFont.create("regular", "normal", "miter", false),
   klmb: KalegFont.create("bold", "normal", "miter", false),
   klbr: KalegFont.create("regular", "normal", "bevel", false),
