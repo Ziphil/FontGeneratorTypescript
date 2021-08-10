@@ -28,9 +28,7 @@ export class KalegFont extends Font {
 
   private static createFamilyName(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean): string {
     let familyName = "Kaleg";
-    if (edgeJoin !== "miter") {
-      familyName += " " + edgeJoin.charAt(0).toUpperCase() + edgeJoin.slice(1);
-    }
+    familyName += " " + edgeJoin.charAt(0).toUpperCase() + edgeJoin.slice(1);
     if (beaked) {
       familyName += " Beaked";
     }
