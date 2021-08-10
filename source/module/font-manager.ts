@@ -13,7 +13,7 @@ export class FontManager {
     this.rawFonts = rawFonts;
   }
 
-  public getAll(): Array<[string, Font]> {
+  public getAll(): Array<[id: string, font: Font]> {
     let fonts = Object.entries(this.rawFonts);
     return fonts;
   }

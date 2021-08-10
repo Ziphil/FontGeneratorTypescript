@@ -36,6 +36,11 @@ npm run generate -- --python (Pythonのコマンド名)
 Python のコマンド名には、`import fontforge` が通るものを指定してください。
 Windows 環境で実行する場合で、上に述べた方法で FontForge をインストールしてある場合は、`ffpython` を指定してください。
 
+生成できるフォントは、以下のコマンドで一覧することができます。
+```
+npm run generate -- --list
+```
+
 ### Web プレビュー
 以下のコマンドを実行すると、プレビュー用のサーバーが起動します。
 ```
@@ -43,20 +48,3 @@ npm run develop -- --port (ポート番号)
 ```
 この状態でブラウザから `localhost:(ポート番号)` にアクセスすると、生成できるフォントの一覧が表示された Web ページが表示されます。
 フォントを選択すると、プレビューを見ることができます。
-
-## フォント一覧
-現在生成できるフォントは以下の通りです。
-
-| ID | フォント名 |
-|:------:|:----------:|
-| `vkr` | Vekos Regular |
-| `vkb` | Vekos Bold |
-| `vkt` | Vekos Thin |
-| `vkcr` | Vekos Condensed Regular |
-| `vkcb` | Vekos Condensed Bold |
-| `vkct` | Vekos Condensed Thin |
-| `vker` | Vekos Expanded Regular |
-| `vkeb` | Vekos Expanded Bold |
-| `vket` | Vekos Expanded Thin |
-| `vkhr` | Vekos High Regular |
-| `vkhb` | Vekos High Bold |
