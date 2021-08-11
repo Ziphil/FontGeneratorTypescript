@@ -240,6 +240,13 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   @part()
+  public partTopRightmostBeak(): Part {
+    let part = this.partTopLeftBeakShape().reflectHor();
+    part.moveOrigin($(-this.narrowBowlWidth * 2 + this.horThickness, this.mean - this.verThickness));
+    return part;
+  }
+
+  @part()
   public partBottomLeftBeak(): Part {
     let part = this.partTopLeftBeakShape().reflectVer();
     part.moveOrigin($(0, this.verThickness));
@@ -250,6 +257,13 @@ export class KalegGenerator extends Generator<KalegConfig> {
   public partBottomRightBeak(): Part {
     let part = this.partTopLeftBeakShape().reflectHor().reflectVer();
     part.moveOrigin($(-this.bowlWidth, this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partBottomRightmostBeak(): Part {
+    let part = this.partTopLeftBeakShape().reflectHor().reflectVer();
+    part.moveOrigin($(-this.narrowBowlWidth * 2 + this.horThickness, this.verThickness));
     return part;
   }
 
@@ -384,14 +398,14 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   @part()
-  public partTopBar(): Part {
+  public partTopHorBar(): Part {
     let part = this.partHorBarShape();
     part.moveOrigin($(-this.horThickness, this.mean - this.verThickness));
     return part;
   }
 
   @part()
-  public partBottomBar(): Part {
+  public partBottomHorBar(): Part {
     let part = this.partHorBarShape();
     part.moveOrigin($(-this.horThickness, 0));
     return part;
@@ -413,28 +427,28 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   @part()
-  public partTopLeftShortBar(): Part {
+  public partTopLeftHorShortBar(): Part {
     let part = this.partHorShortBarShape();
     part.moveOrigin($(-this.horThickness, this.mean - this.verThickness));
     return part;
   }
 
   @part()
-  public partTopRightShortBar(): Part {
+  public partTopRightHorShortBar(): Part {
     let part = this.partHorShortBarShape();
     part.moveOrigin($(-this.narrowBowlWidth, this.mean - this.verThickness));
     return part;
   }
 
   @part()
-  public partBottomLeftShortBar(): Part {
+  public partBottomLeftHorShortBar(): Part {
     let part = this.partHorShortBarShape();
     part.moveOrigin($(-this.horThickness, 0));
     return part;
   }
 
   @part()
-  public partBottomRightShortBar(): Part {
+  public partBottomRightHorShortBar(): Part {
     let part = this.partHorShortBarShape();
     part.moveOrigin($(-this.narrowBowlWidth, 0));
     return part;
@@ -452,30 +466,69 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   @part()
-  public partLeftBar(): Part {
+  public partLeftVerBar(): Part {
     let part = this.partVerBarShape();
     part.moveOrigin($(0, this.verThickness));
     return part;
   }
 
   @part()
-  public partRightBar(): Part {
+  public partRightVerBar(): Part {
     let part = this.partVerBarShape();
     part.moveOrigin($(-this.bowlWidth + this.horThickness, this.verThickness));
     return part;
   }
 
   @part()
-  public partCenterBar(): Part {
+  public partCenterVerBar(): Part {
     let part = this.partVerBarShape();
     part.moveOrigin($(-this.narrowBowlWidth + this.horThickness, this.verThickness));
     return part;
   }
 
   @part()
-  public partRightmostBar(): Part {
+  public partRightmostVerBar(): Part {
     let part = this.partVerBarShape();
     part.moveOrigin($(-this.narrowBowlWidth * 2 + this.horThickness * 2, this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partVerShortBarShape(): Part {
+    let part = Part.seq(
+      Part.line($(0, 0), $(0, -(this.mean - this.verThickness * 3) / 2)),
+      Part.line($(0, 0), $(this.horThickness, 0)),
+      Part.line($(0, 0), $(0, (this.mean - this.verThickness * 3) / 2)),
+      Part.line($(0, 0), $(-this.horThickness, 0))
+    );
+    return part;
+  }
+
+  @part()
+  public partTopLeftVerShortBar(): Part {
+    let part = this.partVerShortBarShape();
+    part.moveOrigin($(0, (this.mean + this.verThickness) / 2));
+    return part;
+  }
+
+  @part()
+  public partTopRightVerShortBar(): Part {
+    let part = this.partVerShortBarShape();
+    part.moveOrigin($(-this.bowlWidth + this.horThickness, (this.mean + this.verThickness) / 2));
+    return part;
+  }
+
+  @part()
+  public partBottomLeftVerShortBar(): Part {
+    let part = this.partVerShortBarShape();
+    part.moveOrigin($(0, this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partBottomRightVerShortBar(): Part {
+    let part = this.partVerShortBarShape();
+    part.moveOrigin($(-this.bowlWidth + this.horThickness, this.verThickness));
     return part;
   }
 
@@ -512,6 +565,24 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return part;
   }
 
+  @part()
+  public partSolidusShape(): Part {
+    let part = Part.seq(
+      Part.line($(0, 0), $(0, -this.verThickness)),
+      Part.line($(0, 0), $(this.bowlWidth, 0)),
+      Part.line($(0, 0), $(0, this.verThickness)),
+      Part.line($(0, 0), $(-this.bowlWidth, 0))
+    );
+    return part;
+  }
+
+  @part()
+  public partSolidus(): Part {
+    let part = this.partSolidusShape();
+    part.moveOrigin($(0, (this.mean - this.verThickness) / 2));
+    return part;
+  }
+
   private createBearings(): Bearings {
     let left = this.bearing;
     let right = this.bearing;
@@ -526,10 +597,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTip(),
       this.partBottomLeftTip(),
       this.partBottomRightTip(),
-      this.partTopBar(),
-      this.partBottomBar(),
-      this.partLeftBar(),
-      this.partRightBar()
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -542,9 +613,9 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightBeak(),
       this.partBottomLeftTip(),
       this.partBottomRightBeak(),
-      this.partTopBar(),
-      this.partBottomBar(),
-      this.partLeftBar()
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -567,9 +638,9 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTip(),
       this.partBottomLeftBeak(),
       this.partBottomRightTip(),
-      this.partTopBar(),
-      this.partBottomBar(),
-      this.partRightBar()
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partRightVerBar()
     );
     part.translate($(this.beakFixLength, 0));
     let glyph = Glyph.byBearings(part, this.createBearings());
@@ -593,9 +664,9 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightLeg(),
       this.partBottomLeftTip(),
       this.partBottomRightTip(),
-      this.partBottomBar(),
-      this.partLeftBar(),
-      this.partRightBar()
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -618,9 +689,9 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTip(),
       this.partBottomLeftLeg(),
       this.partBottomRightLeg(),
-      this.partTopBar(),
-      this.partLeftBar(),
-      this.partRightBar()
+      this.partTopHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -643,10 +714,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTip(),
       this.partBottomLeftTip(),
       this.partBottomRightTip(),
-      this.partTopBar(),
-      this.partBottomBar(),
-      this.partLeftBar(),
-      this.partRightBar()
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -669,10 +740,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTail(),
       this.partBottomLeftTip(),
       this.partBottomRightTip(),
-      this.partTopBar(),
-      this.partBottomBar(),
-      this.partLeftBar(),
-      this.partRightBar()
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -695,10 +766,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTip(),
       this.partBottomLeftTail(),
       this.partBottomRightTip(),
-      this.partTopBar(),
-      this.partBottomBar(),
-      this.partLeftBar(),
-      this.partRightBar()
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -721,10 +792,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTip(),
       this.partBottomLeftTip(),
       this.partBottomRightTail(),
-      this.partTopBar(),
-      this.partBottomBar(),
-      this.partLeftBar(),
-      this.partRightBar()
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -746,8 +817,8 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTail(),
       this.partBottomLeftBeak(),
       this.partBottomRightTip(),
-      this.partBottomBar(),
-      this.partRightBar()
+      this.partBottomHorBar(),
+      this.partRightVerBar()
     );
     part.translate($(this.beakFixLength, 0));
     let glyph = Glyph.byBearings(part, this.createBearings());
@@ -760,8 +831,8 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopLeftTip(),
       this.partTopRightBeak(),
       this.partBottomLeftTail(),
-      this.partTopBar(),
-      this.partLeftBar()
+      this.partTopHorBar(),
+      this.partLeftVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -773,9 +844,9 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTail(),
       this.partBottomLeftBeak(),
       this.partBottomRightTip(),
-      this.partTopBar(),
-      this.partBottomBar(),
-      this.partRightBar()
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partRightVerBar()
     );
     part.translate($(this.beakFixLength, 0));
     let glyph = Glyph.byBearings(part, this.createBearings());
@@ -788,9 +859,9 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopLeftTip(),
       this.partTopRightBeak(),
       this.partBottomLeftTail(),
-      this.partTopBar(),
-      this.partBottomBar(),
-      this.partLeftBar()
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -805,13 +876,13 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partBottomLeftTip(),
       this.partBottomRightmostTip(),
       this.partBottomCenterTip(),
-      this.partLeftBar(),
-      this.partCenterBar(),
-      this.partRightmostBar(),
-      this.partTopLeftShortBar(),
-      this.partTopRightShortBar(),
-      this.partBottomLeftShortBar(),
-      this.partBottomRightShortBar()
+      this.partLeftVerBar(),
+      this.partCenterVerBar(),
+      this.partRightmostVerBar(),
+      this.partTopLeftHorShortBar(),
+      this.partTopRightHorShortBar(),
+      this.partBottomLeftHorShortBar(),
+      this.partBottomRightHorShortBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -836,11 +907,11 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partBottomLeftTip(),
       this.partBottomRightmostLeg(),
       this.partBottomCenterRightTip(),
-      this.partLeftBar(),
-      this.partCenterBar(),
-      this.partRightmostBar(),
-      this.partTopRightShortBar(),
-      this.partBottomLeftShortBar()
+      this.partLeftVerBar(),
+      this.partCenterVerBar(),
+      this.partRightmostVerBar(),
+      this.partTopRightHorShortBar(),
+      this.partBottomLeftHorShortBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -851,6 +922,181 @@ export class KalegGenerator extends Generator<KalegConfig> {
     let part = Part.union(
       this.glyphMes().toPart(),
       this.partWideTransphone()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("0")
+  public glyphNuf(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightTip(),
+      this.partBottomLeftTip(),
+      this.partBottomRightTip(),
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar(),
+      this.partSolidus()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("1")
+  public glyphTas(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightBeak(),
+      this.partBottomLeftTip(),
+      this.partBottomRightTip(),
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partBottomRightVerShortBar(),
+      this.partSolidus()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("9")
+  public glyphVun(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightTip(),
+      this.partBottomLeftBeak(),
+      this.partBottomRightTip(),
+      this.partTopHorBar(),
+      this.partBottomHorBar(),
+      this.partRightVerBar(),
+      this.partTopLeftVerShortBar(),
+      this.partSolidus()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("2")
+  public glyphQic(): Glyph {
+    let part = Part.union(
+      this.partTopLeftLeg(),
+      this.partTopRightLeg(),
+      this.partBottomLeftTip(),
+      this.partBottomRightTip(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar(),
+      this.partBottomLeftTail()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("6")
+  public glyphLem(): Glyph {
+    let part = Part.union(
+      this.partTopLeftLeg(),
+      this.partTopRightLeg(),
+      this.partBottomLeftTip(),
+      this.partBottomRightTip(),
+      this.partBottomHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar(),
+      this.partBottomRightTail()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("4")
+  public glyphPav(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightTip(),
+      this.partBottomLeftLeg(),
+      this.partBottomRightLeg(),
+      this.partTopHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar(),
+      this.partTopLeftTail()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("8")
+  public glyphKeq(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightTip(),
+      this.partBottomLeftLeg(),
+      this.partBottomRightLeg(),
+      this.partTopHorBar(),
+      this.partLeftVerBar(),
+      this.partRightVerBar(),
+      this.partTopRightTail()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("5")
+  public glyphXef(): Glyph {
+    let part = Part.union(
+      this.partTopLeftBeak(),
+      this.partTopRightmostBeak(),
+      this.partTopCenterTip(),
+      this.partBottomLeftBeak(),
+      this.partBottomRightmostBeak(),
+      this.partBottomCenterTip(),
+      this.partCenterVerBar(),
+      this.partTopLeftHorShortBar(),
+      this.partTopRightHorShortBar(),
+      this.partBottomLeftHorShortBar(),
+      this.partBottomRightHorShortBar()
+    );
+    part.translate($(this.beakFixLength, 0));
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("3")
+  public glyphYus(): Glyph {
+    let part = Part.union(
+      this.partTopLeftTip(),
+      this.partTopRightmostTip(),
+      this.partTopCenterTip(),
+      this.partBottomLeftTip(),
+      this.partBottomRightmostLeg(),
+      this.partBottomCenterTip(),
+      this.partLeftVerBar(),
+      this.partRightmostVerBar(),
+      this.partCenterVerBar(),
+      this.partTopLeftHorShortBar(),
+      this.partTopRightHorShortBar(),
+      this.partBottomLeftHorShortBar()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("7")
+  public glyphSiz(): Glyph {
+    let part = Part.union(
+      this.partTopLeftLeg(),
+      this.partTopRightmostTip(),
+      this.partTopCenterTip(),
+      this.partBottomLeftTip(),
+      this.partBottomRightmostTip(),
+      this.partBottomCenterTip(),
+      this.partLeftVerBar(),
+      this.partRightmostVerBar(),
+      this.partCenterVerBar(),
+      this.partTopRightHorShortBar(),
+      this.partBottomLeftHorShortBar(),
+      this.partBottomRightHorShortBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
