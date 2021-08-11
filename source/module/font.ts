@@ -11,18 +11,28 @@ import {
 } from "./generator";
 
 
-export class Font {
+export abstract class Font<G extends Generator = Generator> {
 
-  public generator: Generator;
-  public familyName: string;
-  public style: FontStyle;
-  public info: FontInfo;
+  public generator!: G;
+  public familyName!: string;
+  public style!: FontStyle;
+  public info!: FontInfo;
 
-  public constructor(generator: Generator, familyName: string, style?: FontStyle, info?: FontInfo) {
-    this.generator = generator;
-    this.familyName = familyName;
-    this.style = style ?? new FontStyle();
-    this.info = info ?? new FontInfo();
+  protected abstract createFamilyName(): string;
+
+  protected abstract createStyle(): FontStyle;
+
+  protected abstract createInfo(): FontInfo;
+
+  protected abstract createGenerator(): G;
+
+  // このクラスを継承してサブクラスを作る場合は、コンストラクタでこのメソッドを呼んでください。
+  // もっと良い設計はあるはずですが、思いつきませんでした。
+  protected setup(): void {
+    this.generator = this.createGenerator();
+    this.familyName = this.createFamilyName();
+    this.style = this.createStyle();
+    this.info = this.createInfo();
   }
 
   public get extendedFamilyName(): string {

@@ -8,45 +8,52 @@ import {
   FontWeight
 } from "../../module";
 import {
-  VekosConfig,
   VekosGenerator
 } from "./generator";
 
 
-export class VekosFont extends Font {
+export class VekosFont extends Font<VekosGenerator> {
 
-  public static create(weight: FontWeight, stretch: FontStretch, high: boolean): Font {
-    let config = this.createConfig(weight, stretch, high);
-    let generator = new VekosGenerator(config);
-    let familyName = this.createFamilyName(weight, stretch, high);
-    let style = this.createStyle(weight, stretch, high);
-    let info = new FontInfo("Ziphil", "1.2.0");
-    let font = new VekosFont(generator, familyName, style, info);
-    return font;
+  private weight: FontWeight;
+  private stretch: FontStretch;
+  private high: boolean;
+
+  public constructor(weight: FontWeight, stretch: FontStretch, high: boolean) {
+    super();
+    this.weight = weight;
+    this.stretch = stretch;
+    this.high = high;
+    this.setup();
   }
 
-  private static createFamilyName(weight: FontWeight, stretch: FontStretch, high: boolean): string {
+  protected createFamilyName(): string {
     let familyName = "Vekos";
-    if (high) {
+    if (this.high) {
       familyName += " High";
     }
     return familyName;
   }
 
-  private static createStyle(weight: FontWeight, stretch: FontStretch, high: boolean): FontStyle {
-    let style = new FontStyle(weight, "upright", stretch);
+  protected createStyle(): FontStyle {
+    let style = new FontStyle(this.weight, "upright", this.stretch);
     return style;
   }
 
-  private static createConfig(weight: FontWeight, stretch: FontStretch, high: boolean): VekosConfig {
-    let style = this.createStyle(weight, stretch, high);
+  protected createInfo(): FontInfo {
+    let info = new FontInfo("Ziphil", "1.2.1");
+    return info;
+  }
+
+  protected createGenerator(): VekosGenerator {
+    let style = this.createStyle();
     let weightNumber = style.getWeightNumber();
     let stretchNumber = style.getStretchNumber();
     let weightConst = (weightNumber * 0.5 + 100) / 300;
     let stretchConst = (stretchNumber < 100) ? (stretchNumber * 0.6 + 40) / 100 : stretchNumber / 100;
-    let contrastRatio = (high) ? 0.2 : 0.75;
+    let contrastRatio = (this.high) ? 0.2 : 0.75;
     let config = {weightConst, stretchConst, contrastRatio};
-    return config;
+    let generator = new VekosGenerator(config);
+    return generator;
   }
 
 }

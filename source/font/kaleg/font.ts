@@ -8,40 +8,48 @@ import {
   FontWeight
 } from "../../module";
 import {
-  KalegConfig,
   KalegEdgeJoin,
   KalegGenerator
 } from "./generator";
 
 
-export class KalegFont extends Font {
+export class KalegFont extends Font<KalegGenerator> {
 
-  public static create(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean): Font {
-    let config = this.createConfig(weight, stretch, edgeJoin, beaked);
-    let generator = new KalegGenerator(config);
-    let familyName = this.createFamilyName(weight, stretch, edgeJoin, beaked);
-    let style = this.createStyle(weight, stretch, edgeJoin, beaked);
-    let info = new FontInfo("Ziphil", "1.0.0");
-    let font = new KalegFont(generator, familyName, style, info);
-    return font;
+  private weight: FontWeight;
+  private stretch: FontStretch;
+  private edgeJoin: KalegEdgeJoin;
+  private beaked: boolean;
+
+  public constructor(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean) {
+    super();
+    this.weight = weight;
+    this.stretch = stretch;
+    this.edgeJoin = edgeJoin;
+    this.beaked = beaked;
+    this.setup();
   }
 
-  private static createFamilyName(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean): string {
+  protected createFamilyName(): string {
     let familyName = "Kaleg";
-    familyName += " " + edgeJoin.charAt(0).toUpperCase() + edgeJoin.slice(1);
-    if (beaked) {
+    familyName += " " + this.edgeJoin.charAt(0).toUpperCase() + this.edgeJoin.slice(1);
+    if (this.beaked) {
       familyName += " Beaked";
     }
     return familyName;
   }
 
-  private static createStyle(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean): FontStyle {
-    let style = new FontStyle(weight, "upright", stretch);
+  protected createStyle(): FontStyle {
+    let style = new FontStyle(this.weight, "upright", this.stretch);
     return style;
   }
 
-  private static createConfig(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean): KalegConfig {
-    let style = this.createStyle(weight, stretch, edgeJoin, beaked);
+  protected createInfo(): FontInfo {
+    let info = new FontInfo("Ziphil", "1.0.0");
+    return info;
+  }
+
+  protected createGenerator(): KalegGenerator {
+    let style = this.createStyle();
     let weightNumber = style.getWeightNumber();
     let stretchNumber = style.getStretchNumber();
     let weightConst = (weightNumber * 0.45 + 100) / 300;
@@ -49,11 +57,13 @@ export class KalegFont extends Font {
     let edgeRatio = contrastRatio;
     let edgeContrastRatio = 1;
     let bowlRatio = 0.8;
-    let beakRatio = (beaked) ? 0.2 : 0;
-    let legRatio = (beaked) ? 0 : 0;
-    let tailRatio = (beaked) ? 0.3 : 0;
+    let beakRatio = (this.beaked) ? 0.2 : 0;
+    let legRatio = (this.beaked) ? 0 : 0;
+    let tailRatio = (this.beaked) ? 0.3 : 0;
+    let edgeJoin = this.edgeJoin;
     let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, beakRatio, legRatio, tailRatio, edgeJoin};
-    return config;
+    let generator = new KalegGenerator(config);
+    return generator;
   }
 
 }
