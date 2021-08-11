@@ -18,6 +18,14 @@ import {
 @generator()
 export class GilitGenerator extends Generator<GilitConfig> {
 
+  public get metrics(): Metrics {
+    let ascent = this.ascent + this.extraAscent;
+    let descent = this.descent + this.extraDescent;
+    let em = descent + ascent;
+    let metrics = {em, ascent, descent};
+    return metrics;
+  }
+
   private get ascent(): number {
     return this.triangleHeight + this.ascenderHeight + this.maxThickness / (MathUtil.cosDeg(this.maxObliqueAngle) * 4);
   }
@@ -32,14 +40,6 @@ export class GilitGenerator extends Generator<GilitConfig> {
 
   private get extraAscent(): number {
     return 0;
-  }
-
-  public get metrics(): Metrics {
-    let ascent = this.ascent + this.extraAscent;
-    let descent = this.descent + this.extraDescent;
-    let em = descent + ascent;
-    let metrics = {em, ascent, descent};
-    return metrics;
   }
 
   private get triangleHeight(): number {
