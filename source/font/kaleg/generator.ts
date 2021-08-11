@@ -411,6 +411,35 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return part;
   }
 
+  private get tongueWidth(): number {
+    return this.bowlWidth * 0.85;
+  }
+
+  @part()
+  public partTongueShape(): Part {
+    let part = Part.seq(
+      Part.line($(0, 0), $(0, -this.verThickness)),
+      Part.line($(0, 0), $(this.tongueWidth, 0)),
+      Part.line($(0, 0), $(0, this.verThickness)),
+      Part.line($(0, 0), $(-this.tongueWidth * 2, 0))
+    );
+    return part;
+  }
+
+  @part()
+  public partTopTongue(): Part {
+    let part = this.partTongueShape();
+    part.moveOrigin($(this.tongueWidth - this.bowlWidth, this.mean - this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partBottomTongue(): Part {
+    let part = this.partTongueShape();
+    part.moveOrigin($(0, 0));
+    return part;
+  }
+
   private get narrowBowlWidth(): number {
     return this.bowlWidth * 0.9;
   }
@@ -844,7 +873,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightTail(),
       this.partBottomLeftBeak(),
       this.partBottomRightTip(),
-      this.partTopHorBar(),
+      this.partTopTongue(),
       this.partBottomHorBar(),
       this.partRightVerBar()
     );
@@ -860,7 +889,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightBeak(),
       this.partBottomLeftTail(),
       this.partTopHorBar(),
-      this.partBottomHorBar(),
+      this.partBottomTongue(),
       this.partLeftVerBar()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
