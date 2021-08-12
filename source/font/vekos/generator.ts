@@ -1883,6 +1883,19 @@ export class VekosGenerator extends Generator<VekosConfig> {
     return glyph;
   }
 
+  @glyph("⁉", "‽")
+  public glyphBapadek(): Glyph {
+    let part = Part.union(
+      this.partDot(),
+      this.partDot().translate($(this.dotWidth + this.dotGap, 0)),
+      this.partBadekStem().translate($(this.dotWidth / 2 - this.horThickness / 2, -this.dotWidth - this.badekGap + this.overshoot)),
+      this.partPadekStem().translate($(this.dotWidth / 2 - this.horThickness / 2 + this.dotWidth + this.dotGap, -this.dotWidth - this.badekGap + this.overshoot))
+    );
+    let bearings = {left: this.badekLeftBearing, right: this.bearing};
+    let glyph = Glyph.byBearings(part, bearings);
+    return glyph;
+  }
+
   private get nokHeight(): number {
     return (this.mean + this.descent) * 0.3;
   }
