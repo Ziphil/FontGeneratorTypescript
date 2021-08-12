@@ -45,7 +45,7 @@ export class GilitFont extends Font<GilitGenerator> {
   }
 
   protected createInfo(): FontInfo {
-    let info = new FontInfo("Ziphil", "1.2.1");
+    let info = new FontInfo("Ziphil", "2.0.0");
     return info;
   }
 
