@@ -1,6 +1,5 @@
 #
 
-
 import fontforge
 import os
 import re

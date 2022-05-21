@@ -1,5 +1,7 @@
 @charset "utf-8";
 
+@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap");
+
 
 @mixin large {
   @media screen and (min-width: 1251px) {
@@ -17,7 +19,7 @@
 body {
   margin: 0px;
   padding: 0px;
-  font-family: "Alegreya Sans", "Mgen+ 1pp Regular";
+  font-family: "Barlow", "Mgen+ 1pp Regular";
   font-size: 16px;
   font-stretch: condensed;
   font-feature-settings: "lnum";
@@ -39,14 +41,14 @@ body {
 
 #menu {
   @include large {
-    width: 250px;
-    flex: 0 0 250px;
-    margin: 0px 50px 0px 0px;
-    padding: 0px 50px 0px 0px;
+    width: 260px;
+    flex: 0 0 260px;
+    margin: 0px 30px 0px 0px;
+    padding: 0px 30px 0px 0px;
     border-right: 1px hsl(0, 0%, 85%) solid;
   }
   @include small {
-    width: 850px;
+    width: 838px;
     flex: 0 0 auto;
     margin: 0px 0px 30px 0px;
     padding: 0px 0px 27px 0px;
@@ -90,10 +92,10 @@ body {
 }
 
 #content {
-  width: 850px;
+  width: 838px;
   padding: 0px;
   @include large {
-    flex: 0 0 850px;
+    flex: 0 0 838px;
   }
 }
 
@@ -103,7 +105,7 @@ h1 {
   font-size: 200%;
   font-weight: bold;
   display: flex;
-  align-items: center;
+  align-items: baseline;
 }
 
 h2 {
@@ -154,15 +156,14 @@ h2 {
 }
 
 #glyph-list {
-  margin: -5px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: start;
+  gap: 10px;
 }
 
 .glyph-pane {
-  margin: 5px;
   padding: 8px;
   background-color: hsl(0, 0%, 85%);
   border-radius: 8px;

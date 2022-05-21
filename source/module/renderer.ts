@@ -21,7 +21,7 @@ import {
 
 const GLYPH_CANVAS_WIDTH = 80;
 const GLYPH_CANVAS_HEIGHT = 80;
-const PREVIEW_CANVAS_WIDTH = 834;
+const PREVIEW_CANVAS_WIDTH = 822;
 const PREVIEW_CANVAS_HEIGHT = 150;
 
 const GRAY_COLOR = new Color({hue: 0, saturation: 0, lightness: 0.85});
@@ -119,7 +119,7 @@ export class FontRenderer {
         metricsRectangle.fillColor = METRICS_COLOR;
         metricsOverlay.fillColor = METRICS_COLOR;
         metricsOverlay.opacity = 0;
-        widthText.fontFamily = "Alegreya Sans";
+        widthText.fontFamily = "Barlow";
         widthText.fontSize = 16 * 0.75;
         widthText.fillColor = SELECTED_COLOR;
         widthText.justification = "right";
