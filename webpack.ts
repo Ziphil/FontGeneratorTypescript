@@ -50,12 +50,17 @@ let config = {
       }
     ]
   },
+  ignoreWarnings: [
+    /Failed to parse source map/
+  ],
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".css"]
   },
   devServer: {
     historyApiFallback: true,
-    contentBase: path.join(__dirname, "dist", "client")
+    static: {
+      directory: path.join(__dirname, "dist", "client")
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({
