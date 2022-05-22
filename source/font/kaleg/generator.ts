@@ -267,6 +267,48 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return part;
   }
 
+  private get shortBeakHeight(): number {
+    return this.mean * this.config.beakRatio * 0.6;
+  }
+
+  @part()
+  public partTopLeftShortBeakShape(): Part {
+    let beakHeight = this.beakHeight;
+    if (beakHeight === 0) {
+      let part = Part.seq(
+        Part.line($(0, 0), $(0, -this.verThickness)),
+        Part.line($(0, 0), $(this.unbeakedBeakWidth, 0)),
+        Part.line($(0, 0), $(0, this.verThickness)),
+        Part.line($(0, 0), $(-this.unbeakedBeakWidth, 0))
+      );
+      part.moveOrigin($(this.beakFixLength, 0));
+      return part;
+    } else {
+      let part = Part.seq(
+        Part.line($(0, this.shortBeakHeight), $(0, -this.verThickness + this.edgeHeight)),
+        this.partTopLeftEdgeShape(),
+        Part.line($(0, 0), $(this.horThickness - this.edgeWidth, 0)),
+        Part.line($(0, 0), $(0, this.verThickness + this.shortBeakHeight)),
+        Part.line($(0, 0), $(-this.horThickness, 0))
+      );
+      return part;
+    }
+  }
+
+  @part()
+  public partTopRightShortBeak(): Part {
+    let part = this.partTopLeftShortBeakShape().reflectHor();
+    part.moveOrigin($(-this.bowlWidth, this.mean - this.verThickness));
+    return part;
+  }
+
+  @part()
+  public partBottomLeftShortBeak(): Part {
+    let part = this.partTopLeftShortBeakShape().reflectVer();
+    part.moveOrigin($(0, this.verThickness));
+    return part;
+  }
+
   private get legWidth(): number {
     return this.bowlWidth * this.config.legRatio;
   }
@@ -284,7 +326,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
       return part;
     } else {
       let part = Part.seq(
-        Part.line($(0, this.beakHeight), $(0, -this.verThickness + this.edgeHeight)),
+        Part.line($(0, 0), $(0, -this.verThickness + this.edgeHeight)),
         this.partTopLeftEdgeShape(),
         Part.line($(0, 0), $(this.horThickness - this.edgeWidth + this.legWidth, 0)),
         Part.line($(0, 0), $(0, this.verThickness)),
@@ -977,7 +1019,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   public glyphTas(): Glyph {
     let part = Part.union(
       this.partTopLeftTip(),
-      this.partTopRightBeak(),
+      this.partTopRightShortBeak(),
       this.partBottomLeftTip(),
       this.partBottomRightTip(),
       this.partTopHorBar(),
@@ -995,7 +1037,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
     let part = Part.union(
       this.partTopLeftTip(),
       this.partTopRightTip(),
-      this.partBottomLeftBeak(),
+      this.partBottomLeftShortBeak(),
       this.partBottomRightTip(),
       this.partTopHorBar(),
       this.partBottomHorBar(),
