@@ -20,6 +20,8 @@ export class PointUtil {
 }
 
 
-export function $(x: number, y?: number): Point {
-  return new Point(x, y ?? x);
-}
+export const $ = Object.assign(PointUtil.ortho, {
+  origin: PointUtil.ortho(0, 0),
+  ortho: PointUtil.ortho,
+  polar: PointUtil.polar
+});
