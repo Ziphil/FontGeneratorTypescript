@@ -654,6 +654,47 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return part;
   }
 
+  private get diacriticHorThickness(): number {
+    return this.horThickness * 0.85;
+  }
+
+  private get diacriticVerThickness(): number {
+    return this.diacriticHorThickness * this.config.contrastRatio;
+  }
+
+  private get diacriticWidth(): number {
+    return this.bowlWidth * 0.5;
+  }
+
+  private get diacriticGap(): number {
+    return this.descent * 0.25;
+  }
+
+  @part()
+  public partTopDiacriticShape(): Part {
+    let part = Part.seq(
+      Part.line($(0, 0), $(0, -this.diacriticVerThickness)),
+      Part.line($(0, 0), $(this.diacriticWidth, 0)),
+      Part.line($(0, 0), $(0, this.diacriticVerThickness)),
+      Part.line($(0, 0), $(-this.diacriticWidth, 0))
+    );
+    return part;
+  }
+
+  @part()
+  public partTopDiacritic(): Part {
+    let part = this.partTopDiacriticShape();
+    part.moveOrigin($(-(this.bowlWidth - this.diacriticWidth) / 2, this.mean + this.diacriticGap));
+    return part;
+  }
+
+  @part()
+  public partBottomDiacritic(): Part {
+    let part = this.partTopDiacriticShape().reflectVer();
+    part.moveOrigin($(-(this.bowlWidth - this.diacriticWidth) / 2, -this.diacriticGap));
+    return part;
+  }
+
   private createBearings(): Bearings {
     let left = this.bearing;
     let right = this.bearing;
@@ -1168,6 +1209,56 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partTopRightHorShortBar(),
       this.partBottomLeftHorShortBar(),
       this.partBottomRightHorShortBar()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("á", "Á", "à", "À", "â", "Â")
+  public glyphAtDiacritic(): Glyph {
+    let part = Part.union(
+      this.glyphAt().toPart(),
+      this.partTopDiacritic()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("é", "É", "è", "È", "ê", "Ê")
+  public glyphEtDiacritic(): Glyph {
+    let part = Part.union(
+      this.glyphEt().toPart(),
+      this.partBottomDiacritic()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("í", "Í", "ì", "Ì", "î", "Î")
+  public glyphItDiacritic(): Glyph {
+    let part = Part.union(
+      this.glyphIt().toPart(),
+      this.partTopDiacritic()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("ó", "Ó", "ò", "Ò", "ô", "Ô")
+  public glyphOtDiacritic(): Glyph {
+    let part = Part.union(
+      this.glyphOt().toPart(),
+      this.partBottomDiacritic()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("ú", "Ú", "ù", "Ù", "û", "Û")
+  public glyphUtDiacritic(): Glyph {
+    let part = Part.union(
+      this.glyphUt().toPart(),
+      this.partTopDiacritic()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
