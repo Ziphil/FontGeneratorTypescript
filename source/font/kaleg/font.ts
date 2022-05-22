@@ -60,8 +60,9 @@ export class KalegFont extends Font<KalegGenerator> {
     let beakRatio = (this.beaked) ? 0.2 : 0;
     let legRatio = (this.beaked) ? 0 : 0;
     let tailRatio = (this.beaked) ? 0.3 : 0;
+    let padekBendRatio = 0.3;
     let edgeJoin = this.edgeJoin;
-    let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, beakRatio, legRatio, tailRatio, edgeJoin};
+    let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, beakRatio, legRatio, tailRatio, padekBendRatio, edgeJoin};
     let generator = new KalegGenerator(config);
     return generator;
   }

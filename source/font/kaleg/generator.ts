@@ -695,6 +695,101 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return part;
   }
 
+  private get dotWidth(): number {
+    return this.horThickness;
+  }
+
+  private get dotHeight(): number {
+    return this.verThickness;
+  }
+
+  private get dotGap(): number {
+    return this.bowlWidth * 0.1;
+  }
+
+  @part()
+  public partDotShape(): Part {
+    let part = Part.seq(
+      Part.line($(0, 0), $(0, -this.dotHeight)),
+      Part.line($(0, 0), $(this.dotWidth, 0)),
+      Part.line($(0, 0), $(0, this.dotHeight)),
+      Part.line($(0, 0), $(-this.dotWidth, 0))
+    );
+    return part;
+  }
+
+  @part()
+  public partFirstDot(): Part {
+    let part = this.partDotShape();
+    part.moveOrigin($(0, 0));
+    return part;
+  }
+
+  @part()
+  public partSecondDot(): Part {
+    let part = this.partDotShape();
+    part.moveOrigin($(-this.dotWidth - this.dotGap, 0));
+    return part;
+  }
+
+  private get badekGap(): number {
+    return this.dotHeight;
+  }
+
+  @part()
+  public partBadekStemShape(): Part {
+    let part = Part.seq(
+      Part.line($(0, 0), $(0, -this.mean - this.descent + this.dotHeight + this.badekGap)),
+      Part.line($(0, 0), $(this.horThickness, 0)),
+      Part.line($(0, 0), $(0, this.mean + this.descent - this.dotHeight - this.badekGap)),
+      Part.line($(0, 0), $(-this.horThickness, 0))
+    );
+    return part;
+  }
+
+  @part()
+  public partBadekStem(): Part {
+    let part = this.partBadekStemShape();
+    part.moveOrigin($((this.dotWidth - this.horThickness) / 2, this.dotHeight + this.badekGap));
+    return part;
+  }
+
+  private get padekBendWidth(): number {
+    return this.bowlWidth * this.config.padekBendRatio;
+  }
+
+  @part()
+  public partPadekStemShape(): Part {
+    let padekBendWidth = this.padekBendWidth;
+    if (padekBendWidth === 0) {
+      let part = Part.seq(
+        Part.line($(0, 0), $(0, -this.mean - this.descent + this.dotHeight + this.badekGap)),
+        Part.line($(0, 0), $(this.horThickness, 0)),
+        Part.line($(0, 0), $(0, this.mean + this.descent - this.dotHeight - this.badekGap)),
+        Part.line($(0, 0), $(-this.horThickness, 0))
+      );
+      return part;
+    } else {
+      let part = Part.seq(
+        Part.line($(0, 0), $(0, -this.mean - this.descent + this.dotHeight + this.badekGap + this.edgeHeight)),
+        this.partTopLeftEdgeShape(),
+        Part.line($(0, 0), $(this.horThickness - this.edgeWidth + this.padekBendWidth, 0)),
+        Part.line($(0, 0), $(0, this.verThickness)),
+        Part.line($(0, 0), $(-this.padekBendWidth, 0)),
+        Part.line($(0, 0), $(0, this.mean + this.descent - this.dotHeight - this.badekGap - this.verThickness)),
+        Part.line($(0, 0), $(-this.horThickness, 0))
+      );
+      return part;
+    }
+  }
+
+  @part()
+  public partPadekStem(): Part {
+    let part = this.partPadekStemShape();
+    part.moveOrigin($((this.dotWidth - this.horThickness) / 2, this.dotHeight + this.badekGap));
+    return part;
+  }
+
   private createBearings(): Bearings {
     let left = this.bearing;
     let right = this.bearing;
@@ -1264,6 +1359,47 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return glyph;
   }
 
+  @glyph(",")
+  public glyphTadek(): Glyph {
+    let part = Part.union(
+      this.partFirstDot()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph(".")
+  public glyphDek(): Glyph {
+    let part = Part.union(
+      this.partFirstDot(),
+      this.partSecondDot()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("!")
+  public glyphBadek(): Glyph {
+    let part = Part.union(
+      this.partFirstDot(),
+      this.partSecondDot(),
+      this.partBadekStem()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("?")
+  public glyphPadek(): Glyph {
+    let part = Part.union(
+      this.partFirstDot(),
+      this.partSecondDot(),
+      this.partPadekStem()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
   private get spaceWidth(): number {
     return this.bowlWidth * 0.7;
   }
@@ -1288,6 +1424,7 @@ export type KalegConfig = {
   beakRatio: number,
   legRatio: number,
   tailRatio: number,
+  padekBendRatio: number,
   edgeJoin: KalegEdgeJoin
 };
 export type KalegEdgeJoin = "miter" | "bevel" | "round";
