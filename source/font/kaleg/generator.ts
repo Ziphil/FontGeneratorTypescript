@@ -986,7 +986,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @glyph("q", "Q")
   public glyphQol(): Glyph {
     let part = Part.union(
-      this.glyphPal().toPart(),
+      this.glyphCal().toPart(),
       this.partTransphone()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
