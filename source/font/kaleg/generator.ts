@@ -1135,6 +1135,15 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return glyph;
   }
 
+  @glyph("w", "W")
+  public glyphTransphone(): Glyph {
+    let part = Part.union(
+      this.partTransphone().translate($(-this.bowlWidth - this.transphoneGap, 0))
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
   @glyph("0")
   public glyphNuf(): Glyph {
     let part = Part.union(
