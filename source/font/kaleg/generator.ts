@@ -268,7 +268,8 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   private get shortBeakHeight(): number {
-    return this.mean * this.config.beakRatio * 0.6;
+    let minGap = this.mean * 0.05;
+    return Math.min(this.beakHeight * 0.6, (this.mean - this.verThickness * 3) / 2 - minGap);
   }
 
   @part()
