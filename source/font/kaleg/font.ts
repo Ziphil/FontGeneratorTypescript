@@ -18,13 +18,15 @@ export class KalegFont extends Font<KalegGenerator> {
   private weight: FontWeight;
   private stretch: FontStretch;
   private edgeJoin: KalegEdgeJoin;
+  private square: boolean;
   private beaked: boolean;
 
-  public constructor(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean) {
+  public constructor(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, square: boolean, beaked: boolean) {
     super();
     this.weight = weight;
     this.stretch = stretch;
     this.edgeJoin = edgeJoin;
+    this.square = square;
     this.beaked = beaked;
     this.setup();
   }
@@ -34,6 +36,9 @@ export class KalegFont extends Font<KalegGenerator> {
     familyName += " " + this.edgeJoin.charAt(0).toUpperCase() + this.edgeJoin.slice(1);
     if (this.beaked) {
       familyName += " Beaked";
+    }
+    if (this.square) {
+      familyName += " Square";
     }
     return familyName;
   }
@@ -56,7 +61,7 @@ export class KalegFont extends Font<KalegGenerator> {
     let contrastRatio = 0.75;
     let edgeRatio = contrastRatio;
     let edgeContrastRatio = 1;
-    let bowlRatio = 0.8;
+    let bowlRatio = (this.square) ? 1 : stretchNumber * 0.018 - 1;
     let beakRatio = (this.beaked) ? 0.2 : 0;
     let legRatio = (this.beaked) ? 0 : 0;
     let tailRatio = (this.beaked) ? 0.3 : 0;
