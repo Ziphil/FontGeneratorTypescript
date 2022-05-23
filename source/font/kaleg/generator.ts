@@ -1106,8 +1106,8 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return glyph;
   }
 
-  @glyph("m", "M")
-  public glyphMes(): Glyph {
+  @glyph("n", "N")
+  public glyphNes(): Glyph {
     let part = Part.union(
       this.partTopLeftLeg(),
       this.partTopRightmostTip(),
@@ -1125,10 +1125,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return glyph;
   }
 
-  @glyph("n", "N")
-  public glyphNes(): Glyph {
+  @glyph("m", "M")
+  public glyphMes(): Glyph {
     let part = Part.union(
-      this.glyphMes().toPart(),
+      this.glyphNes().toPart(),
       this.partWideTransphone()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
