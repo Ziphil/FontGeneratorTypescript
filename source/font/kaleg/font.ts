@@ -57,11 +57,11 @@ export class KalegFont extends Font<KalegGenerator> {
     let style = this.createStyle();
     let weightNumber = style.getWeightNumber();
     let stretchNumber = style.getStretchNumber();
-    let weightConst = (weightNumber * 0.45 + 100) / 300;
+    let weightConst = (weightNumber * 0.4 + 110) / 300;
     let contrastRatio = (this.square) ? 1 : 0.75;
     let edgeRatio = 0.75;
     let edgeContrastRatio = 1;
-    let bowlRatio = (this.square) ? stretchNumber * 0.008 + 0.2 : stretchNumber * 0.008;
+    let bowlRatio = (this.square) ? (stretchNumber * 0.8 + 20) / 100 : stretchNumber * 0.8 / 100;
     let beakRatio = (this.beaked) ? 0.15 : 0;
     let legRatio = (this.beaked) ? 0 : 0;
     let tailRatio = (this.beaked) ? 0.3 : 0;
