@@ -1343,7 +1343,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   public glyphOtDiacritic(): Glyph {
     let part = Part.union(
       this.glyphOt().toPart(),
-      this.partBottomDiacritic()
+      this.partBottomDiacritic().translate($(this.beakFixLength / 2, 0))
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
@@ -1353,7 +1353,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   public glyphUtDiacritic(): Glyph {
     let part = Part.union(
       this.glyphUt().toPart(),
-      this.partTopDiacritic()
+      this.partTopDiacritic().translate($(this.beakFixLength / 2, 0))
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
