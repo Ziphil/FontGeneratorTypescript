@@ -119,7 +119,7 @@ export class FontRenderer {
         metricsRectangle.fillColor = METRICS_COLOR;
         metricsOverlay.fillColor = METRICS_COLOR;
         metricsOverlay.opacity = 0;
-        widthText.fontFamily = "Barlow";
+        widthText.fontFamily = "Barlow Condensed";
         widthText.fontSize = 16 * 0.75;
         widthText.fillColor = SELECTED_COLOR;
         widthText.justification = "right";
