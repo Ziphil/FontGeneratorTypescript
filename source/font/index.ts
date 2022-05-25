@@ -4,6 +4,9 @@ import {
   FontManager
 } from "../module";
 import {
+  ColfomFont
+} from "./colfom/font";
+import {
   GilitFont
 } from "./gilit/font";
 import {
@@ -69,7 +72,8 @@ const FONTS = {
   klbbsr: new KalegFont("regular", "normal", "bevel", true, "square"),
   klbbsb: new KalegFont("bold", "normal", "bevel", true, "square"),
   klrbsr: new KalegFont("regular", "normal", "round", true, "square"),
-  klrbsb: new KalegFont("bold", "normal", "round", true, "square")
+  klrbsb: new KalegFont("bold", "normal", "round", true, "square"),
+  cfr: new ColfomFont("regular", "normal")
 };
 
 export const FONT_MANAGER = new FontManager(FONTS);
