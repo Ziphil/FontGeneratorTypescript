@@ -18,16 +18,16 @@ export class KalegFont extends Font<KalegGenerator> {
   private weight: FontWeight;
   private stretch: FontStretch;
   private edgeJoin: KalegEdgeJoin;
-  private square: boolean;
   private beaked: boolean;
+  private special?: "square";
 
-  public constructor(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, square: boolean, beaked: boolean) {
+  public constructor(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean, special?: "square") {
     super();
     this.weight = weight;
     this.stretch = stretch;
     this.edgeJoin = edgeJoin;
-    this.square = square;
     this.beaked = beaked;
+    this.special = special;
     this.setup();
   }
 
@@ -37,8 +37,8 @@ export class KalegFont extends Font<KalegGenerator> {
     if (this.beaked) {
       familyName += " Beaked";
     }
-    if (this.square) {
-      familyName += " Square";
+    if (this.special !== undefined) {
+      familyName += " " + this.special.charAt(0).toUpperCase() + this.special.slice(1);
     }
     return familyName;
   }
@@ -58,10 +58,10 @@ export class KalegFont extends Font<KalegGenerator> {
     let weightNumber = style.getWeightNumber();
     let stretchNumber = style.getStretchNumber();
     let weightConst = (weightNumber * 0.4 + 110) / 300;
-    let contrastRatio = (this.square) ? 1 : 0.75;
+    let contrastRatio = (this.special === "square") ? 1 : 0.75;
     let edgeRatio = 0.75;
     let edgeContrastRatio = 1;
-    let bowlRatio = (this.square) ? (stretchNumber * 0.8 + 20) / 100 : stretchNumber * 0.8 / 100;
+    let bowlRatio = (this.special === "square") ? (stretchNumber * 0.8 + 20) / 100 : stretchNumber * 0.8 / 100;
     let beakRatio = (this.beaked) ? 0.15 : 0;
     let legRatio = (this.beaked) ? 0 : 0;
     let tailRatio = (this.beaked) ? 0.3 : 0;
