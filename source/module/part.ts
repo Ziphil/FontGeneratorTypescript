@@ -9,6 +9,9 @@ import {
   Segment
 } from "paper";
 import {
+  PaperOffset
+} from "paperjs-offset";
+import {
   $,
   PointUtil
 } from "./point";
@@ -156,6 +159,16 @@ export class Part {
     return this;
   }
 
+  public toStroke(offset: number, join: StrokeJoin, cap: StrokeCap): Part {
+    let path = this.getPath();
+    if (path !== undefined) {
+      let nextPath = PaperOffset.offsetStroke(path, offset, {join, cap, insert: false});
+      return new Part(nextPath);
+    } else {
+      throw new Error("unsupported operation");
+    }
+  }
+
   private getPath(): Path | undefined {
     let item = this.item;
     if (item instanceof Path) {
@@ -208,3 +221,7 @@ export class PathUtil {
   }
 
 }
+
+
+export type StrokeJoin = "miter" | "bevel" | "round";
+export type StrokeCap = "round" | "butt";
