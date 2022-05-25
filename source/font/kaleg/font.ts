@@ -57,19 +57,41 @@ export class KalegFont extends Font<KalegGenerator> {
     let style = this.createStyle();
     let weightNumber = style.getWeightNumber();
     let stretchNumber = style.getStretchNumber();
-    let weightConst = (weightNumber * 0.4 + 110) / 300;
-    let contrastRatio = (this.special === "square") ? 1 : 0.75;
-    let edgeRatio = 0.75;
-    let edgeContrastRatio = 1;
-    let bowlRatio = (this.special === "square") ? (stretchNumber * 0.8 + 20) / 100 : stretchNumber * 0.8 / 100;
-    let beakRatio = (this.beaked) ? 0.15 : 0;
-    let legRatio = (this.beaked) ? 0 : 0;
-    let tailRatio = (this.beaked) ? 0.3 : 0;
-    let padekBendRatio = 0.3;
-    let edgeJoin = this.edgeJoin;
-    let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, beakRatio, legRatio, tailRatio, padekBendRatio, edgeJoin};
-    let generator = new KalegGenerator(config);
-    return generator;
+    if (this.special === undefined) {
+      let weightConst = (weightNumber * 0.4 + 110) / 300;
+      let contrastRatio = 0.75;
+      let edgeRatio = 0.75;
+      let edgeContrastRatio = 1;
+      let bowlRatio = stretchNumber * 0.8 / 100;
+      let beakRatio = (this.beaked) ? 0.15 : 0;
+      let legRatio = (this.beaked) ? 0 : 0;
+      let tailRatio = (this.beaked) ? 0.3 : 0;
+      let narrowBowlRatio = 0.9;
+      let unbeakedTalRatio = 0.85;
+      let padekBendRatio = 0.3;
+      let edgeJoin = this.edgeJoin;
+      let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, beakRatio, legRatio, tailRatio, narrowBowlRatio, unbeakedTalRatio, padekBendRatio, edgeJoin};
+      let generator = new KalegGenerator(config);
+      return generator;
+    } else if (this.special === "square") {
+      let weightConst = (weightNumber * 0.4 + 110) / 300;
+      let contrastRatio = 1;
+      let edgeRatio = 0.75;
+      let edgeContrastRatio = 1;
+      let bowlRatio = (stretchNumber * 0.8 + 20) / 100;
+      let beakRatio = (this.beaked) ? 0.15 : 0;
+      let legRatio = (this.beaked) ? 0 : 0;
+      let tailRatio = (this.beaked) ? 0.3 : 0;
+      let narrowBowlRatio = 1;
+      let unbeakedTalRatio = (this.beaked) ? 0.85 : 1;
+      let padekBendRatio = 0.3;
+      let edgeJoin = this.edgeJoin;
+      let config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, beakRatio, legRatio, tailRatio, narrowBowlRatio, unbeakedTalRatio, padekBendRatio, edgeJoin};
+      let generator = new KalegGenerator(config);
+      return generator;
+    } else {
+      throw new Error("cannot happen");
+    }
   }
 
 }

@@ -181,7 +181,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   private get unbeakedTalWidth(): number {
-    return this.bowlWidth * 0.85;
+    return this.bowlWidth * this.config.unbeakedTalRatio;
   }
 
   private get unbeakedBeakWidth(): number {
@@ -455,7 +455,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   private get tongueWidth(): number {
-    return this.bowlWidth * 0.85;
+    return this.unbeakedTalWidth;
   }
 
   @part()
@@ -484,7 +484,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   private get narrowBowlWidth(): number {
-    return this.bowlWidth * 0.9;
+    return this.bowlWidth * this.config.narrowBowlRatio;
   }
 
   @part()
@@ -605,7 +605,7 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   private get transphoneThicknessRatio(): number {
-    return 0.92;
+    return 1;
   }
 
   private get transphoneGap(): number {
@@ -1434,6 +1434,8 @@ export type KalegConfig = {
   beakRatio: number,
   legRatio: number,
   tailRatio: number,
+  narrowBowlRatio: number,
+  unbeakedTalRatio: number,
   padekBendRatio: number,
   edgeJoin: KalegEdgeJoin
 };
