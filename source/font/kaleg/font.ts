@@ -49,7 +49,7 @@ export class KalegFont extends Font<KalegGenerator> {
   }
 
   protected createInfo(): FontInfo {
-    let info = new FontInfo("Ziphil", "0.0.0");
+    let info = new FontInfo("Ziphil", "1.0.0");
     return info;
   }
 
