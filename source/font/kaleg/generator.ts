@@ -791,6 +791,28 @@ export class KalegGenerator extends Generator<KalegConfig> {
     return part;
   }
 
+  private get nokHeight(): number {
+    return (this.mean + this.descent) * 0.3;
+  }
+
+  @part()
+  public partNokShape(): Part {
+    let part = Part.seq(
+      Part.line($(0, 0), $(0, -this.nokHeight)),
+      Part.line($(0, 0), $(this.horThickness, 0)),
+      Part.line($(0, 0), $(0, this.nokHeight)),
+      Part.line($(0, 0), $(-this.horThickness, 0))
+    );
+    return part;
+  }
+
+  @part()
+  public partNok(): Part {
+    let part = this.partNokShape();
+    part.moveOrigin($(0, this.mean + this.descent - this.nokHeight));
+    return part;
+  }
+
   private createBearings(): Bearings {
     let left = this.bearing;
     let right = this.bearing;
@@ -1405,6 +1427,15 @@ export class KalegGenerator extends Generator<KalegConfig> {
       this.partFirstDot(),
       this.partSecondDot(),
       this.partPadekStem()
+    );
+    let glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("'")
+  public glyphNok(): Glyph {
+    let part = Part.union(
+      this.partNok()
     );
     let glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
