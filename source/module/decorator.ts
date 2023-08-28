@@ -23,14 +23,14 @@ type GlyphMethod = () => Glyph;
 type PartMethod = (...args: Array<any>) => Part;
 
 export function generator(): GeneratorDecorator {
-  let decorator = function (clazz: new(...args: any) => Generator): void {
-    let metadata = Reflect.getMetadata(KEY, clazz.prototype) ?? new Map() as Metadata;
+  const decorator = function (clazz: new(...args: any) => Generator): void {
+    const metadata = Reflect.getMetadata(KEY, clazz.prototype) ?? new Map() as Metadata;
     clazz.prototype.chars = Array.from(metadata.keys());
     clazz.prototype.glyph = function (this: Generator, char: string): Glyph | null {
-      let anyThis = this as any;
-      let name = metadata.get(char);
+      const anyThis = this as any;
+      const name = metadata.get(char);
       if (name !== undefined) {
-        let glyph = anyThis[name]();
+        const glyph = anyThis[name]();
         return glyph;
       } else {
         return null;
@@ -42,13 +42,13 @@ export function generator(): GeneratorDecorator {
 }
 
 export function glyph(...chars: Array<string>): GlyphMethodDecorator {
-  let decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<GlyphMethod>): void {
+  const decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<GlyphMethod>): void {
     let metadata = Reflect.getMetadata(KEY, target) as Metadata;
     if (!metadata) {
       metadata = new Map();
       Reflect.defineMetadata(KEY, metadata, target);
     }
-    for (let char of chars) {
+    for (const char of chars) {
       metadata.set(char, name);
     }
   };
@@ -56,13 +56,13 @@ export function glyph(...chars: Array<string>): GlyphMethodDecorator {
 }
 
 export function part(): PartMethodDecorator {
-  let decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>): void {
-    let original = descriptor.value!;
+  const decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>): void {
+    const original = descriptor.value!;
     descriptor.value = function (this: Generator, ...args: Array<any>): Part {
       if (args.length === 0) {
-        let cachedPart = this.partCache.get(name);
+        const cachedPart = this.partCache.get(name);
         if (cachedPart === undefined) {
-          let part = original.call(this, ...args);
+          const part = original.call(this, ...args);
           this.partCache.set(name, part.clone());
           return part;
         } else {
@@ -77,14 +77,14 @@ export function part(): PartMethodDecorator {
 }
 
 function cacheGetters(clazz: new(...args: any) => Generator): void {
-  let descriptors = Object.getOwnPropertyDescriptors(clazz.prototype);
-  for (let [name, descriptor] of Object.entries(descriptors)) {
+  const descriptors = Object.getOwnPropertyDescriptors(clazz.prototype);
+  for (const [name, descriptor] of Object.entries(descriptors)) {
     if (typeof descriptor.get === "function") {
-      let original = descriptor.get;
+      const original = descriptor.get;
       descriptor.get = function (this: Generator): any {
-        let cachedValue = this.getterCache.get(name);
+        const cachedValue = this.getterCache.get(name);
         if (cachedValue === undefined) {
-          let value = original.apply(this);
+          const value = original.apply(this);
           if (typeof value === "number") {
             this.getterCache.set(name, value);
           }

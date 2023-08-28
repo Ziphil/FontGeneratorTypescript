@@ -38,25 +38,25 @@ export class GilitFont extends Font<GilitGenerator> {
   }
 
   protected createStyle(): FontStyle {
-    let stretch = (this.stretch === "triangle") ? "normal" : this.stretch;
-    let style = new FontStyle(this.weight, "upright", stretch);
+    const stretch = (this.stretch === "triangle") ? "normal" : this.stretch;
+    const style = new FontStyle(this.weight, "upright", stretch);
     return style;
   }
 
   protected createInfo(): FontInfo {
-    let info = new FontInfo("Ziphil", "2.0.0");
+    const info = new FontInfo("Ziphil", "2.0.0");
     return info;
   }
 
   protected createGenerator(): GilitGenerator {
-    let style = this.createStyle();
-    let weightNumber = style.getWeightNumber();
-    let stretchNumber = style.getStretchNumber();
-    let weightConst = (weightNumber * 0.5 + 100) / 300;
-    let stretchRatio = (this.stretch === "triangle") ? 2 / Math.sqrt(3) : (stretchNumber - 50) / 50;
-    let ascenderRatio = (this.sprawled) ? 1 : 0.5;
-    let config = {weightConst, stretchRatio, ascenderRatio};
-    let generator = new GilitGenerator(config);
+    const style = this.createStyle();
+    const weightNumber = style.getWeightNumber();
+    const stretchNumber = style.getStretchNumber();
+    const weightConst = (weightNumber * 0.5 + 100) / 300;
+    const stretchRatio = (this.stretch === "triangle") ? 2 / Math.sqrt(3) : (stretchNumber - 50) / 50;
+    const ascenderRatio = (this.sprawled) ? 1 : 0.5;
+    const config = {weightConst, stretchRatio, ascenderRatio};
+    const generator = new GilitGenerator(config);
     return generator;
   }
 

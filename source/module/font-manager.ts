@@ -14,12 +14,12 @@ export class FontManager {
   }
 
   public getAll(): Array<[id: string, font: Font]> {
-    let fonts = Object.entries(this.rawFonts);
+    const fonts = Object.entries(this.rawFonts);
     return fonts;
   }
 
   public findById(id: string): Font | undefined {
-    let font = this.rawFonts[id];
+    const font = this.rawFonts[id];
     return font;
   }
 

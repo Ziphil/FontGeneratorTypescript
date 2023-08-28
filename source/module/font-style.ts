@@ -14,7 +14,7 @@ export class FontStyle {
   }
 
   public getWeightNumber(): number {
-    let weight = this.weight;
+    const weight = this.weight;
     if (weight === "thin") {
       return 100;
     } else if (weight === "extraLight") {
@@ -39,7 +39,7 @@ export class FontStyle {
   }
 
   public getStretchNumber(): number {
-    let stretch = this.stretch;
+    const stretch = this.stretch;
     if (stretch === "ultraCondensed") {
       return 50;
     } else if (stretch === "extraCondensed") {
@@ -64,12 +64,12 @@ export class FontStyle {
   }
 
   public getWeightString(): string {
-    let weight = this.weight;
+    const weight = this.weight;
     return weight.charAt(0).toUpperCase() + weight.slice(1);
   }
 
   public getSlopeString(): string {
-    let slope = this.slope;
+    const slope = this.slope;
     if (slope === "upright") {
       return "";
     } else {
@@ -78,7 +78,7 @@ export class FontStyle {
   }
 
   public getStretchString(): string {
-    let stretch = this.stretch;
+    const stretch = this.stretch;
     if (stretch === "normal") {
       return "";
     } else {

@@ -8,12 +8,12 @@ import {
 export class PointUtil {
 
   public static ortho(x: number, y: number): Point {
-    let point = new Point({x, y});
+    const point = new Point({x, y});
     return point;
   }
 
   public static polar(length: number, angle: number): Point {
-    let point = new Point({length, angle});
+    const point = new Point({length, angle});
     return point;
   }
 

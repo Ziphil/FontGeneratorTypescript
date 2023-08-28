@@ -18,10 +18,10 @@ import {
 export class VekosGenerator extends Generator<VekosConfig> {
 
   public get metrics(): Metrics {
-    let ascent = this.mean + this.descent + this.extraAscent;
-    let descent = this.descent + this.extraDescent;
-    let em = descent + ascent;
-    let metrics = {em, ascent, descent};
+    const ascent = this.mean + this.descent + this.extraAscent;
+    const descent = this.descent + this.extraDescent;
+    const em = descent + ascent;
+    const metrics = {em, ascent, descent};
     return metrics;
   }
 
@@ -62,31 +62,31 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   private createBearings(): Bearings {
-    let left = this.bearing;
-    let right = this.bearing;
-    let bearings = {left, right};
+    const left = this.bearing;
+    const right = this.bearing;
+    const bearings = {left, right};
     return bearings;
   }
 
   // k, p, c, l, a などの文字に共通する丸い部分の外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
   public partOuterBowl(): Part {
-    let width = this.bowlWidth / 2;
-    let height = this.mean / 2 + this.overshoot;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.bowlWidth / 2;
+    const height = this.mean / 2 + this.overshoot;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // k, p, c, l, a などの文字に共通する丸い部分の内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
   public partInnerBowl(): Part {
-    let width = this.bowlWidth / 2 - this.horThickness;
-    let height = this.mean / 2 - this.verThickness + this.overshoot;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.bowlWidth / 2 - this.horThickness;
+    const height = this.mean / 2 - this.verThickness + this.overshoot;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -94,19 +94,19 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあるので、回転や反転で変化しません。
   @part()
   public partBowl(): Part {
-    let outerPart = Part.seq(
+    const outerPart = Part.seq(
       this.partOuterBowl().reflectVer(),
       this.partOuterBowl().rotateHalfTurn().reverse(),
       this.partOuterBowl().reflectHor(),
       this.partOuterBowl().reverse()
     );
-    let innerPart = Part.seq(
+    const innerPart = Part.seq(
       this.partInnerBowl().reflectVer(),
       this.partInnerBowl().rotateHalfTurn().reverse(),
       this.partInnerBowl().reflectHor(),
       this.partInnerBowl().reverse()
     );
-    let part = Part.stack(
+    const part = Part.stack(
       outerPart,
       innerPart.reverse().translate($(this.horThickness, 0))
     );
@@ -125,8 +125,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   private calcIdealThickness(angle: number): number {
     if (angle >= 0 && angle <= 90) {
-      let horWeight = angle / 90;
-      let verWeight = 1 - angle / 90;
+      const horWeight = angle / 90;
+      const verWeight = 1 - angle / 90;
       return horWeight * this.horThickness + verWeight * this.verThickness;
     } else {
       return 1 / 0;
@@ -134,20 +134,20 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   private calcTailError(innerHandle: number, outerHandle: number, bend: number, height: number): number {
-    let path = PathUtil.bezier($(0, 0), $(0, innerHandle), $(0, -outerHandle), $(-bend, height));
-    let basePoint = $(-bend / 2 + this.horThickness / 2, height / 2);
-    let nearestPoint = path.getNearestPoint(basePoint);
-    let angle = nearestPoint.subtract(basePoint).getAngle($(1, 0)) - 90;
-    let error = Math.abs(nearestPoint.getDistance(basePoint) - this.calcIdealThickness(angle) / 2);
+    const path = PathUtil.bezier($(0, 0), $(0, innerHandle), $(0, -outerHandle), $(-bend, height));
+    const basePoint = $(-bend / 2 + this.horThickness / 2, height / 2);
+    const nearestPoint = path.getNearestPoint(basePoint);
+    const angle = nearestPoint.subtract(basePoint).getAngle($(1, 0)) - 90;
+    const error = Math.abs(nearestPoint.getDistance(basePoint) - this.calcIdealThickness(angle) / 2);
     return error;
   }
 
   private searchTailInnerHandle(outerHandle: number, bend: number, height: number): number {
-    let interval = 0.5;
+    const interval = 0.5;
     let resultHandle = 0;
     let minimumError = 10000;
     for (let innerHandle = 0 ; innerHandle <= height ; innerHandle += interval) {
-      let error = this.calcTailError(innerHandle, outerHandle, bend, height);
+      const error = this.calcTailError(innerHandle, outerHandle, bend, height);
       if (error < minimumError) {
         minimumError = error;
         resultHandle = innerHandle;
@@ -159,30 +159,30 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // l の文字のディセンダーの左側の曲線を、上端から下端への向きで生成します。
   @part()
   public partLeftLesTail(): Part {
-    let bend = this.lesTailBend - this.horThickness / 2 + this.lesTailCorrection;
-    let virtualBend = this.lesTailBend;
-    let height = this.mean / 2 + this.descent;
-    let bottomHandle = this.descent * 1.08;
-    let topHandle = this.searchTailInnerHandle(bottomHandle, virtualBend, height);
-    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    const bend = this.lesTailBend - this.horThickness / 2 + this.lesTailCorrection;
+    const virtualBend = this.lesTailBend;
+    const height = this.mean / 2 + this.descent;
+    const bottomHandle = this.descent * 1.08;
+    const topHandle = this.searchTailInnerHandle(bottomHandle, virtualBend, height);
+    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
   // l の文字のディセンダーの右側の曲線を、上端から下端への向きで生成します。
   @part()
   public partRightLesTail(): Part {
-    let bend = this.lesTailBend - this.horThickness / 2;
-    let height = this.mean / 2 + this.descent;
-    let topHandle = this.descent * 1.08;
-    let bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
-    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    const bend = this.lesTailBend - this.horThickness / 2;
+    const height = this.mean / 2 + this.descent;
+    const topHandle = this.descent * 1.08;
+    const bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
+    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
   // 文字の書き始めや書き終わりの位置にある水平に切られた部分を、左端から右端への向きで生成します。
   @part()
   public partCut(): Part {
-    let part = Part.line($(0, 0), $(this.horThickness, 0));
+    const part = Part.line($(0, 0), $(this.horThickness, 0));
     return part;
   }
 
@@ -192,7 +192,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は補正がないとしたときの左上の角にあります。
   @part()
   public partLesTail(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partLeftLesTail(),
       this.partCut(),
       this.partRightLesTail().reverse(),
@@ -206,7 +206,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
   @part()
   public partLes(): Part {
-    let part = Part.union(
+    const part = Part.union(
       this.partBowl(),
       this.partLesTail().translate($(this.bowlWidth / 2 - this.horThickness, 0))
     );
@@ -229,18 +229,18 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 変音符の右に飛び出るように曲がる曲線の上半分を、下端から上端への向きで生成します。
   @part()
   public partTransphoneSegment(): Part {
-    let bend = this.transphoneBend;
-    let height = this.mean / 2;
-    let rightHandle = height * 0.6;
-    let part = Part.bezier($(0, 0), null, $(0, -rightHandle), $(bend, height));
+    const bend = this.transphoneBend;
+    const height = this.mean / 2;
+    const rightHandle = height * 0.6;
+    const part = Part.bezier($(0, 0), null, $(0, -rightHandle), $(bend, height));
     return part;
   }
 
   // 変音符の上下にある水平に切られた部分を、左端から右端への向きで生成します。
   @part()
   public partTransphoneCut(): Part {
-    let width = this.horThickness * this.transphoneThicknessRatio;
-    let part = Part.line($(0, 0), $(width, 0));
+    const width = this.horThickness * this.transphoneThicknessRatio;
+    const part = Part.line($(0, 0), $(width, 0));
     return part;
   }
 
@@ -248,7 +248,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は右に飛び出る部分の左中央にあります。
   @part()
   public partTransphone(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partTransphoneSegment(),
       this.partTransphoneSegment().reflectVer().reverse(),
       this.partTransphoneCut(),
@@ -262,77 +262,77 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("l", "L")
   public glyphLes(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partLes().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("r", "R")
   public glyphRes(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partLes().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("p", "P")
   public glyphPal(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partLes().rotateHalfTurn().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("b", "B")
   public glyphBol(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partLes().rotateHalfTurn().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("c", "C")
   public glyphCal(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partLes().reflectHor().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("q", "Q")
   public glyphQol(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partLes().reflectHor().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("k", "K")
   public glyphKal(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partLes().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("g", "G")
   public glyphGol(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partLes().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -345,10 +345,10 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // y の文字の下半分にある曲線を、上端から下端への向きで生成します。
   @part()
   public partYesLeg(): Part {
-    let bend = this.yesLegBend;
-    let height = this.mean / 2;
-    let leftHandle = height * 0.6;
-    let part = Part.bezier($(0, 0), $(0, leftHandle), null, $(bend, height));
+    const bend = this.yesLegBend;
+    const height = this.mean / 2;
+    const leftHandle = height * 0.6;
+    const part = Part.bezier($(0, 0), $(0, leftHandle), null, $(bend, height));
     return part;
   }
 
@@ -356,7 +356,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあるので、回転や反転で変化しません。
   @part()
   public partYes(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partYesLeg(),
       this.partCut(),
       this.partYesLeg().reverse(),
@@ -374,39 +374,39 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("y", "Y")
   public glyphYes(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partYes().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("h", "H")
   public glyphHes(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partYes().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("s", "S")
   public glyphSal(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partYes().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("z", "Z")
   public glyphZol(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partYes().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.bowlWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -425,22 +425,22 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // t の文字の右上にある部分の外側の曲線を、右端から上端への向きで生成します。
   @part()
   public partOuterTalBeak(): Part {
-    let width = this.talBeakWidth;
-    let height = this.talBeakHeight + this.overshoot;
-    let rightHandle = height * 0.05;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    const width = this.talBeakWidth;
+    const height = this.talBeakHeight + this.overshoot;
+    const rightHandle = height * 0.05;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
   // t の文字の右上にある部分の内側の曲線を、右端から上端への向きで生成します。
   @part()
   public partInnerTalBeak(): Part {
-    let width = this.talBeakWidth - this.horThickness;
-    let height = this.talBeakHeight - this.verThickness + this.overshoot;
-    let rightHandle = height * 0.05;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    const width = this.talBeakWidth - this.horThickness;
+    const height = this.talBeakHeight - this.verThickness + this.overshoot;
+    const rightHandle = height * 0.05;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
@@ -448,7 +448,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあるので、回転や反転で変化しません。
   @part()
   public partTal(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partOuterBowl().reflectVer(),
       this.partOuterTalBeak().reflectVer().reverse(),
       this.partCut().reverse(),
@@ -466,39 +466,39 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("t", "T")
   public glyphTal(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partTal().translate($(this.talWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("d", "D")
   public glyphDol(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partTal().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.talWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("f", "F")
   public glyphFal(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partTal().reflectHor().translate($(this.talWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("v", "V")
   public glyphVol(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partTal().reflectHor().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.talWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -523,11 +523,11 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // x, j の文字に共通する細い丸い部分の外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
   public partOuterLeftNarrowBowl(): Part {
-    let width = this.narrowBowlVirtualWidth / 2;
-    let height = this.mean / 2 + this.overshoot;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.narrowBowlVirtualWidth / 2;
+    const height = this.mean / 2 + this.overshoot;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -535,22 +535,22 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // ただし、他のトレイルと使い方を揃えるため、左右反転してあります。
   @part()
   public partOuterRightNarrowBowl(): Part {
-    let width = this.narrowBowlVirtualWidth / 2 - this.narrowBowlCorrection;
-    let height = this.mean / 2 + this.overshoot;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.narrowBowlVirtualWidth / 2 - this.narrowBowlCorrection;
+    const height = this.mean / 2 + this.overshoot;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // x, j の文字に共通する細い丸い部分の内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
   public partInnerNarrowBowl(): Part {
-    let width = this.narrowBowlVirtualWidth / 2 - this.horThickness;
-    let height = this.mean / 2 - this.verThickness + this.overshoot;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.narrowBowlVirtualWidth / 2 - this.horThickness;
+    const height = this.mean / 2 - this.verThickness + this.overshoot;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -559,19 +559,19 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあります。
   @part()
   public partNarrowBowl(): Part {
-    let outerPart = Part.seq(
+    const outerPart = Part.seq(
       this.partOuterLeftNarrowBowl().reflectVer(),
       this.partOuterRightNarrowBowl().rotateHalfTurn().reverse(),
       this.partOuterRightNarrowBowl().reflectHor(),
       this.partOuterLeftNarrowBowl().reverse()
     );
-    let innerPart = Part.seq(
+    const innerPart = Part.seq(
       this.partInnerNarrowBowl().reflectVer(),
       this.partInnerNarrowBowl().rotateHalfTurn().reverse(),
       this.partInnerNarrowBowl().reflectHor(),
       this.partInnerNarrowBowl().reverse()
     );
-    let part = Part.stack(
+    const part = Part.stack(
       outerPart,
       innerPart.reverse().translate($(this.horThickness, 0))
     );
@@ -583,7 +583,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあります。
   @part()
   public partXal(): Part {
-    let part = Part.union(
+    const part = Part.union(
       this.partNarrowBowl(),
       this.partNarrowBowl().reflectHor().translate($(this.narrowBowlVirtualWidth - this.horThickness, 0))
     );
@@ -593,20 +593,20 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("x", "X")
   public glyphXal(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partXal().translate($(this.xalWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("j", "J")
   public glyphJol(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partXal().translate($(this.xalWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.xalWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -625,20 +625,20 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   private calcSpineError(innerHandle: number, outerHandle: number, bend: number, width: number): number {
-    let path = PathUtil.bezier($(0, 0), $(innerHandle, 0), $(-outerHandle, 0), $(width, -bend));
-    let basePoint = $(width / 2, -bend / 2 + this.verThickness / 2);
-    let nearestPoint = path.getNearestPoint(basePoint);
-    let angle = nearestPoint.subtract(basePoint).getAngle($(1, 0)) - 90;
-    let error = Math.abs(nearestPoint.getDistance(basePoint) - this.calcIdealThickness(angle) / 2);
+    const path = PathUtil.bezier($(0, 0), $(innerHandle, 0), $(-outerHandle, 0), $(width, -bend));
+    const basePoint = $(width / 2, -bend / 2 + this.verThickness / 2);
+    const nearestPoint = path.getNearestPoint(basePoint);
+    const angle = nearestPoint.subtract(basePoint).getAngle($(1, 0)) - 90;
+    const error = Math.abs(nearestPoint.getDistance(basePoint) - this.calcIdealThickness(angle) / 2);
     return error;
   }
 
   private searchSpineInnerHandle(outerHandle: number, bend: number, width: number): number {
-    let interval = 0.5;
+    const interval = 0.5;
     let resultHandle = 0;
     let minimumError = 10000;
     for (let innerHandle = 0 ; innerHandle <= width ; innerHandle += interval) {
-      let error = this.calcSpineError(innerHandle, outerHandle, bend, width);
+      const error = this.calcSpineError(innerHandle, outerHandle, bend, width);
       if (error < minimumError) {
         minimumError = error;
         resultHandle = innerHandle;
@@ -650,32 +650,32 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // n の文字の書き終わりの箇所にある曲線を、上端から下端への向きで生成します。
   @part()
   public partNesLeg(): Part {
-    let bend = this.nesLegBend;
-    let height = this.mean / 2;
-    let rightHandle = height * 0.6;
-    let part = Part.bezier($(0, 0), $(0, rightHandle), null, $(-bend, height));
+    const bend = this.nesLegBend;
+    const height = this.mean / 2;
+    const rightHandle = height * 0.6;
+    const part = Part.bezier($(0, 0), $(0, rightHandle), null, $(-bend, height));
     return part;
   }
 
   // n の文字の中央部分の上側の曲線を、下端から上端への向きで生成します。
   @part()
   public partTopSpine(): Part {
-    let width = this.spineWidth;
-    let bend = this.mean - this.verThickness + this.overshoot * 2;
-    let rightHandle = width * 1.05;
-    let leftHandle = this.searchSpineInnerHandle(rightHandle, bend, width);
-    let part = Part.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0) , $(width, -bend));
+    const width = this.spineWidth;
+    const bend = this.mean - this.verThickness + this.overshoot * 2;
+    const rightHandle = width * 1.05;
+    const leftHandle = this.searchSpineInnerHandle(rightHandle, bend, width);
+    const part = Part.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0), $(width, -bend));
     return part;
   }
 
   // n の文字の中央部分の下側の曲線を、下端から上端への向きで生成します。
   @part()
   public partBottomSpine(): Part {
-    let width = this.spineWidth;
-    let bend = this.mean - this.verThickness + this.overshoot * 2;
-    let leftHandle = width * 1.05;
-    let rightHandle = this.searchSpineInnerHandle(leftHandle, bend, width);
-    let part = Part.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0) , $(width, -bend));
+    const width = this.spineWidth;
+    const bend = this.mean - this.verThickness + this.overshoot * 2;
+    const leftHandle = width * 1.05;
+    const rightHandle = this.searchSpineInnerHandle(leftHandle, bend, width);
+    const part = Part.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0), $(width, -bend));
     return part;
   }
 
@@ -683,7 +683,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあります。
   @part()
   public partNes(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partOuterLeftNarrowBowl().reflectVer(),
       this.partBottomSpine(),
       this.partInnerNarrowBowl().reflectHor().reverse(),
@@ -703,20 +703,20 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("n", "N")
   public glyphNes(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partNes().translate($(this.nesWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("m", "M")
   public glyphMes(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partNes().translate($(this.nesWidth / 2, -this.mean / 2)),
       this.partTransphone().translate($(this.nesWidth + this.transphoneGap, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -743,29 +743,29 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // アキュートアクセントの丸い部分の外側の曲線の半分を、左下端から上端への向きで生成します。
   @part()
   public partOuterAcute(): Part {
-    let width = this.acuteWidth / 2;
-    let height = this.acuteHeight;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.acuteWidth / 2;
+    const height = this.acuteHeight;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // アキュートアクセントの丸い部分の内側の曲線の半分を、左下端から上端への向きで生成します。
   @part()
   public partInnerAcute(): Part {
-    let width = this.acuteWidth / 2 - this.acuteHorThickness;
-    let height = this.acuteHeight - this.acuteVerThickness;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.acuteWidth / 2 - this.acuteHorThickness;
+    const height = this.acuteHeight - this.acuteVerThickness;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // アキュートアクセントの下部にある水平に切られた部分を、左端から右端への向きで生成します。
   @part()
   public partAcuteCut(): Part {
-    let part = Part.line($(0, 0), $(this.acuteHorThickness, 0));
+    const part = Part.line($(0, 0), $(this.acuteHorThickness, 0));
     return part;
   }
 
@@ -773,7 +773,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は下部中央にあります。
   @part()
   public partAcute(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partAcuteCut(),
       this.partInnerAcute(),
       this.partInnerAcute().reflectHor().reverse(),
@@ -804,22 +804,22 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // サーカムフレックスアクセントの外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
   public partOuterCircumflex(): Part {
-    let width = this.circumflexWidth / 2;
-    let height = this.circumflexHeight / 2;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.circumflexWidth / 2;
+    const height = this.circumflexHeight / 2;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // サーカムフレックスアクセントの内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
   public partInnerCircumflex(): Part {
-    let width = this.circumflexWidth / 2 - this.circumflexHorThickness;
-    let height = this.circumflexHeight / 2 - this.circumflexVerThickness;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.circumflexWidth / 2 - this.circumflexHorThickness;
+    const height = this.circumflexHeight / 2 - this.circumflexVerThickness;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -827,19 +827,19 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は下部中央にあります。
   @part()
   public partCircumflex(): Part {
-    let outerPart = Part.seq(
+    const outerPart = Part.seq(
       this.partOuterCircumflex().reflectVer(),
       this.partOuterCircumflex().rotateHalfTurn().reverse(),
       this.partOuterCircumflex().reflectHor(),
       this.partOuterCircumflex().reverse()
     );
-    let innerPart = Part.seq(
+    const innerPart = Part.seq(
       this.partInnerCircumflex().reflectVer(),
       this.partInnerCircumflex().rotateHalfTurn().reverse(),
       this.partInnerCircumflex().reflectHor(),
       this.partInnerCircumflex().reverse()
     );
-    let part = Part.stack(
+    const part = Part.stack(
       outerPart,
       innerPart.reverse().translate($(this.circumflexHorThickness, 0))
     );
@@ -849,40 +849,40 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("a", "A")
   public glyphAt(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partBowl().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("á", "Á")
   public glyphAtAcute(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partBowl().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partAcute().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("à", "À")
   public glyphAtGrave(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partBowl().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partAcute().reflectVer().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("â", "Â")
   public glyphAtCircumflex(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partBowl().translate($(this.bowlWidth / 2, -this.mean / 2)),
       this.partCircumflex().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -898,22 +898,22 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // i の文字のディセンダーの左側の曲線を、上端から下端への向きで生成します。
   @part()
   public partLeftItTail(): Part {
-    let bend = this.itTailBend - this.horThickness / 2;
-    let height = this.mean / 2 + this.descent;
-    let topHandle = this.descent * 1.2;
-    let bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
-    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
+    const bend = this.itTailBend - this.horThickness / 2;
+    const height = this.mean / 2 + this.descent;
+    const topHandle = this.descent * 1.2;
+    const bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
+    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
     return part;
   }
 
   // i の文字のディセンダーの右側の曲線を、上端から下端への向きで生成します。
   @part()
   public partRightItTail(): Part {
-    let bend = this.itTailBend - this.horThickness / 2;
-    let height = this.mean / 2 + this.descent;
-    let bottomHandle = this.descent * 1.2;
-    let topHandle = this.searchTailInnerHandle(bottomHandle, bend, height);
-    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
+    const bend = this.itTailBend - this.horThickness / 2;
+    const height = this.mean / 2 + this.descent;
+    const bottomHandle = this.descent * 1.2;
+    const topHandle = this.searchTailInnerHandle(bottomHandle, bend, height);
+    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
     return part;
   }
 
@@ -921,7 +921,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は上部の丸い部分の中央にあるので、回転や反転で変化しません。
   @part()
   public partIt(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partLeftItTail(),
       this.partCut(),
       this.partRightItTail().reverse(),
@@ -937,79 +937,79 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("i", "I")
   public glyphIt(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partIt().translate($(this.talWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("í", "Í")
   public glyphItAcute(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partIt().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("ì", "Ì")
   public glyphItGrave(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partIt().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().reflectVer().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("î", "Î")
   public glyphItCircumflex(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partIt().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partCircumflex().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("e", "E")
   public glyphEt(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partIt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("é", "É")
   public glyphEtAcute(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partIt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().reflectVer().translate($(this.talBeakWidth, this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("è", "È")
   public glyphEtGrave(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partIt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().translate($(this.talBeakWidth, this.acuteHeight + this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("ê", "Ê")
   public glyphEtCircumflex(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partIt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partCircumflex().translate($(this.talBeakWidth, this.circumflexHeight + this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1029,44 +1029,44 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // u の文字のディセンダーと接続する部分の外側の曲線を、上端から下端への向きで生成します。
   @part()
   public partOuterLink(): Part {
-    let width = this.linkWidth;
-    let height = this.mean / 2 - this.linkLowerCorrection;
-    let leftHandle = height * 0.02;
-    let bottomHandle = width;
-    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
+    const width = this.linkWidth;
+    const height = this.mean / 2 - this.linkLowerCorrection;
+    const leftHandle = height * 0.02;
+    const bottomHandle = width;
+    const part = Part.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
     return part;
   }
 
   // u の文字のディセンダーと接続する部分の内側の曲線を、上端から下端への向きで生成します。
   @part()
   public partInnerLink(): Part {
-    let width = this.linkWidth - this.horThickness;
-    let height = this.mean / 2 - this.verThickness;
-    let leftHandle = height * 0.02;
-    let bottomHandle = width;
-    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
+    const width = this.linkWidth - this.horThickness;
+    const height = this.mean / 2 - this.verThickness;
+    const leftHandle = height * 0.02;
+    const bottomHandle = width;
+    const part = Part.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
     return part;
   }
 
   // u の文字のディセンダーの左側の曲線を、下端から上端への向きで生成します。
   @part()
   public partLeftUtTail(): Part {
-    let bend = this.utTailBend + this.horThickness / 2;
-    let height = this.descent + this.verThickness - this.linkUpperCorrection;
-    let leftHandle = height * 0.1;
-    let topHandle = bend;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
+    const bend = this.utTailBend + this.horThickness / 2;
+    const height = this.descent + this.verThickness - this.linkUpperCorrection;
+    const leftHandle = height * 0.1;
+    const topHandle = bend;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
     return part;
   }
 
   // u の文字のディセンダーの右側の曲線を、下端から上端への向きで生成します。
   @part()
   public partRightUtTail(): Part {
-    let bend = this.utTailBend - this.horThickness / 2;
-    let height = this.descent;
-    let leftHandle = height * 0.1;
-    let topHandle = bend;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
+    const bend = this.utTailBend - this.horThickness / 2;
+    const height = this.descent;
+    const leftHandle = height * 0.1;
+    const topHandle = bend;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
     return part;
   }
 
@@ -1075,7 +1075,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあるので、回転や反転で変化しません。
   @part()
   public partUpperUt(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partOuterLink(),
       Part.line($(0, 0), $(0, -this.verThickness + this.linkLowerCorrection)),
       this.partInnerLink().reverse(),
@@ -1094,7 +1094,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は右上の角にあります。
   @part()
   public partUtTail(): Part {
-    let part  = Part.seq(
+    const part = Part.seq(
       this.partLeftUtTail().reverse(),
       this.partCut(),
       this.partRightUtTail(),
@@ -1107,7 +1107,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
   @part()
   public partUt(): Part {
-    let part = Part.union(
+    const part = Part.union(
       this.partUpperUt(),
       this.partUtTail().translate($(-this.talWidth / 2 + this.linkWidth, this.mean / 2 - this.verThickness + this.linkUpperCorrection))
     );
@@ -1116,79 +1116,79 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("u", "U")
   public glyphUt(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partUt().translate($(this.talWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("ú", "Ú")
   public glyphUtAcute(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partUt().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("ù", "Ù")
   public glyphUtGrave(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partUt().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().reflectVer().translate($(this.bowlWidth / 2, -this.mean - this.acuteHeight - this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("û", "Û")
   public glyphUtCircumflex(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partUt().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partCircumflex().translate($(this.bowlWidth / 2, -this.mean - this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("o", "O")
   public glyphOt(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partUt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("ó", "Ó")
   public glyphOtAcute(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partUt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().reflectVer().translate($(this.talBeakWidth, this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("ò", "Ò")
   public glyphOtGrave(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partUt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partAcute().translate($(this.talBeakWidth, this.acuteHeight + this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("ô", "Ô")
   public glyphOtCircumflex(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partUt().rotateHalfTurn().translate($(this.talWidth / 2, -this.mean / 2)),
       this.partCircumflex().translate($(this.talBeakWidth, this.circumflexHeight + this.diacriticGap))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1196,7 +1196,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
   @part()
   public partRac(): Part {
-    let part = Part.union(
+    const part = Part.union(
       this.partYes().rotateHalfTurn(),
       this.partLesTail().translate($(this.bowlWidth / 2 - this.horThickness, 0))
     );
@@ -1205,37 +1205,37 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("6")
   public glyphRac(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partRac().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("4")
   public glyphPav(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partRac().rotateHalfTurn().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("2")
   public glyphQic(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partRac().reflectHor().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("8")
   public glyphKeq(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partRac().reflectVer().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1249,9 +1249,9 @@ export class VekosGenerator extends Generator<VekosConfig> {
   }
 
   private get solidusLength(): number {
-    let line = PathUtil.line($(0, 0), $(this.bowlWidth / 2, -this.solidusGrade));
-    let rawLength = line.getIntersections(this.partBowl().item)[1].point.getDistance($(0, 0));
-    let length = rawLength * 2 - this.horThickness;
+    const line = PathUtil.line($(0, 0), $(this.bowlWidth / 2, -this.solidusGrade));
+    const rawLength = line.getIntersections(this.partBowl().item)[1].point.getDistance($(0, 0));
+    const length = rawLength * 2 - this.horThickness;
     return length;
   }
 
@@ -1267,7 +1267,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // パーツを構成した後に回転することを想定しているので、このトレイルは水平です。
   @part()
   public partSolidusSegment(): Part {
-    let part = Part.line($(0, 0), $(this.solidusLength, 0));
+    const part = Part.line($(0, 0), $(this.solidusLength, 0));
     return part;
   }
 
@@ -1275,7 +1275,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // パーツを構成した後に回転することを想定しているので、このトレイルは鉛直です。
   @part()
   public partSolidusCut(): Part {
-    let part = Part.line($(0, 0), $(0, this.solidusThickness));
+    const part = Part.line($(0, 0), $(0, this.solidusThickness));
     return part;
   }
 
@@ -1283,7 +1283,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあります。
   @part()
   public partSolidus(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partSolidusCut(),
       this.partSolidusSegment(),
       this.partSolidusCut().reverse(),
@@ -1298,7 +1298,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあります。
   @part()
   public partNuf(): Part {
-    let part = Part.union(
+    const part = Part.union(
       this.partBowl(),
       this.partSolidus()
     );
@@ -1307,10 +1307,10 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("0")
   public glyphNuf(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partNuf().translate($(this.bowlWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1333,22 +1333,22 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 5 の文字の左上にある部分の外側の曲線を、右端から上端への向きで生成します。
   @part()
   public partOuterXefBeak(): Part {
-    let width = this.xefBeakWidth;
-    let height = this.xefBeakHeight + this.overshoot;
-    let leftHandle = height * 0.05;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.xefBeakWidth;
+    const height = this.xefBeakHeight + this.overshoot;
+    const leftHandle = height * 0.05;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // 5 の文字の左上にある部分の内側の曲線を、右端から上端への向きで生成します。
   @part()
   public partInnerXefBeak(): Part {
-    let width = this.xefBeakWidth - this.horThickness;
-    let height = this.xefBeakHeight - this.verThickness + this.overshoot;
-    let leftHandle = height * 0.05;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.xefBeakWidth - this.horThickness;
+    const height = this.xefBeakHeight - this.verThickness + this.overshoot;
+    const leftHandle = height * 0.05;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -1357,7 +1357,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあります。
   @part()
   public partXefHalf(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partOuterRightNarrowBowl().reflectHor(),
       this.partOuterXefBeak().reverse(),
       this.partCut(),
@@ -1377,7 +1377,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあります。
   @part()
   public partXef(): Part {
-    let part = Part.union(
+    const part = Part.union(
       this.partXefHalf(),
       this.partXefHalf().reflectHor().translate($(this.xefHalfVirtualWidth - this.horThickness, 0))
     );
@@ -1387,10 +1387,10 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("5")
   public glyphXef(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partXef().translate($(this.xefWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1425,51 +1425,51 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 1 の文字の右上にある部分の外側の曲線を、右端から上端への向きで生成します。
   @part()
   public partOuterTasBeak(): Part {
-    let width = this.tasBeakWidth;
-    let height = this.tasBeakHeight + this.overshoot;
-    let rightHandle = height * 0.05;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    const width = this.tasBeakWidth;
+    const height = this.tasBeakHeight + this.overshoot;
+    const rightHandle = height * 0.05;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
   // 1 の文字の右上にある部分の内側の曲線を、右端から上端への向きで生成します。
   @part()
   public partInnerTasBeak(): Part {
-    let width = this.tasBeakWidth - this.horThickness;
-    let height = this.tasBeakHeight - this.verThickness + this.overshoot;
-    let rightHandle = height * 0.05;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    const width = this.tasBeakWidth - this.horThickness;
+    const height = this.tasBeakHeight - this.verThickness + this.overshoot;
+    const rightHandle = height * 0.05;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
   // 1 の文字の右下にある部分の外側の曲線を、上端から下端への向きで生成します。
   @part()
   public partOuterTasShoulder(): Part {
-    let width = this.tasShoulderWidth;
-    let height = this.tasCrossbarAltitude + this.verThickness / 2 - this.tasShoulderStraightHeight + this.overshoot;
-    let rightHandle = height * 0.1;
-    let bottomHandle = width;
-    let part = Part.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
+    const width = this.tasShoulderWidth;
+    const height = this.tasCrossbarAltitude + this.verThickness / 2 - this.tasShoulderStraightHeight + this.overshoot;
+    const rightHandle = height * 0.1;
+    const bottomHandle = width;
+    const part = Part.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
     return part;
   }
 
   // 1 の文字の右下にある部分の内側の曲線を、上端から下端への向きで生成します。
   @part()
   public partInnerTasShoulder(): Part {
-    let width = this.tasShoulderWidth - this.horThickness;
-    let height = this.tasCrossbarAltitude - this.verThickness / 2 - this.tasShoulderStraightHeight + this.overshoot;
-    let rightHandle = height * 0.1;
-    let bottomHandle = width;
-    let part = Part.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
+    const width = this.tasShoulderWidth - this.horThickness;
+    const height = this.tasCrossbarAltitude - this.verThickness / 2 - this.tasShoulderStraightHeight + this.overshoot;
+    const rightHandle = height * 0.1;
+    const bottomHandle = width;
+    const part = Part.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
     return part;
   }
 
   // 1 の文字の右下にある部分に含まれる直線を、上端から下端への向きで生成します。
   @part()
   public partTasShoulderStraight(): Part {
-    let part = Part.line($(0, 0), $(0, -this.tasShoulderStraightHeight));
+    const part = Part.line($(0, 0), $(0, -this.tasShoulderStraightHeight));
     return part;
   }
 
@@ -1477,7 +1477,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあるので、回転や反転で変化しません。
   @part()
   public partTasFrame(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partOuterBowl().reflectVer(),
       this.partOuterTasShoulder().reverse(),
       this.partTasShoulderStraight(),
@@ -1498,14 +1498,14 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 1 の文字の横線の部分の直線を、左端から右端への向きで生成します。
   @part()
   public partTasCrossbarSegment(): Part {
-    let part = Part.line($(0, 0), $(this.bowlWidth / 2 + this.tasShoulderWidth - this.horThickness, 0));
+    const part = Part.line($(0, 0), $(this.bowlWidth / 2 + this.tasShoulderWidth - this.horThickness, 0));
     return part;
   }
 
   // 文字の書き始めや書き終わりの位置にある垂直に切られた部分を、上端から下端への向きで生成します。
   @part()
   public partVerticalCut(): Part {
-    let part = Part.line($(0, 0), $(0, this.verThickness));
+    const part = Part.line($(0, 0), $(0, this.verThickness));
     return part;
   }
 
@@ -1513,7 +1513,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partTasCrossbar(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partVerticalCut(),
       this.partTasCrossbarSegment(),
       this.partVerticalCut().reverse(),
@@ -1526,7 +1526,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
   @part()
   public partTas(): Part {
-    let part = Part.union(
+    const part = Part.union(
       this.partTasFrame(),
       this.partTasCrossbar().translate($(this.horThickness / 2 - this.tasWidth / 2, -this.tasCrossbarAltitude + this.mean / 2 - this.verThickness / 2))
     );
@@ -1535,19 +1535,19 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("1")
   public glyphTas(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partTas().translate($(this.tasWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("9")
   public glyphVun(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partTas().rotateHalfTurn().translate($(this.tasWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1574,61 +1574,61 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 3 の文字の左上にある丸い部分の外側の曲線を、左端から上端への向きで生成します。
   @part()
   public partOuterYusBowl(): Part {
-    let width = this.yusWidth / 2;
-    let height = this.mean / 2 + this.overshoot;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.yusWidth / 2;
+    const height = this.mean / 2 + this.overshoot;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // 3 の文字の左上にある丸い部分の内側の曲線を、左端から上端への向きで生成します。
   @part()
   public partInnerYusBowl(): Part {
-    let width = this.yusWidth / 2 - this.horThickness;
-    let height = this.mean / 2 - this.verThickness + this.overshoot;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const width = this.yusWidth / 2 - this.horThickness;
+    const height = this.mean / 2 - this.verThickness + this.overshoot;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // 3 の文字の右下にある曲線を、上端から下端への向きで生成します。
   @part()
   public partYusLeg(): Part {
-    let bend = this.yusLegBend;
-    let height = this.mean / 2;
-    let leftHandle = height * 0.6;
-    let part = Part.bezier($(0, 0), $(0, leftHandle), null, $(-bend, height));
+    const bend = this.yusLegBend;
+    const height = this.mean / 2;
+    const leftHandle = height * 0.6;
+    const part = Part.bezier($(0, 0), $(0, leftHandle), null, $(-bend, height));
     return part;
   }
 
   // 3 の文字の左下にある部分の外側の曲線を、左端から下端への向きで生成します。
   @part()
   public partOuterYusShoulder(): Part {
-    let width = this.yusCrossbarLatitude + this.horThickness * this.yusCrossbarThicknessRatio / 2 - this.yusShoulderStraightWidth;
-    let height = this.mean / 2;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
+    const width = this.yusCrossbarLatitude + this.horThickness * this.yusCrossbarThicknessRatio / 2 - this.yusShoulderStraightWidth;
+    const height = this.mean / 2;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
     return part;
   }
 
   // 3 の文字の左下にある部分の内側の曲線を、左端から下端への向きで生成します。
   @part()
   public partInnerYusShoulder(): Part {
-    let width = this.yusCrossbarLatitude + this.horThickness * (this.yusCrossbarThicknessRatio - 2) / 2 - this.yusShoulderStraightWidth;
-    let height = this.mean / 2 - this.verThickness;
-    let leftHandle = height * 0.1;
-    let topHandle = width;
-    let part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
+    const width = this.yusCrossbarLatitude + this.horThickness * (this.yusCrossbarThicknessRatio - 2) / 2 - this.yusShoulderStraightWidth;
+    const height = this.mean / 2 - this.verThickness;
+    const leftHandle = height * 0.1;
+    const topHandle = width;
+    const part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
     return part;
   }
 
   // 3 の文字の左下にある部分に含まれる直線を、左端から右端への向きで生成します。
   @part()
   public partYusShoulderStraight(): Part {
-    let part = Part.line($(0, 0), $(this.yusShoulderStraightWidth, 0));
+    const part = Part.line($(0, 0), $(this.yusShoulderStraightWidth, 0));
     return part;
   }
 
@@ -1636,7 +1636,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は全体の中央にあるので、回転や反転で変化しません。
   @part()
   public partYusFrame(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partOuterYusShoulder(),
       this.partYusShoulderStraight(),
       this.partVerticalCut().reverse(),
@@ -1657,14 +1657,14 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 3 の文字の縦線の部分の直線を、上端から下端への向きで生成します。
   @part()
   public partYusCrossbarSegment(): Part {
-    let part = Part.line($(0, 0), $(0, this.mean - this.verThickness));
+    const part = Part.line($(0, 0), $(0, this.mean - this.verThickness));
     return part;
   }
 
   // 3 の文字の縦線の部分の水平に切られた部分を、左端から右端への向きで生成します。
   @part()
   public partYusCrossbarCut(): Part {
-    let part = Part.line($(0, 0), $(this.horThickness * this.yusCrossbarThicknessRatio, 0));
+    const part = Part.line($(0, 0), $(this.horThickness * this.yusCrossbarThicknessRatio, 0));
     return part;
   }
 
@@ -1672,7 +1672,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partYusCrossbar(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partYusCrossbarSegment(),
       this.partYusCrossbarCut(),
       this.partYusCrossbarSegment().reverse(),
@@ -1685,7 +1685,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は丸い部分の中央にあるので、回転や反転で変化しません。
   @part()
   public partYus(): Part {
-    let part = Part.union(
+    const part = Part.union(
       this.partYusFrame(),
       this.partYusCrossbar().translate($(this.yusCrossbarLatitude - this.yusWidth / 2 - this.horThickness * this.yusCrossbarThicknessRatio / 2, -this.mean / 2 + this.verThickness / 2))
     );
@@ -1694,19 +1694,19 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("3")
   public glyphYus(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partYus().translate($(this.yusWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("7")
   public glyphSiz(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partYus().rotateHalfTurn().translate($(this.yusWidth / 2, -this.mean / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1722,7 +1722,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は円に外接する矩形の左下の角からオーバーシュート分だけ上に移動した位置にあります。
   @part()
   public partDot(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       Part.circle($(0, 0), this.dotWidth / 2)
     );
     part.moveOrigin($(-this.dotWidth / 2, this.dotWidth / 2 - this.overshoot));
@@ -1731,20 +1731,20 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph(",")
   public glyphTadek(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partDot()
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph(".")
   public glyphDek(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partDot(),
       this.partDot().translate($(this.dotWidth + this.dotGap, 0))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1765,7 +1765,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左端にあります。
   @part()
   public partFloatingDot(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       Part.circle($(0, 0), this.dotWidth / 2)
     );
     part.moveOrigin($(-this.dotWidth / 2, 0));
@@ -1774,21 +1774,21 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph(":")
   public glyphKaltak(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partDot(),
       this.partFloatingDot().translate($(0, -this.upperKaltakAltitude))
     );
-    let bearings = {left: this.kaltakBearing, right: this.kaltakBearing};
-    let glyph = Glyph.byBearings(part, bearings);
+    const bearings = {left: this.kaltakBearing, right: this.kaltakBearing};
+    const glyph = Glyph.byBearings(part, bearings);
     return glyph;
   }
 
   @glyph("·")
   public glyphMiddot(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partFloatingDot().translate($(0, -this.middotAltitude))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1803,7 +1803,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // バデックの棒状の部分の直線を、上端から下端への向きで生成します。
   @part()
   public partBadekStemSegment(): Part {
-    let part = Part.line($(0, 0), $(0, this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot));
+    const part = Part.line($(0, 0), $(0, this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot));
     return part;
   }
 
@@ -1811,7 +1811,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左下の角にあります。
   @part()
   public partBadekStem(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partCut(),
       this.partBadekStemSegment().reverse(),
       this.partCut().reverse(),
@@ -1822,13 +1822,13 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("!")
   public glyphBadek(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partDot(),
       this.partDot().translate($(this.dotWidth + this.dotGap, 0)),
       this.partBadekStem().translate($(this.dotWidth / 2 - this.horThickness / 2, -this.dotWidth - this.badekGap + this.overshoot))
     );
-    let bearings = {left: this.badekLeftBearing, right: this.bearing};
-    let glyph = Glyph.byBearings(part, bearings);
+    const bearings = {left: this.badekLeftBearing, right: this.bearing};
+    const glyph = Glyph.byBearings(part, bearings);
     return glyph;
   }
 
@@ -1839,22 +1839,22 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // パデックの棒状の部分の左側の曲線を、上端から下端への向きで生成します。
   @part()
   public partLeftPadekStem(): Part {
-    let bend = this.padekBend;
-    let height = this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot;
-    let bottomHandle = height * 0.55;
-    let topHandle = this.searchTailInnerHandle(bottomHandle, bend, height);
-    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    const bend = this.padekBend;
+    const height = this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot;
+    const bottomHandle = height * 0.55;
+    const topHandle = this.searchTailInnerHandle(bottomHandle, bend, height);
+    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
   // パデックの棒状の部分の右側の曲線を、上端から下端への向きで生成します。
   @part()
   public partRightPadekStem(): Part {
-    let bend = this.padekBend;
-    let height = this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot;
-    let topHandle = height * 0.55;
-    let bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
-    let part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    const bend = this.padekBend;
+    const height = this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot;
+    const topHandle = height * 0.55;
+    const bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
+    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
@@ -1862,7 +1862,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左下の角にあります。
   @part()
   public partPadekStem(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partCut(),
       this.partRightPadekStem().reverse(),
       this.partCut().reverse(),
@@ -1873,26 +1873,26 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("?")
   public glyphPadek(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partDot(),
       this.partDot().translate($(this.dotWidth + this.dotGap, 0)),
       this.partPadekStem().translate($(this.dotWidth / 2 - this.horThickness / 2, -this.dotWidth - this.badekGap + this.overshoot))
     );
-    let bearings = {left: this.badekLeftBearing, right: this.bearing};
-    let glyph = Glyph.byBearings(part, bearings);
+    const bearings = {left: this.badekLeftBearing, right: this.bearing};
+    const glyph = Glyph.byBearings(part, bearings);
     return glyph;
   }
 
   @glyph("⁉", "‽")
   public glyphBapadek(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partDot(),
       this.partDot().translate($(this.dotWidth + this.dotGap, 0)),
       this.partBadekStem().translate($(this.dotWidth / 2 - this.horThickness / 2, -this.dotWidth - this.badekGap + this.overshoot)),
       this.partPadekStem().translate($(this.dotWidth / 2 - this.horThickness / 2 + this.dotWidth + this.dotGap, -this.dotWidth - this.badekGap + this.overshoot))
     );
-    let bearings = {left: this.badekLeftBearing, right: this.bearing};
-    let glyph = Glyph.byBearings(part, bearings);
+    const bearings = {left: this.badekLeftBearing, right: this.bearing};
+    const glyph = Glyph.byBearings(part, bearings);
     return glyph;
   }
 
@@ -1903,7 +1903,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // ノークの棒状の部分の縦の曲線を、上端から下端への向きで生成します。
   @part()
   public partNokStem(): Part {
-    let part = Part.line($(0, 0), $(0, this.nokHeight));
+    const part = Part.line($(0, 0), $(0, this.nokHeight));
     return part;
   }
 
@@ -1911,7 +1911,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partNok(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partNokStem(),
       this.partCut(),
       this.partNokStem().reverse(),
@@ -1922,10 +1922,10 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("'")
   public glyphNok(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partNok().translate($(0, -this.mean - this.descent))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -1944,10 +1944,10 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // ディカックの棒状の部分の曲線を、上端から下端への向きで生成します。
   @part()
   public partDikakStem(): Part {
-    let bend = this.dikakBend;
-    let height = this.dikakHeight;
-    let leftHandle = height * 0.6;
-    let part = Part.bezier($(0, 0), null, $(0, -leftHandle), $(-bend, height));
+    const bend = this.dikakBend;
+    const height = this.dikakHeight;
+    const leftHandle = height * 0.6;
+    const part = Part.bezier($(0, 0), null, $(0, -leftHandle), $(-bend, height));
     return part;
   }
 
@@ -1955,7 +1955,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partDikak(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partDikakStem(),
       this.partCut(),
       this.partDikakStem().reverse(),
@@ -1966,11 +1966,11 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("ʻ")
   public glyphDikak(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partDikak().translate($(this.dikakBend, -this.mean - this.descent))
     );
-    let bearings = {left: this.bearing, right: this.dikakRightBearing};
-    let glyph = Glyph.byBearings(part, bearings);
+    const bearings = {left: this.bearing, right: this.dikakRightBearing};
+    const glyph = Glyph.byBearings(part, bearings);
     return glyph;
   }
 
@@ -1986,7 +1986,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // フェークの直線を、左端から右端への向きで生成します。
   @part()
   public partFekHorizontal(): Part {
-    let part = Part.line($(0, 0), $(this.fekWidth, 0));
+    const part = Part.line($(0, 0), $(this.fekWidth, 0));
     return part;
   }
 
@@ -1994,7 +1994,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partFek(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partVerticalCut(),
       this.partFekHorizontal(),
       this.partVerticalCut().reverse(),
@@ -2005,10 +2005,10 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("-")
   public glyphFek(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partFek().translate($(0, -this.fekAltitude - this.verThickness / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -2019,7 +2019,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // フォーハックの直線を、左端から右端への向きで生成します。
   @part()
   public partFohakHorizontal(): Part {
-    let part = Part.line($(0, 0), $(this.fohakWidth, 0));
+    const part = Part.line($(0, 0), $(this.fohakWidth, 0));
     return part;
   }
 
@@ -2027,7 +2027,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partFohak(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partVerticalCut(),
       this.partFohakHorizontal(),
       this.partVerticalCut().reverse(),
@@ -2038,10 +2038,10 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("…")
   public glyphFohak(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partFohak().translate($(0, -this.verThickness))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -2056,7 +2056,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // ダッシュの直線を、左端から右端への向きで生成します。
   @part()
   public partDashHorizontal(): Part {
-    let part = Part.line($(0, 0), $(this.dashWidth, 0));
+    const part = Part.line($(0, 0), $(this.dashWidth, 0));
     return part;
   }
 
@@ -2064,7 +2064,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partDash(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partVerticalCut(),
       this.partDashHorizontal(),
       this.partVerticalCut().reverse(),
@@ -2075,10 +2075,10 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("—")
   public glyphDash(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partDash().translate($(0, -this.dashAltitude - this.verThickness / 2))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -2093,14 +2093,14 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // ラクットの縦向きの棒状の部分の直線を、上端から下端への向きで生成します。
   @part()
   public partRakutVerticalSegment(): Part {
-    let part = Part.line($(0, 0), $(0, this.rakutHeight));
+    const part = Part.line($(0, 0), $(0, this.rakutHeight));
     return part;
   }
 
   // ラクットの横向きの棒状の部分の直線を、左端から右端への向きで生成します。
   @part()
   public partRakutHorizontalSegment(): Part {
-    let part = Part.line($(0, 0), $(this.rakutWidth, 0));
+    const part = Part.line($(0, 0), $(this.rakutWidth, 0));
     return part;
   }
 
@@ -2108,7 +2108,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partRakutVertical(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partRakutVerticalSegment(),
       this.partCut(),
       this.partRakutVerticalSegment().reverse(),
@@ -2121,7 +2121,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partRakutHorizontal(): Part {
-    let part = Part.seq(
+    const part = Part.seq(
       this.partVerticalCut(),
       this.partRakutHorizontalSegment(),
       this.partVerticalCut().reverse(),
@@ -2134,7 +2134,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 原点は左上の角にあります。
   @part()
   public partOpeningRakut(): Part {
-    let part = Part.union(
+    const part = Part.union(
       this.partRakutVertical(),
       this.partRakutHorizontal()
     );
@@ -2143,19 +2143,19 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph("[", "«")
   public glyphOpeningRakut(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partOpeningRakut().translate($(0, -this.mean - this.descent))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
   @glyph("]", "»")
   public glyphClosingRakut(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       this.partOpeningRakut().reflectHor().translate($(this.rakutWidth, -this.mean - this.descent))
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
@@ -2165,9 +2165,9 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   @glyph(" ")
   public glyphSpace(): Glyph {
-    let part = Part.empty();
-    let bearings = {left: this.spaceWidth, right: 0};
-    let glyph = Glyph.byBearings(part, bearings);
+    const part = Part.empty();
+    const bearings = {left: this.spaceWidth, right: 0};
+    const glyph = Glyph.byBearings(part, bearings);
     return glyph;
   }
 

@@ -28,51 +28,51 @@ export class Part {
   }
 
   public static line(startPoint: Point, endPoint: Point): Part {
-    let path = PathUtil.line(startPoint, endPoint);
-    let part = new Part(path);
+    const path = PathUtil.line(startPoint, endPoint);
+    const part = new Part(path);
     return part;
   }
 
   public static circle(centerPoint: Point, radius: number): Part {
-    let path = PathUtil.circle(centerPoint, radius);
-    let part = new Part(path);
+    const path = PathUtil.circle(centerPoint, radius);
+    const part = new Part(path);
     return part;
   }
 
   public static arc(centerPoint: Point, radius: number, fromAngle: number, toAngle: number): Part {
-    let path = PathUtil.arc(centerPoint, radius, fromAngle, toAngle);
-    let part = new Part(path);
+    const path = PathUtil.arc(centerPoint, radius, fromAngle, toAngle);
+    const part = new Part(path);
     return part;
   }
 
   public static bezier(startPoint: Point, startHandle: Point | null, endHandle: Point | null, endPoint: Point): Part {
-    let path = PathUtil.bezier(startPoint, startHandle, endHandle, endPoint);
-    let part = new Part(path);
+    const path = PathUtil.bezier(startPoint, startHandle, endHandle, endPoint);
+    const part = new Part(path);
     return part;
   }
 
   public static empty(): Part {
-    let path = PathUtil.empty();
-    let part = new Part(path);
+    const path = PathUtil.empty();
+    const part = new Part(path);
     return part;
   }
 
   public static of(item: PathItem): Part {
-    let part = new Part(item);
+    const part = new Part(item);
     return part;
   }
 
   public static seq(...parts: Array<Part>): Part {
     let point = $(0, 0);
-    let segments = new Array<Segment>();
-    for (let part of parts) {
-      let partPath = part.getPath();
+    const segments = new Array<Segment>();
+    for (const part of parts) {
+      const partPath = part.getPath();
       if (partPath !== undefined) {
         partPath.translate(point);
-        let lastSegment = segments.pop();
+        const lastSegment = segments.pop();
         if (lastSegment) {
-          let firstSegment = partPath.segments[0];
-          let concatSegment = new Segment(firstSegment.point, lastSegment.handleIn, firstSegment.handleOut);
+          const firstSegment = partPath.segments[0];
+          const concatSegment = new Segment(firstSegment.point, lastSegment.handleIn, firstSegment.handleOut);
           segments.push(concatSegment, ...partPath.segments.slice(1));
         } else {
           segments.push(...partPath.segments);
@@ -82,29 +82,29 @@ export class Part {
         throw new Error("unsupported operation");
       }
     }
-    let path = new Path({segments});
+    const path = new Path({segments});
     path.closePath();
-    let resultPart = new Part(path);
+    const resultPart = new Part(path);
     return resultPart;
   }
 
   public static stack(...parts: Array<Part | PathItem>): Part {
-    let children = parts.map((part) => (part instanceof Part) ? part.item : part);
-    let item = new CompoundPath({children});
-    let resultPart = new Part(item);
+    const children = parts.map((part) => (part instanceof Part) ? part.item : part);
+    const item = new CompoundPath({children});
+    const resultPart = new Part(item);
     return resultPart;
   }
 
   public static union(...parts: Array<Part | PathItem>): Part {
-    let items = parts.map((part) => (part instanceof Part) ? part.item : part);
-    let unitedItem = items.reduce((previousPart, part) => previousPart.unite(part));
-    let resultPart = new Part(unitedItem);
+    const items = parts.map((part) => (part instanceof Part) ? part.item : part);
+    const unitedItem = items.reduce((previousPart, part) => previousPart.unite(part));
+    const resultPart = new Part(unitedItem);
     return resultPart;
   }
 
   public clone(): Part {
-    let clonedItem = this.item.clone();
-    let clonedPart = new Part(clonedItem);
+    const clonedItem = this.item.clone();
+    const clonedPart = new Part(clonedItem);
     return clonedPart;
   }
 
@@ -144,12 +144,12 @@ export class Part {
   }
 
   public reverse(): this {
-    let path = this.getPath();
+    const path = this.getPath();
     if (path !== undefined) {
       if (path.closed) {
         this.item.reverse();
       } else {
-        let point = path.lastSegment.point;
+        const point = path.lastSegment.point;
         this.item.reverse();
         this.item.translate(point.multiply(-1));
       }
@@ -160,9 +160,9 @@ export class Part {
   }
 
   public toStroke(offset: number, join: StrokeJoin, cap: StrokeCap): Part {
-    let path = this.getPath();
+    const path = this.getPath();
     if (path !== undefined) {
-      let nextPath = PaperOffset.offsetStroke(path, offset, {join, cap, insert: false});
+      const nextPath = PaperOffset.offsetStroke(path, offset, {join, cap, insert: false});
       return new Part(nextPath);
     } else {
       throw new Error("unsupported operation");
@@ -170,7 +170,7 @@ export class Part {
   }
 
   private getPath(): Path | undefined {
-    let item = this.item;
+    const item = this.item;
     if (item instanceof Path) {
       return item;
     } else if (item instanceof CompoundPath) {
@@ -190,33 +190,33 @@ export class Part {
 export class PathUtil {
 
   public static line(startPoint: Point, endPoint: Point): Path {
-    let path = new Path({segments: [startPoint, endPoint]});
+    const path = new Path({segments: [startPoint, endPoint]});
     return path;
   }
 
   public static circle(centerPoint: Point, radius: number): Path {
-    let path = new Path.Circle(centerPoint, radius);
+    const path = new Path.Circle(centerPoint, radius);
     return path;
   }
 
   public static arc(centerPoint: Point, radius: number, fromAngle: number, toAngle: number): Path {
-    let fromPoint = PointUtil.polar(radius, fromAngle);
-    let toPoint = PointUtil.polar(radius, toAngle);
-    let throughPoint = PointUtil.polar(radius, (fromAngle + toAngle) / 2);
-    let path = new Path.Arc(fromPoint, throughPoint, toPoint);
+    const fromPoint = PointUtil.polar(radius, fromAngle);
+    const toPoint = PointUtil.polar(radius, toAngle);
+    const throughPoint = PointUtil.polar(radius, (fromAngle + toAngle) / 2);
+    const path = new Path.Arc(fromPoint, throughPoint, toPoint);
     path.translate(centerPoint);
     return path;
   }
 
   public static bezier(startPoint: Point, startHandle: Point | null, endHandle: Point | null, endPoint: Point): Path {
-    let startSegment = new Segment(startPoint, undefined, startHandle ?? undefined);
-    let endSegment = new Segment(endPoint, endHandle ?? undefined, undefined);
-    let path = new Path({segments: [startSegment, endSegment]});
+    const startSegment = new Segment(startPoint, undefined, startHandle ?? undefined);
+    const endSegment = new Segment(endPoint, endHandle ?? undefined, undefined);
+    const path = new Path({segments: [startSegment, endSegment]});
     return path;
   }
 
   public static empty(): Path {
-    let path = new Path();
+    const path = new Path();
     return path;
   }
 

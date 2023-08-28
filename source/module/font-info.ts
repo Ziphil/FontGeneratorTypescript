@@ -12,7 +12,7 @@ export class FontInfo {
   }
 
   public get copyright(): string {
-    let date = new Date();
+    const date = new Date();
     let copyright = "Copyright";
     copyright += " " + date.getFullYear().toString();
     copyright += " " + this.author;

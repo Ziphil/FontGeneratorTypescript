@@ -52,10 +52,10 @@ export class FontRenderer {
   }
 
   private setupMenu(): void {
-    let menuPane = document.getElementById("menu")! as HTMLDivElement;
-    let fonts = this.fontManager.getAll();
-    for (let [id, font] of fonts) {
-      let itemPane = document.createElement("div");
+    const menuPane = document.getElementById("menu")! as HTMLDivElement;
+    const fonts = this.fontManager.getAll();
+    for (const [id, font] of fonts) {
+      const itemPane = document.createElement("div");
       itemPane.classList.add("item");
       itemPane.id = "item-" + id;
       itemPane.textContent = font.fullName;
@@ -67,17 +67,17 @@ export class FontRenderer {
   }
 
   private setupMenuItem(): void {
-    let itemPane = document.getElementById("item-" + this.id);
+    const itemPane = document.getElementById("item-" + this.id);
     itemPane?.classList.add("current");
   }
 
   private setupPreviewCanvas(): void {
-    let input = document.getElementById("preview-text")! as HTMLInputElement;
-    let canvas = document.getElementById("preview")! as HTMLCanvasElement;
+    const input = document.getElementById("preview-text")! as HTMLInputElement;
+    const canvas = document.getElementById("preview")! as HTMLCanvasElement;
     canvas.width = PREVIEW_CANVAS_WIDTH;
     canvas.height = PREVIEW_CANVAS_HEIGHT;
-    let project = new Project("preview");
-    let previewString = queryParser.parse(location.search)["preview"] as string;
+    const project = new Project("preview");
+    const previewString = queryParser.parse(location.search)["preview"] as string;
     input.value = previewString ?? "";
     this.renderPreview(project, input);
     input.addEventListener("input", () => {
@@ -87,27 +87,27 @@ export class FontRenderer {
   }
 
   private renderPreview(project: Project, input: HTMLInputElement): void {
-    let generator = this.font!.generator;
-    let scale = PREVIEW_CANVAS_HEIGHT / generator.metrics.em;
+    const generator = this.font!.generator;
+    const scale = PREVIEW_CANVAS_HEIGHT / generator.metrics.em;
     project.activate();
     project.activeLayer.removeChildren();
-    let scaledAscent = Math.floor(generator.metrics.ascent * scale);
-    let baselinePath = new Path({segments: [$(0, scaledAscent), $(10000, scaledAscent)]});
+    const scaledAscent = Math.floor(generator.metrics.ascent * scale);
+    const baselinePath = new Path({segments: [$(0, scaledAscent), $(10000, scaledAscent)]});
     baselinePath.strokeColor = GRAY_COLOR;
     baselinePath.strokeWidth = 2;
     let position = 0;
-    let items = [];
-    let frontInfoGroups = [];
-    let backInfoGroups = [];
-    for (let char of Array.from(input.value)) {
-      let glyph = generator.glyph(char);
+    const items = [];
+    const frontInfoGroups = [];
+    const backInfoGroups = [];
+    for (const char of Array.from(input.value)) {
+      const glyph = generator.glyph(char);
       if (glyph !== null) {
-        let [item, width] = glyph.createItem(generator.metrics);
-        let metricsRectangle = new Path.Rectangle({point: $(0, 0), size: $(width * scale, generator.metrics.em * scale)});
-        let metricsOverlay = metricsRectangle.clone();
-        let widthText = new PointText({point: $(width * scale - 5, 15), content: Math.round(width).toString()});
-        let frontInfoGroup = new Group([widthText, metricsOverlay]);
-        let backInfoGroup = new Group([metricsRectangle]);
+        const [item, width] = glyph.createItem(generator.metrics);
+        const metricsRectangle = new Path.Rectangle({point: $(0, 0), size: $(width * scale, generator.metrics.em * scale)});
+        const metricsOverlay = metricsRectangle.clone();
+        const widthText = new PointText({point: $(width * scale - 5, 15), content: Math.round(width).toString()});
+        const frontInfoGroup = new Group([widthText, metricsOverlay]);
+        const backInfoGroup = new Group([metricsRectangle]);
         items.push(item);
         frontInfoGroups.push(frontInfoGroup);
         backInfoGroups.push(backInfoGroup);
@@ -142,36 +142,36 @@ export class FontRenderer {
   }
 
   private appendGlyphPane(): void {
-    let listElement = document.getElementById("glyph-list")!;
-    let chars = this.font!.generator.chars;
+    const listElement = document.getElementById("glyph-list")!;
+    const chars = this.font!.generator.chars;
     chars.sort((firstChar, secondChar) => firstChar.codePointAt(0)! - secondChar.codePointAt(0)!);
-    for (let char of chars) {
+    for (const char of chars) {
       listElement.append(this.createGlyphPane(char));
-      let project = new Project(`glyph-${char.codePointAt(0)}`);
+      const project = new Project(`glyph-${char.codePointAt(0)}`);
       this.renderGlyph(project, char);
     }
   }
 
   private setupFontName(): void {
-    let nameElement = document.getElementById("name")!;
-    let idElement = document.getElementById("id")!;
-    let versionElement = document.getElementById("version")!;
+    const nameElement = document.getElementById("name")!;
+    const idElement = document.getElementById("id")!;
+    const versionElement = document.getElementById("version")!;
     nameElement.textContent = this.font!.fullName;
     idElement.textContent = this.id;
     versionElement.textContent = this.font!.info.version;
   }
 
   private renderGlyph(project: Project, char: string): void {
-    let generator = this.font!.generator;
-    let scale = GLYPH_CANVAS_HEIGHT / generator.metrics.em;
+    const generator = this.font!.generator;
+    const scale = GLYPH_CANVAS_HEIGHT / generator.metrics.em;
     project.activate();
-    let glyph = generator.glyph(char);
+    const glyph = generator.glyph(char);
     if (glyph !== null) {
-      let [item, width] = glyph.createItem(generator.metrics);
-      let scaledWidth = Math.floor(width * scale) + 0.5;
-      let scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
-      let baselinePath = new Path({segments: [$(0, scaledAscent), $(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
-      let widthPath = new Path({segments: [$(scaledWidth, 0), $(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
+      const [item, width] = glyph.createItem(generator.metrics);
+      const scaledWidth = Math.floor(width * scale) + 0.5;
+      const scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
+      const baselinePath = new Path({segments: [$(0, scaledAscent), $(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
+      const widthPath = new Path({segments: [$(scaledWidth, 0), $(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
       item.scale(scale, $(0, 0));
       item.selectedColor = SELECTED_COLOR;
       baselinePath.strokeColor = GRAY_COLOR;
@@ -189,8 +189,8 @@ export class FontRenderer {
   }
 
   private createGlyphPane(char: string): HTMLElement {
-    let glyphPane = document.createElement("div");
-    let canvas = document.createElement("canvas");
+    const glyphPane = document.createElement("div");
+    const canvas = document.createElement("canvas");
     glyphPane.classList.add("glyph-pane");
     canvas.id = `glyph-${char.codePointAt(0)}`;
     canvas.width = GLYPH_CANVAS_WIDTH;
@@ -202,10 +202,10 @@ export class FontRenderer {
   }
 
   private createInfoPane(char: string): HTMLElement {
-    let infoPane = document.createElement("div");
-    let charPane = document.createElement("div");
-    let codePointPane = document.createElement("div");
-    let codePoint = char.codePointAt(0)!;
+    const infoPane = document.createElement("div");
+    const charPane = document.createElement("div");
+    const codePointPane = document.createElement("div");
+    const codePoint = char.codePointAt(0)!;
     infoPane.classList.add("info");
     charPane.classList.add("char");
     codePointPane.classList.add("codepoint");
@@ -216,11 +216,11 @@ export class FontRenderer {
   }
 
   private createBottomInfoPane(char: string): HTMLElement {
-    let generator = this.font!.generator;
-    let infoPane = document.createElement("div");
-    let widthPane = document.createElement("div");
-    let [, width] = generator.glyph(char)!.createItem(generator.metrics);
-    let em = this.font!.generator.metrics.em;
+    const generator = this.font!.generator;
+    const infoPane = document.createElement("div");
+    const widthPane = document.createElement("div");
+    const [, width] = generator.glyph(char)!.createItem(generator.metrics);
+    const em = this.font!.generator.metrics.em;
     infoPane.classList.add("bottom-info");
     widthPane.classList.add("width");
     widthPane.textContent = `↔${Math.round(width)} · ↕${Math.round(em)}`;

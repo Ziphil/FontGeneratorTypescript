@@ -35,24 +35,24 @@ export class VekosFont extends Font<VekosGenerator> {
   }
 
   protected createStyle(): FontStyle {
-    let style = new FontStyle(this.weight, "upright", this.stretch);
+    const style = new FontStyle(this.weight, "upright", this.stretch);
     return style;
   }
 
   protected createInfo(): FontInfo {
-    let info = new FontInfo("Ziphil", "2.0.0");
+    const info = new FontInfo("Ziphil", "2.0.0");
     return info;
   }
 
   protected createGenerator(): VekosGenerator {
-    let style = this.createStyle();
-    let weightNumber = style.getWeightNumber();
-    let stretchNumber = style.getStretchNumber();
-    let weightConst = (weightNumber * 0.5 + 100) / 300;
-    let stretchConst = (stretchNumber < 100) ? (stretchNumber * 0.6 + 40) / 100 : stretchNumber / 100;
-    let contrastRatio = (this.high) ? 0.2 : 0.75;
-    let config = {weightConst, stretchConst, contrastRatio};
-    let generator = new VekosGenerator(config);
+    const style = this.createStyle();
+    const weightNumber = style.getWeightNumber();
+    const stretchNumber = style.getStretchNumber();
+    const weightConst = (weightNumber * 0.5 + 100) / 300;
+    const stretchConst = (stretchNumber < 100) ? (stretchNumber * 0.6 + 40) / 100 : stretchNumber / 100;
+    const contrastRatio = (this.high) ? 0.2 : 0.75;
+    const config = {weightConst, stretchConst, contrastRatio};
+    const generator = new VekosGenerator(config);
     return generator;
   }
 

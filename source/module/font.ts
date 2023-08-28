@@ -48,13 +48,13 @@ export abstract class Font<G extends Generator = Generator> {
   }
 
   private getModifiers(onlyStretch: boolean): Array<string> {
-    let modifiers = [
+    const modifiers = [
       this.familyName,
       this.style.getStretchString(),
       (onlyStretch) ? "" : this.style.getWeightString(),
       (onlyStretch) ? "" : this.style.getSlopeString()
     ];
-    let filteredModifiers = modifiers.filter((string) => string !== "");
+    const filteredModifiers = modifiers.filter((string) => string !== "");
     return filteredModifiers;
   }
 

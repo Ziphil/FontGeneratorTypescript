@@ -17,7 +17,7 @@ import {
 export class Main {
 
   public main(): void {
-    let options = argsParser([
+    const options = argsParser([
       {name: "list", alias: "l", type: Boolean},
       {name: "id", alias: "i", multiple: true, defaultOption: true},
       {name: "python", alias: "p"}
@@ -31,33 +31,33 @@ export class Main {
   }
 
   private setupPaper(): void {
-    let size = new Size(100, 100);
+    const size = new Size(100, 100);
     paper.settings.insertItems = false;
     paper.setup(size);
   }
 
   private listFonts(): void {
-    let fonts = FONT_MANAGER.getAll();
-    let maxFullNameLength = Math.max(...fonts.map(([, font]) => font.fullName.length));
-    let fontStrings = fonts.map(([id, font]) => {
-      let fontString = chalk.green(id.padEnd(5)) + "  " + font.fullName;
+    const fonts = FONT_MANAGER.getAll();
+    const maxFullNameLength = Math.max(...fonts.map(([, font]) => font.fullName.length));
+    const fontStrings = fonts.map(([id, font]) => {
+      const fontString = chalk.green(id.padEnd(5)) + "  " + font.fullName;
       return fontString;
     });
-    let output = fontStrings.join("\n");
+    const output = fontStrings.join("\n");
     console.log(output);
   }
 
   private async generate(options: any): Promise<void> {
-    let pythonCommand = options["python"];
-    let ids = options["id"];
-    let fonts = (ids === undefined) ? FONT_MANAGER.getAll() : FONT_MANAGER.getAll().filter(([id]) => ids.includes(id));
+    const pythonCommand = options["python"];
+    const ids = options["id"];
+    const fonts = (ids === undefined) ? FONT_MANAGER.getAll() : FONT_MANAGER.getAll().filter(([id]) => ids.includes(id));
     let count = 0;
-    let promises = fonts.map(async ([id, font]) => {
-      let writer = new FontWriter(font, {pythonCommand});
+    const promises = fonts.map(async ([id, font]) => {
+      const writer = new FontWriter(font, {pythonCommand});
       await writer.generate();
       count ++;
-      let countString = chalk.cyan("[" + count.toString().padStart(2) + "/" + fonts.length.toString().padStart(2) + "]");
-      let output = countString + " " + chalk.green(id.padEnd(5)) + "  " + font.fullName;
+      const countString = chalk.cyan("[" + count.toString().padStart(2) + "/" + fonts.length.toString().padStart(2) + "]");
+      const output = countString + " " + chalk.green(id.padEnd(5)) + "  " + font.fullName;
       console.log(output);
     });
     await Promise.all(promises);
@@ -66,5 +66,5 @@ export class Main {
 }
 
 
-let main = new Main();
+const main = new Main();
 main.main();

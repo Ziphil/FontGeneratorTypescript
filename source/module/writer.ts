@@ -26,18 +26,18 @@ export class FontWriter {
   }
 
   public async generate(): Promise<void> {
-    let codePath = this.path + "/generate.py";
-    let pythonCommand = this.config.pythonCommand ?? "python";
+    const codePath = this.path + "/generate.py";
+    const pythonCommand = this.config.pythonCommand ?? "python";
     await this.writeFont();
     await this.writeCode();
     await execa(pythonCommand, [codePath]);
   }
 
   private async writeCode(): Promise<void> {
-    let extension = this.config.extension ?? "ttf";
-    let autoHint = this.config.autoHint ?? true;
-    let fontPath = this.path + "." + extension;
-    let codePath = this.path + "/generate.py";
+    const extension = this.config.extension ?? "ttf";
+    const autoHint = this.config.autoHint ?? true;
+    const fontPath = this.path + "." + extension;
+    const codePath = this.path + "/generate.py";
     let code = await fs.readFile("resource/generate.py", "utf-8");
     code = code.replace("__familyname__", "\"" + this.font.extendedFamilyName + "\"");
     code = code.replace("__fontname__", "\"" + this.font.postScriptName + "\"");
@@ -56,25 +56,25 @@ export class FontWriter {
 
   public async writeFont(): Promise<void> {
     await fs.mkdir(this.path, {recursive: true});
-    let chars = this.font.generator.chars;
-    let promises = chars.map(async (char) => {
+    const chars = this.font.generator.chars;
+    const promises = chars.map(async (char) => {
       await this.writeGlyph(char);
     });
     await Promise.all(promises);
   }
 
   public async writeGlyph(char: string): Promise<void> {
-    let generator = this.font.generator;
-    let glyph = generator.glyph(char);
-    let glyphPath = this.path + "/" + char.charCodeAt(0) + ".svg";
+    const generator = this.font.generator;
+    const glyph = generator.glyph(char);
+    const glyphPath = this.path + "/" + char.charCodeAt(0) + ".svg";
     if (glyph !== null) {
-      let metrics = generator.metrics;
-      let [item, width] = glyph.createItem(metrics);
-      let size = new Size(metrics.em, metrics.em);
-      let project = new Project(size);
+      const metrics = generator.metrics;
+      const [item, width] = glyph.createItem(metrics);
+      const size = new Size(metrics.em, metrics.em);
+      const project = new Project(size);
       project.activeLayer.addChild(item);
-      let svgString = project.exportSVG({asString: true}) as string;
-      let addedSvgString = svgString.replace(/<svg(.+?)>/, `<svg$1 glyph-width="${width}">`);
+      const svgString = project.exportSVG({asString: true}) as string;
+      const addedSvgString = svgString.replace(/<svg(.+?)>/, `<svg$1 glyph-width="${width}">`);
       await fs.writeFile(glyphPath, addedSvgString);
       project.remove();
     }

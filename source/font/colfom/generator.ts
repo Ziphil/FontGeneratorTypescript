@@ -7,10 +7,8 @@ import {
   Glyph,
   Metrics,
   Part,
-  PathUtil,
   generator,
-  glyph,
-  part
+  glyph
 } from "../../module";
 
 
@@ -18,10 +16,10 @@ import {
 export class ColfomGenerator extends Generator<ColfomConfig> {
 
   public get metrics(): Metrics {
-    let ascent = this.mean + this.descent + this.extraAscent;
-    let descent = this.descent + this.extraDescent;
-    let em = descent + ascent;
-    let metrics = {em, ascent, descent};
+    const ascent = this.mean + this.descent + this.extraAscent;
+    const descent = this.descent + this.extraDescent;
+    const em = descent + ascent;
+    const metrics = {em, ascent, descent};
     return metrics;
   }
 
@@ -54,18 +52,18 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private createBearings(): Bearings {
-    let left = this.bearing;
-    let right = this.bearing;
-    let bearings = {left, right};
+    const left = this.bearing;
+    const right = this.bearing;
+    const bearings = {left, right};
     return bearings;
   }
 
   @glyph("#")
   public glyphTest(): Glyph {
-    let part = Part.union(
+    const part = Part.union(
       Part.circle($(this.bowlWidth / 2, -this.bowlWidth / 2), this.bowlWidth / 2).toStroke(this.thickness / 2, "round", "round")
     );
-    let glyph = Glyph.byBearings(part, this.createBearings());
+    const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
