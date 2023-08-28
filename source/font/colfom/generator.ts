@@ -11,6 +11,9 @@ import {
   glyph,
   part
 } from "../../module";
+import {
+  MathUtil
+} from "../../util/math";
 
 
 @generator()
@@ -53,7 +56,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get bearing(): number {
-    return this.bowlWidth * 0.09;
+    return (this.bowlWidth + this.thickness) * 0.07;
   }
 
   private get thickness(): number {
@@ -83,6 +86,16 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     return part;
   }
 
+  @glyph("a", "A")
+  public glyphAt(): Glyph {
+    const part = Part.union(
+      this.partBowl()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
   private get tailDepth(): number {
     return this.bowlHeight / 2 * 0.5;
   }
@@ -99,7 +112,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get transphoneGap(): number {
-    return this.bowlWidth * 0.16;
+    return (this.bowlWidth + this.thickness) * 0.14;
   }
 
   private get transphoneMargin(): number {
@@ -114,16 +127,6 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
       Part.line(startPoint, endPoint).toStroke(this.thickness / 2, "round", "round")
     );
     return part;
-  }
-
-  @glyph("a", "A")
-  public glyphAt(): Glyph {
-    const part = Part.union(
-      this.partBowl()
-    );
-    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
-    const glyph = Glyph.byBearings(part, this.createBearings());
-    return glyph;
   }
 
   @glyph("l", "L")
@@ -212,6 +215,66 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
       this.partBowl(),
       this.partLesTail().reflectVer(),
       this.partTransphone().translate($(this.bowlWidth / 2 + this.thickness + this.transphoneGap, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  private get talBeakHeight(): number {
+    return this.bowlHeight / 2 * 0.3;
+  }
+
+  private get talWidth(): number {
+    return (this.bowlHeight / 2 + Math.sqrt(this.talBeakHeight * (this.bowlHeight - this.talBeakHeight))) * this.bowlWidth / this.bowlHeight;
+  }
+
+  @part()
+  public partTal(): Part {
+    const radius = this.bowlHeight / 2;
+    const angle = MathUtil.atan2Deg(radius - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (radius * 2 - this.talBeakHeight)));
+    const part = Part.union(
+      Part.arc($.origin, this.bowlHeight / 2, angle, 360 - angle).scale(this.bowlWidth / this.bowlHeight, 1).toStroke(this.thickness / 2, "round", "round")
+    );
+    return part;
+  }
+
+  @glyph("t", "T")
+  public glyphTal(): Glyph {
+    const part = Part.union(
+      this.partTal()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("d", "D")
+  public glyphDol(): Glyph {
+    const part = Part.union(
+      this.partTal(),
+      this.partTransphone().translate($(this.talWidth - this.bowlWidth / 2 + this.thickness + this.transphoneGap, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("f", "F")
+  public glyphFal(): Glyph {
+    const part = Part.union(
+      this.partTal().rotateHalfTurn().translate($(this.talWidth - this.bowlWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("v", "V")
+  public glyphVol(): Glyph {
+    const part = Part.union(
+      this.partTal().rotateHalfTurn().translate($(this.talWidth - this.bowlWidth, 0)),
+      this.partTransphone().translate($(this.talWidth - this.bowlWidth / 2 + this.thickness + this.transphoneGap, 0))
     );
     part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
     const glyph = Glyph.byBearings(part, this.createBearings());
