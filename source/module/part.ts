@@ -199,6 +199,12 @@ export class PathUtil {
     return path;
   }
 
+  public static ellipse(centerPoint: Point, horRadius: number, verRadius: number): Path {
+    const path = PathUtil.circle(centerPoint, horRadius);
+    path.scale(1, verRadius / horRadius, centerPoint);
+    return path;
+  }
+
   public static arc(centerPoint: Point, radius: number, fromAngle: number, toAngle: number): Path {
     const fromPoint = PointUtil.polar(radius, fromAngle);
     const toPoint = PointUtil.polar(radius, toAngle);
