@@ -24,9 +24,9 @@ const GLYPH_CANVAS_HEIGHT = 80;
 const PREVIEW_CANVAS_WIDTH = 822;
 const PREVIEW_CANVAS_HEIGHT = 150;
 
-const GRAY_COLOR = new Color({hue: 0, saturation: 0, lightness: 0.85});
-const SELECTED_COLOR = new Color({hue: 200, saturation: 0.8, lightness: 0.5});
-const METRICS_COLOR = new Color({hue: 200, saturation: 0.8, lightness: 0.95});
+const GRAY_COLOR = new Color({hue: 198, saturation: 0.5, lightness: 0.9});
+const SELECTED_COLOR = new Color({hue: 35, saturation: 0.9, lightness: 0.5});
+const METRICS_COLOR = new Color({hue: 35, saturation: 0.9, lightness: 0.95});
 
 
 export class FontRenderer {
@@ -119,7 +119,7 @@ export class FontRenderer {
         metricsRectangle.fillColor = METRICS_COLOR;
         metricsOverlay.fillColor = METRICS_COLOR;
         metricsOverlay.opacity = 0;
-        widthText.fontFamily = "Barlow Condensed";
+        widthText.fontFamily = "Asap Condensed";
         widthText.fontSize = 16 * 0.75;
         widthText.fillColor = SELECTED_COLOR;
         widthText.justification = "right";

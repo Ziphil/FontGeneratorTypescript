@@ -1,8 +1,6 @@
 @charset "utf-8";
 
-@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Asap+Condensed:wght@400;700&family=Asap:wght@400;700&display=swap");
 
 @mixin large {
   @media screen and (min-width: 1251px) {
@@ -17,11 +15,19 @@
 }
 
 
+$text-color: hsl(198, 50%, 25%);
+$gray-color: hsl(198, 50%, 90%);
+$gray-text-color: hsl(198, 50%, 80%);
+$background-color: hsl(198, 30%, 98%);
+
+
 body {
   margin: 0px;
   padding: 0px;
-  font-family: "Barlow Condensed", "Mgen+ 1pp Regular";
+  font-family: "Asap Condensed", "Mgen+ 1pp Regular";
   font-size: 16px;
+  color: $text-color;
+  background-color: $background-color;
   font-feature-settings: "lnum";
   overflow-x: auto;
   overflow-y: scroll;
@@ -45,14 +51,14 @@ body {
     flex: 0 0 260px;
     margin: 0px 30px 0px 0px;
     padding: 0px 30px 0px 0px;
-    border-right: 1px hsl(0, 0%, 85%) solid;
+    border-right: 1px $gray-color solid;
   }
   @include small {
     width: 838px;
     flex: 0 0 auto;
     margin: 0px 0px 30px 0px;
     padding: 0px 0px 27px 0px;
-    border-bottom: 1px hsl(0, 0%, 85%) solid;
+    border-bottom: 1px $gray-color solid;
     display: flex;
     flex-wrap: wrap;
   }
@@ -76,17 +82,17 @@ body {
 }
 
 #menu .item.current {
-  background-color: hsl(0, 0%, 85%);
+  background-color: $gray-color;
   font-weight: bold;
 }
 
 #menu .item:hover {
-  background-color: hsl(0, 0%, 85%);
+  background-color: $gray-color;
 }
 
 #menu .item::before {
   margin: 0em 0.3em 0em 0em;
-  color: hsl(0, 0%, 85%);
+  color: $gray-color;
   font-weight: normal;
   content: "❥";
 }
@@ -109,17 +115,25 @@ h1 {
 }
 
 h2 {
-  margin: 30px 0px 15px 0px;
+  margin: 40px 0px 15px 0px;
   padding: 0px;
-  font-size: 150%;
+  font-family: "Asap";
+  font-size: 125%;
   font-weight: bold;
+  color: $gray-text-color;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+}
+
+#name {
+  font-family: "Asap";
 }
 
 #id {
   margin: 0px 0px 0px 15px;
   padding: 0px 4px;
   font-size: 70%;
-  border: 1px hsl(0, 0%, 85%) solid;
+  border: 1px $gray-color solid;
   border-radius: 4px;
 }
 
@@ -131,7 +145,7 @@ h2 {
 #preview-wrapper {
   margin: 0px;
   padding: 8px;
-  background-color: hsl(0, 0%, 85%);
+  background-color: $gray-color;
   border-radius: 8px;
 }
 
@@ -165,7 +179,7 @@ h2 {
 
 .glyph-pane {
   padding: 8px;
-  background-color: hsl(0, 0%, 85%);
+  background-color: $gray-color;
   border-radius: 8px;
 }
 
@@ -179,7 +193,7 @@ h2 {
 
 .glyph-pane .char {
   height: 20px;
-  font-family: "Barlow";
+  font-family: "Asap";
   font-weight: bold;
   white-space: pre;
   display: flex;
