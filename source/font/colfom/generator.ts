@@ -222,7 +222,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get talBeakHeight(): number {
-    return this.bowlHeight / 2 * 0.3;
+    return this.bowlHeight / 2 * 0.4;
   }
 
   private get talWidth(): number {
@@ -280,6 +280,40 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
+
+  @part()
+  public partItBeak(): Part {
+    const radius = this.bowlHeight / 2;
+    const fromAngle = 360 - MathUtil.atan2Deg(radius - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (radius * 2 - this.talBeakHeight)));
+    const toAngle = 180 - MathUtil.atan2Deg(radius - this.tailDepth, Math.sqrt(this.tailDepth * (radius * 2 - this.tailDepth)));
+    const part = Part.union(
+      Part.arc($.origin, this.bowlHeight / 2, fromAngle, toAngle).scale(this.bowlWidth / this.bowlHeight, 1).toStroke(this.thickness / 2, "round", "round")
+    );
+    return part;
+  }
+
+  @glyph("i", "I")
+  public glyphIt(): Glyph {
+    const part = Part.union(
+      this.partItBeak(),
+      this.partLesTail().reflectHor()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("e", "E")
+  public glyphEt(): Glyph {
+    const part = Part.union(
+      this.partItBeak().rotateHalfTurn().translate($(this.talWidth - this.bowlWidth, 0)),
+      this.partLesTail().reflectVer().translate($(this.talWidth - this.bowlWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
 
   private get spaceWidth(): number {
     return this.bowlWidth * 0.6;
