@@ -73,7 +73,9 @@ const FONTS = {
   klbbsb: new KalegFont("bold", "normal", "bevel", true, "square"),
   klrbsr: new KalegFont("regular", "normal", "round", true, "square"),
   klrbsb: new KalegFont("bold", "normal", "round", true, "square"),
-  cfr: new ColfomFont("regular", "normal")
+  cfr: new ColfomFont("regular", "normal"),
+  cfb: new ColfomFont("bold", "normal"),
+  cft: new ColfomFont("thin", "normal")
 };
 
 export const FONT_MANAGER = new FontManager(FONTS);
