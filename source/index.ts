@@ -38,9 +38,10 @@ export class Main {
 
   private listFonts(): void {
     const fonts = FONT_MANAGER.getAll();
+    const maxIdLength = Math.max(...fonts.map(([id]) => id.length));
     const maxFullNameLength = Math.max(...fonts.map(([, font]) => font.fullName.length));
     const fontStrings = fonts.map(([id, font]) => {
-      const fontString = chalk.green(id.padEnd(5)) + "  " + font.fullName;
+      const fontString = chalk.green(id.padEnd(maxIdLength)) + "  " + font.fullName;
       return fontString;
     });
     const output = fontStrings.join("\n");
