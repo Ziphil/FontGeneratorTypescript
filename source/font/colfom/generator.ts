@@ -132,22 +132,22 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
       this.partBowl(),
       this.partBowl().translate($(this.bowlWidth, 0)),
       this.partTransphone().translate($(this.bowlWidth * 3 / 2 + this.thickness + this.transphoneGap, 0))
-
     );
     part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
     const glyph = Glyph.byBearings(part, this.createBearings());
     return glyph;
   }
 
-  private get tailDepth(): number {
+  private get lesTailDepth(): number {
     return this.bowlHeight / 2 * 0.5;
   }
 
   @part()
   public partLesTail(): Part {
     const radius = this.bowlHeight / 2;
-    const startPoint = $(Math.sqrt(this.tailDepth * (radius * 2 - this.tailDepth)), radius - this.tailDepth);
-    const endPoint = startPoint.add($(-(this.tailDepth + this.virtualDescent) * (radius - this.tailDepth) / Math.sqrt(this.tailDepth * (radius * 2 - this.tailDepth)), this.tailDepth + this.virtualDescent));
+    const height = this.lesTailDepth + this.virtualDescent;
+    const startPoint = $(Math.sqrt(this.lesTailDepth * (radius * 2 - this.lesTailDepth)), radius - this.lesTailDepth);
+    const endPoint = startPoint.add($(-height * (radius - this.lesTailDepth) / Math.sqrt(this.lesTailDepth * (radius * 2 - this.lesTailDepth)), height));
     const part = Part.union(
       Contour.line(startPoint, endPoint).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
@@ -307,10 +307,10 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   @part()
-  public partItBeak(): Part {
+  public partUpperIt(): Part {
     const radius = this.bowlHeight / 2;
     const fromAngle = 360 - MathUtil.atan2Deg(radius - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (radius * 2 - this.talBeakHeight)));
-    const toAngle = 180 - MathUtil.atan2Deg(radius - this.tailDepth, Math.sqrt(this.tailDepth * (radius * 2 - this.tailDepth)));
+    const toAngle = 180 - MathUtil.atan2Deg(radius - this.lesTailDepth, Math.sqrt(this.lesTailDepth * (radius * 2 - this.lesTailDepth)));
     const part = Part.union(
       Contour.arc($.origin, this.bowlHeight / 2, fromAngle, toAngle).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
@@ -320,7 +320,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   @glyph("i", "I")
   public glyphIt(): Glyph {
     const part = Part.union(
-      this.partItBeak(),
+      this.partUpperIt(),
       this.partLesTail().reflectHor()
     );
     part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
@@ -331,7 +331,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   @glyph("e", "E")
   public glyphEt(): Glyph {
     const part = Part.union(
-      this.partItBeak().rotateHalfTurn().translate($(this.talWidth - this.bowlWidth, 0)),
+      this.partUpperIt().rotateHalfTurn().translate($(this.talWidth - this.bowlWidth, 0)),
       this.partLesTail().reflectVer().translate($(this.talWidth - this.bowlWidth, 0))
     );
     part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
@@ -411,6 +411,59 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
       this.partYesLeg().reflectVer(),
       this.partYesLeg().reflectHor().reflectVer(),
       this.partTransphone().translate($(this.bowlWidth / 2 + this.thickness + this.transphoneGap, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  private get utTailDepth(): number {
+    return this.bowlHeight / 2 * 0.1;
+  }
+
+  private get utWidth(): number {
+    return (this.bowlHeight / 2 + Math.sqrt(this.utTailDepth * (this.bowlHeight - this.utTailDepth))) * this.bowlWidth / this.bowlHeight;
+  }
+
+  @part()
+  public partUpperUt(): Part {
+    const radius = this.bowlHeight / 2;
+    const fromAngle = MathUtil.atan2Deg(radius - this.utTailDepth, Math.sqrt(this.utTailDepth * (radius * 2 - this.utTailDepth)));
+    const toAngle = MathUtil.atan2Deg(radius - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (radius * 2 - this.talBeakHeight)));
+    const part = Part.union(
+      Contour.arc($.origin, this.bowlHeight / 2, fromAngle, 360 - toAngle).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    return part;
+  }
+
+  @part()
+  public partUtTail(): Part {
+    const radius = this.bowlHeight / 2;
+    const height = this.utTailDepth + this.virtualDescent;
+    const startPoint = $(Math.sqrt(this.utTailDepth * (radius * 2 - this.utTailDepth)), radius - this.utTailDepth);
+    const endPoint = startPoint.add($(-height * (radius - this.lesTailDepth) / Math.sqrt(this.lesTailDepth * (radius * 2 - this.lesTailDepth)), height));
+    const part = Part.union(
+      Contour.line(startPoint, endPoint).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    return part;
+  }
+
+  @glyph("u", "U")
+  public glyphUt(): Glyph {
+    const part = Part.union(
+      this.partUpperUt(),
+      this.partUtTail()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("o", "O")
+  public glyphOt(): Glyph {
+    const part = Part.union(
+      this.partUpperUt().rotateHalfTurn().translate($(this.talWidth - this.bowlWidth, 0)),
+      this.partUtTail().rotateHalfTurn().translate($(this.talWidth - this.bowlWidth, 0))
     );
     part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
     const glyph = Glyph.byBearings(part, this.createBearings());
