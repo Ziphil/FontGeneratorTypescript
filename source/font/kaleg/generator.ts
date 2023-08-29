@@ -3,6 +3,7 @@
 import {
   $,
   Bearings,
+  Contour,
   Generator,
   Glyph,
   Metrics,
@@ -65,35 +66,35 @@ export class KalegGenerator extends Generator<KalegConfig> {
   }
 
   @part()
-  public partTopLeftEdgeShape(): Part {
+  public contourTopLeftEdgeShape(): Contour {
     const edgeJoin = this.config.edgeJoin;
     if (edgeJoin === "miter") {
-      const part = Part.seq(
-        Part.line($(0, 0), $(0, -this.edgeHeight)),
-        Part.line($(0, 0), $(this.edgeWidth, 0))
+      const contour = Contour.seq(
+        Contour.line($(0, 0), $(0, -this.edgeHeight)),
+        Contour.line($(0, 0), $(this.edgeWidth, 0))
       );
-      return part;
+      return contour;
     } else if (edgeJoin === "bevel") {
-      const part = Part.seq(
-        Part.line($(0, 0), $(this.edgeWidth, -this.edgeHeight))
+      const contour = Contour.seq(
+        Contour.line($(0, 0), $(this.edgeWidth, -this.edgeHeight))
       );
-      return part;
+      return contour;
     } else {
-      const part = Part.seq(
-        Part.arc($(this.edgeWidth, 0), this.edgeWidth, -180, -90).scale(1, this.edgeHeight / this.edgeWidth)
+      const contour = Contour.seq(
+        Contour.arc($(this.edgeWidth, 0), this.edgeWidth, -180, -90).scale(1, this.edgeHeight / this.edgeWidth)
       );
-      return part;
+      return contour;
     }
   }
 
   @part()
   public partTopLeftTipShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.verThickness + this.edgeHeight)),
-      this.partTopLeftEdgeShape(),
-      Part.line($(0, 0), $(this.horThickness - this.edgeWidth, 0)),
-      Part.line($(0, 0), $(0, this.verThickness)),
-      Part.line($(0, 0), $(-this.horThickness, 0))
+      Contour.line($(0, 0), $(0, -this.verThickness + this.edgeHeight)),
+      this.contourTopLeftEdgeShape(),
+      Contour.line($(0, 0), $(this.horThickness - this.edgeWidth, 0)),
+      Contour.line($(0, 0), $(0, this.verThickness)),
+      Contour.line($(0, 0), $(-this.horThickness, 0))
     );
     return part;
   }
@@ -157,10 +158,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partTopCenterTipShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.verThickness)),
-      Part.line($(0, 0), $(this.horThickness, 0)),
-      Part.line($(0, 0), $(0, this.verThickness)),
-      Part.line($(0, 0), $(-this.horThickness, 0))
+      Contour.line($(0, 0), $(0, -this.verThickness)),
+      Contour.line($(0, 0), $(this.horThickness, 0)),
+      Contour.line($(0, 0), $(0, this.verThickness)),
+      Contour.line($(0, 0), $(-this.horThickness, 0))
     );
     return part;
   }
@@ -205,20 +206,20 @@ export class KalegGenerator extends Generator<KalegConfig> {
     const beakHeight = this.beakHeight;
     if (beakHeight === 0) {
       const part = Part.seq(
-        Part.line($(0, 0), $(0, -this.verThickness)),
-        Part.line($(0, 0), $(this.unbeakedBeakWidth, 0)),
-        Part.line($(0, 0), $(0, this.verThickness)),
-        Part.line($(0, 0), $(-this.unbeakedBeakWidth, 0))
+        Contour.line($(0, 0), $(0, -this.verThickness)),
+        Contour.line($(0, 0), $(this.unbeakedBeakWidth, 0)),
+        Contour.line($(0, 0), $(0, this.verThickness)),
+        Contour.line($(0, 0), $(-this.unbeakedBeakWidth, 0))
       );
       part.moveOrigin($(this.beakFixLength, 0));
       return part;
     } else {
       const part = Part.seq(
-        Part.line($(0, this.beakHeight), $(0, -this.verThickness + this.edgeHeight)),
-        this.partTopLeftEdgeShape(),
-        Part.line($(0, 0), $(this.horThickness - this.edgeWidth, 0)),
-        Part.line($(0, 0), $(0, this.verThickness + this.beakHeight)),
-        Part.line($(0, 0), $(-this.horThickness, 0))
+        Contour.line($(0, this.beakHeight), $(0, -this.verThickness + this.edgeHeight)),
+        this.contourTopLeftEdgeShape(),
+        Contour.line($(0, 0), $(this.horThickness - this.edgeWidth, 0)),
+        Contour.line($(0, 0), $(0, this.verThickness + this.beakHeight)),
+        Contour.line($(0, 0), $(-this.horThickness, 0))
       );
       return part;
     }
@@ -276,20 +277,20 @@ export class KalegGenerator extends Generator<KalegConfig> {
     const beakHeight = this.beakHeight;
     if (beakHeight === 0) {
       const part = Part.seq(
-        Part.line($(0, 0), $(0, -this.verThickness)),
-        Part.line($(0, 0), $(this.unbeakedBeakWidth, 0)),
-        Part.line($(0, 0), $(0, this.verThickness)),
-        Part.line($(0, 0), $(-this.unbeakedBeakWidth, 0))
+        Contour.line($(0, 0), $(0, -this.verThickness)),
+        Contour.line($(0, 0), $(this.unbeakedBeakWidth, 0)),
+        Contour.line($(0, 0), $(0, this.verThickness)),
+        Contour.line($(0, 0), $(-this.unbeakedBeakWidth, 0))
       );
       part.moveOrigin($(this.beakFixLength, 0));
       return part;
     } else {
       const part = Part.seq(
-        Part.line($(0, this.shortBeakHeight), $(0, -this.verThickness + this.edgeHeight)),
-        this.partTopLeftEdgeShape(),
-        Part.line($(0, 0), $(this.horThickness - this.edgeWidth, 0)),
-        Part.line($(0, 0), $(0, this.verThickness + this.shortBeakHeight)),
-        Part.line($(0, 0), $(-this.horThickness, 0))
+        Contour.line($(0, this.shortBeakHeight), $(0, -this.verThickness + this.edgeHeight)),
+        this.contourTopLeftEdgeShape(),
+        Contour.line($(0, 0), $(this.horThickness - this.edgeWidth, 0)),
+        Contour.line($(0, 0), $(0, this.verThickness + this.shortBeakHeight)),
+        Contour.line($(0, 0), $(-this.horThickness, 0))
       );
       return part;
     }
@@ -318,19 +319,19 @@ export class KalegGenerator extends Generator<KalegConfig> {
     const legWidth = this.legWidth;
     if (legWidth === 0) {
       const part = Part.seq(
-        Part.line($(0, 0), $(0, -this.verThickness)),
-        Part.line($(0, 0), $(this.horThickness, 0)),
-        Part.line($(0, 0), $(0, this.verThickness)),
-        Part.line($(0, 0), $(-this.horThickness, 0))
+        Contour.line($(0, 0), $(0, -this.verThickness)),
+        Contour.line($(0, 0), $(this.horThickness, 0)),
+        Contour.line($(0, 0), $(0, this.verThickness)),
+        Contour.line($(0, 0), $(-this.horThickness, 0))
       );
       return part;
     } else {
       const part = Part.seq(
-        Part.line($(0, 0), $(0, -this.verThickness + this.edgeHeight)),
-        this.partTopLeftEdgeShape(),
-        Part.line($(0, 0), $(this.horThickness - this.edgeWidth + this.legWidth, 0)),
-        Part.line($(0, 0), $(0, this.verThickness)),
-        Part.line($(0, 0), $(-this.horThickness - this.legWidth, 0))
+        Contour.line($(0, 0), $(0, -this.verThickness + this.edgeHeight)),
+        this.contourTopLeftEdgeShape(),
+        Contour.line($(0, 0), $(this.horThickness - this.edgeWidth + this.legWidth, 0)),
+        Contour.line($(0, 0), $(0, this.verThickness)),
+        Contour.line($(0, 0), $(-this.horThickness - this.legWidth, 0))
       );
       return part;
     }
@@ -380,21 +381,21 @@ export class KalegGenerator extends Generator<KalegConfig> {
     const tailWidth = this.tailWidth;
     if (tailWidth === 0) {
       const part = Part.seq(
-        Part.line($(0, 0), $(0, -this.verThickness - this.descent)),
-        Part.line($(0, 0), $(this.horThickness, 0)),
-        Part.line($(0, 0), $(0, this.verThickness + this.descent)),
-        Part.line($(0, 0), $(-this.horThickness, 0))
+        Contour.line($(0, 0), $(0, -this.verThickness - this.descent)),
+        Contour.line($(0, 0), $(this.horThickness, 0)),
+        Contour.line($(0, 0), $(0, this.verThickness + this.descent)),
+        Contour.line($(0, 0), $(-this.horThickness, 0))
       );
       return part;
     } else {
       const part = Part.seq(
-        Part.line($(0, 0), $(0, -this.verThickness - this.descent + this.edgeHeight)),
-        this.partTopLeftEdgeShape(),
-        Part.line($(0, 0), $(this.horThickness - this.edgeWidth + this.tailWidth, 0)),
-        Part.line($(0, 0), $(0, this.verThickness)),
-        Part.line($(0, 0), $(-this.tailWidth, 0)),
-        Part.line($(0, 0), $(0, this.descent)),
-        Part.line($(0, 0), $(-this.horThickness, 0))
+        Contour.line($(0, 0), $(0, -this.verThickness - this.descent + this.edgeHeight)),
+        this.contourTopLeftEdgeShape(),
+        Contour.line($(0, 0), $(this.horThickness - this.edgeWidth + this.tailWidth, 0)),
+        Contour.line($(0, 0), $(0, this.verThickness)),
+        Contour.line($(0, 0), $(-this.tailWidth, 0)),
+        Contour.line($(0, 0), $(0, this.descent)),
+        Contour.line($(0, 0), $(-this.horThickness, 0))
       );
       return part;
     }
@@ -431,10 +432,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partHorBarShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.verThickness)),
-      Part.line($(0, 0), $(this.bowlWidth - this.horThickness * 2, 0)),
-      Part.line($(0, 0), $(0, this.verThickness)),
-      Part.line($(0, 0), $(-this.bowlWidth + this.horThickness * 2, 0))
+      Contour.line($(0, 0), $(0, -this.verThickness)),
+      Contour.line($(0, 0), $(this.bowlWidth - this.horThickness * 2, 0)),
+      Contour.line($(0, 0), $(0, this.verThickness)),
+      Contour.line($(0, 0), $(-this.bowlWidth + this.horThickness * 2, 0))
     );
     return part;
   }
@@ -460,10 +461,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partTongueShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.verThickness)),
-      Part.line($(0, 0), $(this.tongueWidth, 0)),
-      Part.line($(0, 0), $(0, this.verThickness)),
-      Part.line($(0, 0), $(-this.tongueWidth * 2, 0))
+      Contour.line($(0, 0), $(0, -this.verThickness)),
+      Contour.line($(0, 0), $(this.tongueWidth, 0)),
+      Contour.line($(0, 0), $(0, this.verThickness)),
+      Contour.line($(0, 0), $(-this.tongueWidth * 2, 0))
     );
     return part;
   }
@@ -489,10 +490,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partHorShortBarShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.verThickness)),
-      Part.line($(0, 0), $(this.narrowBowlWidth - this.horThickness * 2, 0)),
-      Part.line($(0, 0), $(0, this.verThickness)),
-      Part.line($(0, 0), $(-this.narrowBowlWidth + this.horThickness * 2, 0))
+      Contour.line($(0, 0), $(0, -this.verThickness)),
+      Contour.line($(0, 0), $(this.narrowBowlWidth - this.horThickness * 2, 0)),
+      Contour.line($(0, 0), $(0, this.verThickness)),
+      Contour.line($(0, 0), $(-this.narrowBowlWidth + this.horThickness * 2, 0))
     );
     return part;
   }
@@ -528,10 +529,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partVerBarShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.mean + this.verThickness * 2)),
-      Part.line($(0, 0), $(this.horThickness, 0)),
-      Part.line($(0, 0), $(0, this.mean - this.verThickness * 2)),
-      Part.line($(0, 0), $(-this.horThickness, 0))
+      Contour.line($(0, 0), $(0, -this.mean + this.verThickness * 2)),
+      Contour.line($(0, 0), $(this.horThickness, 0)),
+      Contour.line($(0, 0), $(0, this.mean - this.verThickness * 2)),
+      Contour.line($(0, 0), $(-this.horThickness, 0))
     );
     return part;
   }
@@ -567,10 +568,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partVerShortBarShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -(this.mean - this.verThickness * 3) / 2)),
-      Part.line($(0, 0), $(this.horThickness, 0)),
-      Part.line($(0, 0), $(0, (this.mean - this.verThickness * 3) / 2)),
-      Part.line($(0, 0), $(-this.horThickness, 0))
+      Contour.line($(0, 0), $(0, -(this.mean - this.verThickness * 3) / 2)),
+      Contour.line($(0, 0), $(this.horThickness, 0)),
+      Contour.line($(0, 0), $(0, (this.mean - this.verThickness * 3) / 2)),
+      Contour.line($(0, 0), $(-this.horThickness, 0))
     );
     return part;
   }
@@ -614,10 +615,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partTransphoneShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.mean)),
-      Part.line($(0, 0), $(this.horThickness * this.transphoneThicknessRatio, 0)),
-      Part.line($(0, 0), $(0, this.mean)),
-      Part.line($(0, 0), $(-this.horThickness * this.transphoneThicknessRatio, 0))
+      Contour.line($(0, 0), $(0, -this.mean)),
+      Contour.line($(0, 0), $(this.horThickness * this.transphoneThicknessRatio, 0)),
+      Contour.line($(0, 0), $(0, this.mean)),
+      Contour.line($(0, 0), $(-this.horThickness * this.transphoneThicknessRatio, 0))
     );
     return part;
   }
@@ -639,10 +640,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partSolidusShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.verThickness)),
-      Part.line($(0, 0), $(this.bowlWidth, 0)),
-      Part.line($(0, 0), $(0, this.verThickness)),
-      Part.line($(0, 0), $(-this.bowlWidth, 0))
+      Contour.line($(0, 0), $(0, -this.verThickness)),
+      Contour.line($(0, 0), $(this.bowlWidth, 0)),
+      Contour.line($(0, 0), $(0, this.verThickness)),
+      Contour.line($(0, 0), $(-this.bowlWidth, 0))
     );
     return part;
   }
@@ -673,10 +674,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partTopDiacriticShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.diacriticVerThickness)),
-      Part.line($(0, 0), $(this.diacriticWidth, 0)),
-      Part.line($(0, 0), $(0, this.diacriticVerThickness)),
-      Part.line($(0, 0), $(-this.diacriticWidth, 0))
+      Contour.line($(0, 0), $(0, -this.diacriticVerThickness)),
+      Contour.line($(0, 0), $(this.diacriticWidth, 0)),
+      Contour.line($(0, 0), $(0, this.diacriticVerThickness)),
+      Contour.line($(0, 0), $(-this.diacriticWidth, 0))
     );
     return part;
   }
@@ -710,10 +711,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partDotShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.dotHeight)),
-      Part.line($(0, 0), $(this.dotWidth, 0)),
-      Part.line($(0, 0), $(0, this.dotHeight)),
-      Part.line($(0, 0), $(-this.dotWidth, 0))
+      Contour.line($(0, 0), $(0, -this.dotHeight)),
+      Contour.line($(0, 0), $(this.dotWidth, 0)),
+      Contour.line($(0, 0), $(0, this.dotHeight)),
+      Contour.line($(0, 0), $(-this.dotWidth, 0))
     );
     return part;
   }
@@ -739,10 +740,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partBadekStemShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.mean - this.descent + this.dotHeight + this.badekGap)),
-      Part.line($(0, 0), $(this.horThickness, 0)),
-      Part.line($(0, 0), $(0, this.mean + this.descent - this.dotHeight - this.badekGap)),
-      Part.line($(0, 0), $(-this.horThickness, 0))
+      Contour.line($(0, 0), $(0, -this.mean - this.descent + this.dotHeight + this.badekGap)),
+      Contour.line($(0, 0), $(this.horThickness, 0)),
+      Contour.line($(0, 0), $(0, this.mean + this.descent - this.dotHeight - this.badekGap)),
+      Contour.line($(0, 0), $(-this.horThickness, 0))
     );
     return part;
   }
@@ -763,21 +764,21 @@ export class KalegGenerator extends Generator<KalegConfig> {
     const padekBendWidth = this.padekBendWidth;
     if (padekBendWidth === 0) {
       const part = Part.seq(
-        Part.line($(0, 0), $(0, -this.mean - this.descent + this.dotHeight + this.badekGap)),
-        Part.line($(0, 0), $(this.horThickness, 0)),
-        Part.line($(0, 0), $(0, this.mean + this.descent - this.dotHeight - this.badekGap)),
-        Part.line($(0, 0), $(-this.horThickness, 0))
+        Contour.line($(0, 0), $(0, -this.mean - this.descent + this.dotHeight + this.badekGap)),
+        Contour.line($(0, 0), $(this.horThickness, 0)),
+        Contour.line($(0, 0), $(0, this.mean + this.descent - this.dotHeight - this.badekGap)),
+        Contour.line($(0, 0), $(-this.horThickness, 0))
       );
       return part;
     } else {
       const part = Part.seq(
-        Part.line($(0, 0), $(0, -this.mean - this.descent + this.dotHeight + this.badekGap + this.edgeHeight)),
-        this.partTopLeftEdgeShape(),
-        Part.line($(0, 0), $(this.horThickness - this.edgeWidth + this.padekBendWidth, 0)),
-        Part.line($(0, 0), $(0, this.verThickness)),
-        Part.line($(0, 0), $(-this.padekBendWidth, 0)),
-        Part.line($(0, 0), $(0, this.mean + this.descent - this.dotHeight - this.badekGap - this.verThickness)),
-        Part.line($(0, 0), $(-this.horThickness, 0))
+        Contour.line($(0, 0), $(0, -this.mean - this.descent + this.dotHeight + this.badekGap + this.edgeHeight)),
+        this.contourTopLeftEdgeShape(),
+        Contour.line($(0, 0), $(this.horThickness - this.edgeWidth + this.padekBendWidth, 0)),
+        Contour.line($(0, 0), $(0, this.verThickness)),
+        Contour.line($(0, 0), $(-this.padekBendWidth, 0)),
+        Contour.line($(0, 0), $(0, this.mean + this.descent - this.dotHeight - this.badekGap - this.verThickness)),
+        Contour.line($(0, 0), $(-this.horThickness, 0))
       );
       return part;
     }
@@ -797,10 +798,10 @@ export class KalegGenerator extends Generator<KalegConfig> {
   @part()
   public partNokShape(): Part {
     const part = Part.seq(
-      Part.line($(0, 0), $(0, -this.nokHeight)),
-      Part.line($(0, 0), $(this.horThickness, 0)),
-      Part.line($(0, 0), $(0, this.nokHeight)),
-      Part.line($(0, 0), $(-this.horThickness, 0))
+      Contour.line($(0, 0), $(0, -this.nokHeight)),
+      Contour.line($(0, 0), $(this.horThickness, 0)),
+      Contour.line($(0, 0), $(0, this.nokHeight)),
+      Contour.line($(0, 0), $(-this.horThickness, 0))
     );
     return part;
   }

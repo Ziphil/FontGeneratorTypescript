@@ -2,6 +2,7 @@
 
 import {
   $,
+  Contour,
   Generator,
   Glyph,
   Metrics,
@@ -73,33 +74,33 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partCut(): Part {
+  public partCut(): Contour {
     const y = -this.thickness / (MathUtil.cosDeg(this.obliqueAngle) * 2);
     const x = this.thickness / (MathUtil.sinDeg(this.obliqueAngle) * 2);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
   @part()
-  public partHorizontalCut(): Part {
+  public partHorizontalCut(): Contour {
     const x = this.thickness / MathUtil.sinDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, 0));
+    const part = Contour.line($(0, 0), $(x, 0));
     return part;
   }
 
   @part()
-  public partRightLeftOblique(): Part {
+  public partRightLeftOblique(): Contour {
     const y = -this.triangleHeight - this.thickness / 2;
     const x = -y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
   @part()
-  public partLeftLeftOblique(): Part {
+  public partLeftLeftOblique(): Contour {
     const y = this.triangleHeight + this.thickness / (MathUtil.cosDeg(this.obliqueAngle) * 2) + this.thickness / 2;
     const x = -y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
@@ -128,18 +129,18 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partRightLeftShortOblique(): Part {
+  public partRightLeftShortOblique(): Contour {
     const y = -this.triangleHeight + this.diamondGap * MathUtil.sinDeg(this.obliqueAngle) - this.thickness / 2 + this.thickness / (MathUtil.cosDeg(this.obliqueAngle) * 2);
     const x = -y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
   @part()
-  public partLeftLeftShortOblique(): Part {
+  public partLeftLeftShortOblique(): Contour {
     const y = this.triangleHeight - this.diamondGap * MathUtil.sinDeg(this.obliqueAngle) + this.thickness / 2;
     const x = -y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
@@ -164,25 +165,25 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partHorizontalChippedCut(): Part {
+  public partHorizontalChippedCut(): Contour {
     const x = this.thickness / MathUtil.sinDeg(this.obliqueAngle) - this.thickness / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, 0));
+    const part = Contour.line($(0, 0), $(x, 0));
     return part;
   }
 
   @part()
-  public partLeftLeftChippedOblique(): Part {
+  public partLeftLeftChippedOblique(): Contour {
     const y = this.triangleHeight + this.thickness / (MathUtil.cosDeg(this.obliqueAngle) * 2);
     const x = -y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
   @part()
-  public partChip(): Part {
+  public partChip(): Contour {
     const y = this.thickness / 2;
     const x = y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
@@ -207,10 +208,10 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partLeftLeftCutOblique(): Part {
+  public partLeftLeftCutOblique(): Contour {
     const y = this.triangleHeight + this.thickness;
     const x = -y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
@@ -257,32 +258,32 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partBottomBase(): Part {
+  public partBottomBase(): Contour {
     const x = this.triangleWidth + this.thickness / MathUtil.sinDeg(this.obliqueAngle) + this.thickness / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, 0));
+    const part = Contour.line($(0, 0), $(x, 0));
     return part;
   }
 
   @part()
-  public partRightBase(): Part {
+  public partRightBase(): Contour {
     const y = -this.thickness;
     const x = -this.thickness / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
   @part()
-  public partTopBase(): Part {
+  public partTopBase(): Contour {
     const x = -this.triangleWidth - this.thickness / MathUtil.sinDeg(this.obliqueAngle) + this.thickness / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, 0));
+    const part = Contour.line($(0, 0), $(x, 0));
     return part;
   }
 
   @part()
-  public partLeftBase(): Part {
+  public partLeftBase(): Contour {
     const y = this.thickness;
     const x = -this.thickness / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
@@ -301,9 +302,9 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partBottomLeftChippedBase(): Part {
+  public partBottomLeftChippedBase(): Contour {
     const x = this.triangleWidth + this.thickness / MathUtil.sinDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, 0));
+    const part = Contour.line($(0, 0), $(x, 0));
     return part;
   }
 
@@ -349,10 +350,10 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partRightLeftAscender(): Part {
+  public partRightLeftAscender(): Contour {
     const y = -this.ascenderHeight - this.thickness / (MathUtil.cosDeg(this.obliqueAngle) * 4);
     const x = y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
@@ -377,18 +378,18 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partLeftLeftDescender(): Part {
+  public partLeftLeftDescender(): Contour {
     const y = this.ascenderHeight + this.thickness / 2 + this.thickness / (MathUtil.cosDeg(this.obliqueAngle) * 4);
     const x = y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
   @part()
-  public partRightLeftDescender(): Part {
+  public partRightLeftDescender(): Contour {
     const y = -this.ascenderHeight - this.thickness / 2 + this.thickness / (MathUtil.cosDeg(this.obliqueAngle) * 4);
     const x = y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
@@ -413,10 +414,10 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partLeftLeftChippedDescender(): Part {
+  public partLeftLeftChippedDescender(): Contour {
     const y = this.ascenderHeight + this.thickness / (MathUtil.cosDeg(this.obliqueAngle) * 4);
     const x = y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
@@ -463,10 +464,10 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partRightTransphone(): Part {
+  public partRightTransphone(): Contour {
     const y = -this.triangleHeight - this.thickness;
     const x = y / MathUtil.tanDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
@@ -506,17 +507,17 @@ export class GilitGenerator extends Generator<GilitConfig> {
   }
 
   @part()
-  public partUpperAcuteCut(): Part {
+  public partUpperAcuteCut(): Contour {
     const y = -this.thickness * this.acuteRatio / (MathUtil.cosDeg(this.obliqueAngle) * 2);
     const x = this.thickness * this.acuteRatio / (MathUtil.sinDeg(this.obliqueAngle) * 2);
-    const part = Part.line($(0, 0), $(x, y));
+    const part = Contour.line($(0, 0), $(x, y));
     return part;
   }
 
   @part()
-  public partUpperAcuteHorizontalCut(): Part {
+  public partUpperAcuteHorizontalCut(): Contour {
     const x = this.thickness * this.acuteRatio / MathUtil.sinDeg(this.obliqueAngle);
-    const part = Part.line($(0, 0), $(x, 0));
+    const part = Contour.line($(0, 0), $(x, 0));
     return part;
   }
 

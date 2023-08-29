@@ -8,6 +8,7 @@ import {
   Glyph
 } from "./glyph";
 import {
+  Contour,
   Part
 } from "./part";
 
@@ -18,9 +19,10 @@ type Metadata = Map<string, string | symbol>;
 
 type GeneratorDecorator = (clazz: new(...args: any) => Generator) => void;
 type GlyphMethodDecorator = (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<GlyphMethod>) => void;
-type PartMethodDecorator = (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>) => void;
+type PartMethodDecorator = (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod> | TypedPropertyDescriptor<ContourMethod>) => void;
 type GlyphMethod = () => Glyph;
 type PartMethod = (...args: Array<any>) => Part;
+type ContourMethod = (...args: Array<any>) => Contour;
 
 export function generator(): GeneratorDecorator {
   const decorator = function (clazz: new(...args: any) => Generator): void {
@@ -56,9 +58,9 @@ export function glyph(...chars: Array<string>): GlyphMethodDecorator {
 }
 
 export function part(): PartMethodDecorator {
-  const decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod>): void {
-    const original = descriptor.value!;
-    descriptor.value = function (this: Generator, ...args: Array<any>): Part {
+  const decorator = function (target: object, name: string | symbol, descriptor: TypedPropertyDescriptor<PartMethod> | TypedPropertyDescriptor<ContourMethod>): void {
+    const original = descriptor.value! as any;
+    descriptor.value = function (this: Generator, ...args: Array<any>): any {
       if (args.length === 0) {
         const cachedPart = this.partCache.get(name);
         if (cachedPart === undefined) {

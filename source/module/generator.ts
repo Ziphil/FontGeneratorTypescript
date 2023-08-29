@@ -5,6 +5,7 @@ import {
   Metrics
 } from "./glyph";
 import {
+  Contour,
   Part
 } from "./part";
 
@@ -13,7 +14,7 @@ export abstract class Generator<C = unknown> {
 
   public chars!: Array<string>;
   protected config: C;
-  protected partCache: Map<string | symbol, Part>;
+  protected partCache: Map<string | symbol, Contour | Part>;
   protected getterCache: Map<string | symbol, unknown>;
 
   public constructor(config: C) {

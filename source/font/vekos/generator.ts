@@ -3,6 +3,7 @@
 import {
   $,
   Bearings,
+  Contour,
   Generator,
   Glyph,
   Metrics,
@@ -70,23 +71,23 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // k, p, c, l, a などの文字に共通する丸い部分の外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
-  public partOuterBowl(): Part {
+  public partOuterBowl(): Contour {
     const width = this.bowlWidth / 2;
     const height = this.mean / 2 + this.overshoot;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // k, p, c, l, a などの文字に共通する丸い部分の内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
-  public partInnerBowl(): Part {
+  public partInnerBowl(): Contour {
     const width = this.bowlWidth / 2 - this.horThickness;
     const height = this.mean / 2 - this.verThickness + this.overshoot;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -158,31 +159,31 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // l の文字のディセンダーの左側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partLeftLesTail(): Part {
+  public partLeftLesTail(): Contour {
     const bend = this.lesTailBend - this.horThickness / 2 + this.lesTailCorrection;
     const virtualBend = this.lesTailBend;
     const height = this.mean / 2 + this.descent;
     const bottomHandle = this.descent * 1.08;
     const topHandle = this.searchTailInnerHandle(bottomHandle, virtualBend, height);
-    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    const part = Contour.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
   // l の文字のディセンダーの右側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partRightLesTail(): Part {
+  public partRightLesTail(): Contour {
     const bend = this.lesTailBend - this.horThickness / 2;
     const height = this.mean / 2 + this.descent;
     const topHandle = this.descent * 1.08;
     const bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
-    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    const part = Contour.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
   // 文字の書き始めや書き終わりの位置にある水平に切られた部分を、左端から右端への向きで生成します。
   @part()
-  public partCut(): Part {
-    const part = Part.line($(0, 0), $(this.horThickness, 0));
+  public partCut(): Contour {
+    const part = Contour.line($(0, 0), $(this.horThickness, 0));
     return part;
   }
 
@@ -196,7 +197,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
       this.partLeftLesTail(),
       this.partCut(),
       this.partRightLesTail().reverse(),
-      Part.line($(0, 0), $(-this.horThickness + this.lesTailCorrection, 0))
+      Contour.line($(0, 0), $(-this.horThickness + this.lesTailCorrection, 0))
     );
     part.moveOrigin($(-this.lesTailCorrection, 0));
     return part;
@@ -228,19 +229,19 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // 変音符の右に飛び出るように曲がる曲線の上半分を、下端から上端への向きで生成します。
   @part()
-  public partTransphoneSegment(): Part {
+  public partTransphoneSegment(): Contour {
     const bend = this.transphoneBend;
     const height = this.mean / 2;
     const rightHandle = height * 0.6;
-    const part = Part.bezier($(0, 0), null, $(0, -rightHandle), $(bend, height));
+    const part = Contour.bezier($(0, 0), null, $(0, -rightHandle), $(bend, height));
     return part;
   }
 
   // 変音符の上下にある水平に切られた部分を、左端から右端への向きで生成します。
   @part()
-  public partTransphoneCut(): Part {
+  public partTransphoneCut(): Contour {
     const width = this.horThickness * this.transphoneThicknessRatio;
-    const part = Part.line($(0, 0), $(width, 0));
+    const part = Contour.line($(0, 0), $(width, 0));
     return part;
   }
 
@@ -344,11 +345,11 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // y の文字の下半分にある曲線を、上端から下端への向きで生成します。
   @part()
-  public partYesLeg(): Part {
+  public partYesLeg(): Contour {
     const bend = this.yesLegBend;
     const height = this.mean / 2;
     const leftHandle = height * 0.6;
-    const part = Part.bezier($(0, 0), $(0, leftHandle), null, $(bend, height));
+    const part = Contour.bezier($(0, 0), $(0, leftHandle), null, $(bend, height));
     return part;
   }
 
@@ -424,23 +425,23 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // t の文字の右上にある部分の外側の曲線を、右端から上端への向きで生成します。
   @part()
-  public partOuterTalBeak(): Part {
+  public partOuterTalBeak(): Contour {
     const width = this.talBeakWidth;
     const height = this.talBeakHeight + this.overshoot;
     const rightHandle = height * 0.05;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
   // t の文字の右上にある部分の内側の曲線を、右端から上端への向きで生成します。
   @part()
-  public partInnerTalBeak(): Part {
+  public partInnerTalBeak(): Contour {
     const width = this.talBeakWidth - this.horThickness;
     const height = this.talBeakHeight - this.verThickness + this.overshoot;
     const rightHandle = height * 0.05;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
@@ -522,35 +523,35 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // x, j の文字に共通する細い丸い部分の外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
-  public partOuterLeftNarrowBowl(): Part {
+  public partOuterLeftNarrowBowl(): Contour {
     const width = this.narrowBowlVirtualWidth / 2;
     const height = this.mean / 2 + this.overshoot;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // x, j の文字に共通する細い丸い部分の外側の曲線の 4 分の 1 を、右端から上端への向きで生成します。
   // ただし、他のトレイルと使い方を揃えるため、左右反転してあります。
   @part()
-  public partOuterRightNarrowBowl(): Part {
+  public partOuterRightNarrowBowl(): Contour {
     const width = this.narrowBowlVirtualWidth / 2 - this.narrowBowlCorrection;
     const height = this.mean / 2 + this.overshoot;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // x, j の文字に共通する細い丸い部分の内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
-  public partInnerNarrowBowl(): Part {
+  public partInnerNarrowBowl(): Contour {
     const width = this.narrowBowlVirtualWidth / 2 - this.horThickness;
     const height = this.mean / 2 - this.verThickness + this.overshoot;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -649,33 +650,33 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // n の文字の書き終わりの箇所にある曲線を、上端から下端への向きで生成します。
   @part()
-  public partNesLeg(): Part {
+  public partNesLeg(): Contour {
     const bend = this.nesLegBend;
     const height = this.mean / 2;
     const rightHandle = height * 0.6;
-    const part = Part.bezier($(0, 0), $(0, rightHandle), null, $(-bend, height));
+    const part = Contour.bezier($(0, 0), $(0, rightHandle), null, $(-bend, height));
     return part;
   }
 
   // n の文字の中央部分の上側の曲線を、下端から上端への向きで生成します。
   @part()
-  public partTopSpine(): Part {
+  public partTopSpine(): Contour {
     const width = this.spineWidth;
     const bend = this.mean - this.verThickness + this.overshoot * 2;
     const rightHandle = width * 1.05;
     const leftHandle = this.searchSpineInnerHandle(rightHandle, bend, width);
-    const part = Part.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0), $(width, -bend));
+    const part = Contour.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0), $(width, -bend));
     return part;
   }
 
   // n の文字の中央部分の下側の曲線を、下端から上端への向きで生成します。
   @part()
-  public partBottomSpine(): Part {
+  public partBottomSpine(): Contour {
     const width = this.spineWidth;
     const bend = this.mean - this.verThickness + this.overshoot * 2;
     const leftHandle = width * 1.05;
     const rightHandle = this.searchSpineInnerHandle(leftHandle, bend, width);
-    const part = Part.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0), $(width, -bend));
+    const part = Contour.bezier($(0, 0), $(leftHandle, 0), $(-rightHandle, 0), $(width, -bend));
     return part;
   }
 
@@ -742,30 +743,30 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // アキュートアクセントの丸い部分の外側の曲線の半分を、左下端から上端への向きで生成します。
   @part()
-  public partOuterAcute(): Part {
+  public partOuterAcute(): Contour {
     const width = this.acuteWidth / 2;
     const height = this.acuteHeight;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // アキュートアクセントの丸い部分の内側の曲線の半分を、左下端から上端への向きで生成します。
   @part()
-  public partInnerAcute(): Part {
+  public partInnerAcute(): Contour {
     const width = this.acuteWidth / 2 - this.acuteHorThickness;
     const height = this.acuteHeight - this.acuteVerThickness;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // アキュートアクセントの下部にある水平に切られた部分を、左端から右端への向きで生成します。
   @part()
-  public partAcuteCut(): Part {
-    const part = Part.line($(0, 0), $(this.acuteHorThickness, 0));
+  public partAcuteCut(): Contour {
+    const part = Contour.line($(0, 0), $(this.acuteHorThickness, 0));
     return part;
   }
 
@@ -803,23 +804,23 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // サーカムフレックスアクセントの外側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
-  public partOuterCircumflex(): Part {
+  public partOuterCircumflex(): Contour {
     const width = this.circumflexWidth / 2;
     const height = this.circumflexHeight / 2;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // サーカムフレックスアクセントの内側の曲線の 4 分の 1 を、左端から上端への向きで生成します。
   @part()
-  public partInnerCircumflex(): Part {
+  public partInnerCircumflex(): Contour {
     const width = this.circumflexWidth / 2 - this.circumflexHorThickness;
     const height = this.circumflexHeight / 2 - this.circumflexVerThickness;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -897,23 +898,23 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // i の文字のディセンダーの左側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partLeftItTail(): Part {
+  public partLeftItTail(): Contour {
     const bend = this.itTailBend - this.horThickness / 2;
     const height = this.mean / 2 + this.descent;
     const topHandle = this.descent * 1.2;
     const bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
-    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
+    const part = Contour.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
     return part;
   }
 
   // i の文字のディセンダーの右側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partRightItTail(): Part {
+  public partRightItTail(): Contour {
     const bend = this.itTailBend - this.horThickness / 2;
     const height = this.mean / 2 + this.descent;
     const bottomHandle = this.descent * 1.2;
     const topHandle = this.searchTailInnerHandle(bottomHandle, bend, height);
-    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
+    const part = Contour.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(bend, height));
     return part;
   }
 
@@ -1028,45 +1029,45 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // u の文字のディセンダーと接続する部分の外側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partOuterLink(): Part {
+  public partOuterLink(): Contour {
     const width = this.linkWidth;
     const height = this.mean / 2 - this.linkLowerCorrection;
     const leftHandle = height * 0.02;
     const bottomHandle = width;
-    const part = Part.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
+    const part = Contour.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
     return part;
   }
 
   // u の文字のディセンダーと接続する部分の内側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partInnerLink(): Part {
+  public partInnerLink(): Contour {
     const width = this.linkWidth - this.horThickness;
     const height = this.mean / 2 - this.verThickness;
     const leftHandle = height * 0.02;
     const bottomHandle = width;
-    const part = Part.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
+    const part = Contour.bezier($(0, 0), $(0, leftHandle), $(-bottomHandle, 0), $(width, height));
     return part;
   }
 
   // u の文字のディセンダーの左側の曲線を、下端から上端への向きで生成します。
   @part()
-  public partLeftUtTail(): Part {
+  public partLeftUtTail(): Contour {
     const bend = this.utTailBend + this.horThickness / 2;
     const height = this.descent + this.verThickness - this.linkUpperCorrection;
     const leftHandle = height * 0.1;
     const topHandle = bend;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
     return part;
   }
 
   // u の文字のディセンダーの右側の曲線を、下端から上端への向きで生成します。
   @part()
-  public partRightUtTail(): Part {
+  public partRightUtTail(): Contour {
     const bend = this.utTailBend - this.horThickness / 2;
     const height = this.descent;
     const leftHandle = height * 0.1;
     const topHandle = bend;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(bend, -height));
     return part;
   }
 
@@ -1077,7 +1078,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   public partUpperUt(): Part {
     const part = Part.seq(
       this.partOuterLink(),
-      Part.line($(0, 0), $(0, -this.verThickness + this.linkLowerCorrection)),
+      Contour.line($(0, 0), $(0, -this.verThickness + this.linkLowerCorrection)),
       this.partInnerLink().reverse(),
       this.partInnerBowl(),
       this.partInnerTalBeak().reverse(),
@@ -1098,7 +1099,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
       this.partLeftUtTail().reverse(),
       this.partCut(),
       this.partRightUtTail(),
-      Part.line($(0, 0), $(0, -this.verThickness + this.linkUpperCorrection))
+      Contour.line($(0, 0), $(0, -this.verThickness + this.linkUpperCorrection))
     );
     return part;
   }
@@ -1266,16 +1267,16 @@ export class VekosGenerator extends Generator<VekosConfig> {
   // 0 の文字の斜線の部分の長い方の直線を、左端から右端への向きで生成します。
   // パーツを構成した後に回転することを想定しているので、このトレイルは水平です。
   @part()
-  public partSolidusSegment(): Part {
-    const part = Part.line($(0, 0), $(this.solidusLength, 0));
+  public partSolidusSegment(): Contour {
+    const part = Contour.line($(0, 0), $(this.solidusLength, 0));
     return part;
   }
 
   // 0 の文字の斜線の部分の短い方の直線を、上端から下端への向きで生成します。
   // パーツを構成した後に回転することを想定しているので、このトレイルは鉛直です。
   @part()
-  public partSolidusCut(): Part {
-    const part = Part.line($(0, 0), $(0, this.solidusThickness));
+  public partSolidusCut(): Contour {
+    const part = Contour.line($(0, 0), $(0, this.solidusThickness));
     return part;
   }
 
@@ -1332,23 +1333,23 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // 5 の文字の左上にある部分の外側の曲線を、右端から上端への向きで生成します。
   @part()
-  public partOuterXefBeak(): Part {
+  public partOuterXefBeak(): Contour {
     const width = this.xefBeakWidth;
     const height = this.xefBeakHeight + this.overshoot;
     const leftHandle = height * 0.05;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // 5 の文字の左上にある部分の内側の曲線を、右端から上端への向きで生成します。
   @part()
-  public partInnerXefBeak(): Part {
+  public partInnerXefBeak(): Contour {
     const width = this.xefBeakWidth - this.horThickness;
     const height = this.xefBeakHeight - this.verThickness + this.overshoot;
     const leftHandle = height * 0.05;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
@@ -1424,52 +1425,52 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // 1 の文字の右上にある部分の外側の曲線を、右端から上端への向きで生成します。
   @part()
-  public partOuterTasBeak(): Part {
+  public partOuterTasBeak(): Contour {
     const width = this.tasBeakWidth;
     const height = this.tasBeakHeight + this.overshoot;
     const rightHandle = height * 0.05;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
   // 1 の文字の右上にある部分の内側の曲線を、右端から上端への向きで生成します。
   @part()
-  public partInnerTasBeak(): Part {
+  public partInnerTasBeak(): Contour {
     const width = this.tasBeakWidth - this.horThickness;
     const height = this.tasBeakHeight - this.verThickness + this.overshoot;
     const rightHandle = height * 0.05;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -rightHandle), $(topHandle, 0), $(-width, -height));
     return part;
   }
 
   // 1 の文字の右下にある部分の外側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partOuterTasShoulder(): Part {
+  public partOuterTasShoulder(): Contour {
     const width = this.tasShoulderWidth;
     const height = this.tasCrossbarAltitude + this.verThickness / 2 - this.tasShoulderStraightHeight + this.overshoot;
     const rightHandle = height * 0.1;
     const bottomHandle = width;
-    const part = Part.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
+    const part = Contour.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
     return part;
   }
 
   // 1 の文字の右下にある部分の内側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partInnerTasShoulder(): Part {
+  public partInnerTasShoulder(): Contour {
     const width = this.tasShoulderWidth - this.horThickness;
     const height = this.tasCrossbarAltitude - this.verThickness / 2 - this.tasShoulderStraightHeight + this.overshoot;
     const rightHandle = height * 0.1;
     const bottomHandle = width;
-    const part = Part.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
+    const part = Contour.bezier($(0, 0), $(0, rightHandle), $(bottomHandle, 0), $(-width, height));
     return part;
   }
 
   // 1 の文字の右下にある部分に含まれる直線を、上端から下端への向きで生成します。
   @part()
-  public partTasShoulderStraight(): Part {
-    const part = Part.line($(0, 0), $(0, -this.tasShoulderStraightHeight));
+  public partTasShoulderStraight(): Contour {
+    const part = Contour.line($(0, 0), $(0, -this.tasShoulderStraightHeight));
     return part;
   }
 
@@ -1497,15 +1498,15 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // 1 の文字の横線の部分の直線を、左端から右端への向きで生成します。
   @part()
-  public partTasCrossbarSegment(): Part {
-    const part = Part.line($(0, 0), $(this.bowlWidth / 2 + this.tasShoulderWidth - this.horThickness, 0));
+  public partTasCrossbarSegment(): Contour {
+    const part = Contour.line($(0, 0), $(this.bowlWidth / 2 + this.tasShoulderWidth - this.horThickness, 0));
     return part;
   }
 
   // 文字の書き始めや書き終わりの位置にある垂直に切られた部分を、上端から下端への向きで生成します。
   @part()
-  public partVerticalCut(): Part {
-    const part = Part.line($(0, 0), $(0, this.verThickness));
+  public partVerticalCut(): Contour {
+    const part = Contour.line($(0, 0), $(0, this.verThickness));
     return part;
   }
 
@@ -1573,62 +1574,62 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // 3 の文字の左上にある丸い部分の外側の曲線を、左端から上端への向きで生成します。
   @part()
-  public partOuterYusBowl(): Part {
+  public partOuterYusBowl(): Contour {
     const width = this.yusWidth / 2;
     const height = this.mean / 2 + this.overshoot;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // 3 の文字の左上にある丸い部分の内側の曲線を、左端から上端への向きで生成します。
   @part()
-  public partInnerYusBowl(): Part {
+  public partInnerYusBowl(): Contour {
     const width = this.yusWidth / 2 - this.horThickness;
     const height = this.mean / 2 - this.verThickness + this.overshoot;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
+    const part = Contour.bezier($(0, 0), $(0, -leftHandle), $(-topHandle, 0), $(width, -height));
     return part;
   }
 
   // 3 の文字の右下にある曲線を、上端から下端への向きで生成します。
   @part()
-  public partYusLeg(): Part {
+  public partYusLeg(): Contour {
     const bend = this.yusLegBend;
     const height = this.mean / 2;
     const leftHandle = height * 0.6;
-    const part = Part.bezier($(0, 0), $(0, leftHandle), null, $(-bend, height));
+    const part = Contour.bezier($(0, 0), $(0, leftHandle), null, $(-bend, height));
     return part;
   }
 
   // 3 の文字の左下にある部分の外側の曲線を、左端から下端への向きで生成します。
   @part()
-  public partOuterYusShoulder(): Part {
+  public partOuterYusShoulder(): Contour {
     const width = this.yusCrossbarLatitude + this.horThickness * this.yusCrossbarThicknessRatio / 2 - this.yusShoulderStraightWidth;
     const height = this.mean / 2;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
+    const part = Contour.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
     return part;
   }
 
   // 3 の文字の左下にある部分の内側の曲線を、左端から下端への向きで生成します。
   @part()
-  public partInnerYusShoulder(): Part {
+  public partInnerYusShoulder(): Contour {
     const width = this.yusCrossbarLatitude + this.horThickness * (this.yusCrossbarThicknessRatio - 2) / 2 - this.yusShoulderStraightWidth;
     const height = this.mean / 2 - this.verThickness;
     const leftHandle = height * 0.1;
     const topHandle = width;
-    const part = Part.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
+    const part = Contour.bezier($(0, 0), $(0, leftHandle), $(-topHandle, 0), $(width, height));
     return part;
   }
 
   // 3 の文字の左下にある部分に含まれる直線を、左端から右端への向きで生成します。
   @part()
-  public partYusShoulderStraight(): Part {
-    const part = Part.line($(0, 0), $(this.yusShoulderStraightWidth, 0));
+  public partYusShoulderStraight(): Contour {
+    const part = Contour.line($(0, 0), $(this.yusShoulderStraightWidth, 0));
     return part;
   }
 
@@ -1656,15 +1657,15 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // 3 の文字の縦線の部分の直線を、上端から下端への向きで生成します。
   @part()
-  public partYusCrossbarSegment(): Part {
-    const part = Part.line($(0, 0), $(0, this.mean - this.verThickness));
+  public partYusCrossbarSegment(): Contour {
+    const part = Contour.line($(0, 0), $(0, this.mean - this.verThickness));
     return part;
   }
 
   // 3 の文字の縦線の部分の水平に切られた部分を、左端から右端への向きで生成します。
   @part()
-  public partYusCrossbarCut(): Part {
-    const part = Part.line($(0, 0), $(this.horThickness * this.yusCrossbarThicknessRatio, 0));
+  public partYusCrossbarCut(): Contour {
+    const part = Contour.line($(0, 0), $(this.horThickness * this.yusCrossbarThicknessRatio, 0));
     return part;
   }
 
@@ -1723,7 +1724,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @part()
   public partDot(): Part {
     const part = Part.seq(
-      Part.circle($(0, 0), this.dotWidth / 2)
+      Contour.circle($(0, 0), this.dotWidth / 2)
     );
     part.moveOrigin($(-this.dotWidth / 2, this.dotWidth / 2 - this.overshoot));
     return part;
@@ -1766,7 +1767,7 @@ export class VekosGenerator extends Generator<VekosConfig> {
   @part()
   public partFloatingDot(): Part {
     const part = Part.seq(
-      Part.circle($(0, 0), this.dotWidth / 2)
+      Contour.circle($(0, 0), this.dotWidth / 2)
     );
     part.moveOrigin($(-this.dotWidth / 2, 0));
     return part;
@@ -1802,8 +1803,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // バデックの棒状の部分の直線を、上端から下端への向きで生成します。
   @part()
-  public partBadekStemSegment(): Part {
-    const part = Part.line($(0, 0), $(0, this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot));
+  public partBadekStemSegment(): Contour {
+    const part = Contour.line($(0, 0), $(0, this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot));
     return part;
   }
 
@@ -1838,23 +1839,23 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // パデックの棒状の部分の左側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partLeftPadekStem(): Part {
+  public partLeftPadekStem(): Contour {
     const bend = this.padekBend;
     const height = this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot;
     const bottomHandle = height * 0.55;
     const topHandle = this.searchTailInnerHandle(bottomHandle, bend, height);
-    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    const part = Contour.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
   // パデックの棒状の部分の右側の曲線を、上端から下端への向きで生成します。
   @part()
-  public partRightPadekStem(): Part {
+  public partRightPadekStem(): Contour {
     const bend = this.padekBend;
     const height = this.mean + this.descent - this.dotWidth - this.badekGap + this.overshoot;
     const topHandle = height * 0.55;
     const bottomHandle = this.searchTailInnerHandle(topHandle, bend, height);
-    const part = Part.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
+    const part = Contour.bezier($(0, 0), $(0, topHandle), $(0, -bottomHandle), $(-bend, height));
     return part;
   }
 
@@ -1902,8 +1903,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // ノークの棒状の部分の縦の曲線を、上端から下端への向きで生成します。
   @part()
-  public partNokStem(): Part {
-    const part = Part.line($(0, 0), $(0, this.nokHeight));
+  public partNokStem(): Contour {
+    const part = Contour.line($(0, 0), $(0, this.nokHeight));
     return part;
   }
 
@@ -1943,11 +1944,11 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // ディカックの棒状の部分の曲線を、上端から下端への向きで生成します。
   @part()
-  public partDikakStem(): Part {
+  public partDikakStem(): Contour {
     const bend = this.dikakBend;
     const height = this.dikakHeight;
     const leftHandle = height * 0.6;
-    const part = Part.bezier($(0, 0), null, $(0, -leftHandle), $(-bend, height));
+    const part = Contour.bezier($(0, 0), null, $(0, -leftHandle), $(-bend, height));
     return part;
   }
 
@@ -1985,8 +1986,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // フェークの直線を、左端から右端への向きで生成します。
   @part()
-  public partFekHorizontal(): Part {
-    const part = Part.line($(0, 0), $(this.fekWidth, 0));
+  public partFekHorizontal(): Contour {
+    const part = Contour.line($(0, 0), $(this.fekWidth, 0));
     return part;
   }
 
@@ -2018,8 +2019,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // フォーハックの直線を、左端から右端への向きで生成します。
   @part()
-  public partFohakHorizontal(): Part {
-    const part = Part.line($(0, 0), $(this.fohakWidth, 0));
+  public partFohakHorizontal(): Contour {
+    const part = Contour.line($(0, 0), $(this.fohakWidth, 0));
     return part;
   }
 
@@ -2055,8 +2056,8 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // ダッシュの直線を、左端から右端への向きで生成します。
   @part()
-  public partDashHorizontal(): Part {
-    const part = Part.line($(0, 0), $(this.dashWidth, 0));
+  public partDashHorizontal(): Contour {
+    const part = Contour.line($(0, 0), $(this.dashWidth, 0));
     return part;
   }
 
@@ -2092,15 +2093,15 @@ export class VekosGenerator extends Generator<VekosConfig> {
 
   // ラクットの縦向きの棒状の部分の直線を、上端から下端への向きで生成します。
   @part()
-  public partRakutVerticalSegment(): Part {
-    const part = Part.line($(0, 0), $(0, this.rakutHeight));
+  public partRakutVerticalSegment(): Contour {
+    const part = Contour.line($(0, 0), $(0, this.rakutHeight));
     return part;
   }
 
   // ラクットの横向きの棒状の部分の直線を、左端から右端への向きで生成します。
   @part()
-  public partRakutHorizontalSegment(): Part {
-    const part = Part.line($(0, 0), $(this.rakutWidth, 0));
+  public partRakutHorizontalSegment(): Contour {
+    const part = Contour.line($(0, 0), $(this.rakutWidth, 0));
     return part;
   }
 

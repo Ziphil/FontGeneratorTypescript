@@ -3,6 +3,7 @@
 import {
   $,
   Bearings,
+  Contour,
   Generator,
   Glyph,
   Metrics,
@@ -81,7 +82,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   @part()
   public partBowl(): Part {
     const part = Part.union(
-      Part.circle($.origin, this.bowlHeight / 2).scale(this.bowlWidth / this.bowlHeight, 1).toStroke(this.thickness / 2, "round", "round")
+      Contour.circle($.origin, this.bowlHeight / 2).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -106,7 +107,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const startPoint = $(Math.sqrt(this.tailDepth * (radius * 2 - this.tailDepth)), radius - this.tailDepth);
     const endPoint = startPoint.add($(-(this.tailDepth + this.virtualDescent) * (radius - this.tailDepth) / Math.sqrt(this.tailDepth * (radius * 2 - this.tailDepth)), this.tailDepth + this.virtualDescent));
     const part = Part.union(
-      Part.line(startPoint, endPoint).scale(this.bowlWidth / this.bowlHeight, 1).toStroke(this.thickness / 2, "round", "round")
+      Contour.line(startPoint, endPoint).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -124,7 +125,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const startPoint = $(0, -this.bowlHeight / 2 + this.transphoneMargin);
     const endPoint = $(0, this.bowlHeight / 2 - this.transphoneMargin);
     const part = Part.union(
-      Part.line(startPoint, endPoint).toStroke(this.thickness / 2, "round", "round")
+      Contour.line(startPoint, endPoint).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -234,7 +235,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const radius = this.bowlHeight / 2;
     const angle = MathUtil.atan2Deg(radius - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (radius * 2 - this.talBeakHeight)));
     const part = Part.union(
-      Part.arc($.origin, this.bowlHeight / 2, angle, 360 - angle).scale(this.bowlWidth / this.bowlHeight, 1).toStroke(this.thickness / 2, "round", "round")
+      Contour.arc($.origin, this.bowlHeight / 2, angle, 360 - angle).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -287,7 +288,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const fromAngle = 360 - MathUtil.atan2Deg(radius - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (radius * 2 - this.talBeakHeight)));
     const toAngle = 180 - MathUtil.atan2Deg(radius - this.tailDepth, Math.sqrt(this.tailDepth * (radius * 2 - this.tailDepth)));
     const part = Part.union(
-      Part.arc($.origin, this.bowlHeight / 2, fromAngle, toAngle).scale(this.bowlWidth / this.bowlHeight, 1).toStroke(this.thickness / 2, "round", "round")
+      Contour.arc($.origin, this.bowlHeight / 2, fromAngle, toAngle).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
