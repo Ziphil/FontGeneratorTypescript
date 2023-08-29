@@ -8,7 +8,7 @@ import path from "path";
 let config = {
   entry: ["babel-polyfill", "./source/index-client.ts", "./resource/style.scss"],
   output: {
-    path: path.join(__dirname, "dist", "client"),
+    path: path.join(__dirname, "dist"),
     publicPath: "/",
     filename: "./bundle.js"
   },

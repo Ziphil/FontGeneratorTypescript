@@ -8,6 +8,7 @@
   "main": "dist/index.js",
   "scripts": {
     "develop": "webpack-dev-server --mode development --devtool inline-source-map --config webpack.ts --hot",
+    "build": "webpack --mode production --config webpack.ts",
     "generate": "ts-node ./source/index.ts",
     "start": "ts-node ./source/index.ts",
     "lint": "eslint source/**/*.ts",
