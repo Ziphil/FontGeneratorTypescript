@@ -19,9 +19,9 @@ export class KalegFont extends Font<KalegGenerator> {
   private stretch: FontStretch;
   private edgeJoin: KalegEdgeJoin;
   private beaked: boolean;
-  private special?: "square";
+  private special?: "square" | "column";
 
-  public constructor(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean, special?: "square") {
+  public constructor(weight: FontWeight, stretch: FontStretch, edgeJoin: KalegEdgeJoin, beaked: boolean, special?: "square" | "column") {
     super();
     this.weight = weight;
     this.stretch = stretch;
@@ -84,6 +84,22 @@ export class KalegFont extends Font<KalegGenerator> {
       const tailRatio = (this.beaked) ? 0.3 : 0;
       const narrowBowlRatio = 1;
       const unbeakedTalRatio = (this.beaked) ? 0.85 : 1;
+      const padekBendRatio = 0.3;
+      const edgeJoin = this.edgeJoin;
+      const config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, beakRatio, legRatio, tailRatio, narrowBowlRatio, unbeakedTalRatio, padekBendRatio, edgeJoin};
+      const generator = new KalegGenerator(config);
+      return generator;
+    } else if (this.special === "column") {
+      const weightConst = (weightNumber * 0.4 + 110) / 300 * 0.6;
+      const contrastRatio = 0.2;
+      const edgeRatio = 0.2;
+      const edgeContrastRatio = 1;
+      const bowlRatio = 0.3;
+      const beakRatio = (this.beaked) ? 0.15 : 0;
+      const legRatio = (this.beaked) ? 0 : 0;
+      const tailRatio = (this.beaked) ? 0.3 : 0;
+      const narrowBowlRatio = 0.9;
+      const unbeakedTalRatio = 0.85;
       const padekBendRatio = 0.3;
       const edgeJoin = this.edgeJoin;
       const config = {weightConst, contrastRatio, edgeRatio, edgeContrastRatio, bowlRatio, beakRatio, legRatio, tailRatio, narrowBowlRatio, unbeakedTalRatio, padekBendRatio, edgeJoin};
