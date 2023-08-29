@@ -46,30 +46,30 @@ class PathItemWrapper<P extends boolean> {
     return this.translate(point.multiply(-1));
   }
 
-  public rotate(angle: number): this {
-    this.item.rotate(angle, $(0, 0));
+  public rotate(angle: number, center?: Point): this {
+    this.item.rotate(angle, center ?? $.origin);
     return this;
   }
 
-  public rotateHalfTurn(): this {
-    return this.rotate(180);
+  public rotateHalfTurn(center?: Point): this {
+    return this.rotate(180, center);
   }
 
-  public rotateQuarterTurn(): this {
-    return this.rotate(90);
+  public rotateQuarterTurn(center?: Point): this {
+    return this.rotate(90, center);
   }
 
-  public scale(hor: number, ver: number): this {
-    this.item.scale(hor, ver, $(0, 0));
+  public scale(hor: number, ver: number, center?: Point): this {
+    this.item.scale(hor, ver, center ?? $.origin);
     return this;
   }
 
-  public reflectHor(): this {
-    return this.scale(-1, 1);
+  public reflectHor(center?: Point): this {
+    return this.scale(-1, 1, center);
   }
 
-  public reflectVer(): this {
-    return this.scale(1, -1);
+  public reflectVer(center?: Point): this {
+    return this.scale(1, -1, center);
   }
 
   public reverse(): this {
