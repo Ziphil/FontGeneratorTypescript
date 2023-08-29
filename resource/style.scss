@@ -29,14 +29,17 @@ body {
   color: $text-color;
   background-color: $background-color;
   font-feature-settings: "lnum";
-  overflow-x: auto;
-  overflow-y: scroll;
+  @include large {
+    overflow: hidden;
+  }
 }
 
 #root {
-  margin: 40px 0px;
+  padding: 40px 0px;
   display: flex;
+  box-sizing: border-box;
   @include large {
+    height: 100vh;
     justify-content: center;
   }
   @include small {
@@ -45,7 +48,7 @@ body {
   }
 }
 
-#menu {
+#menu-wrapper {
   @include large {
     width: 260px;
     flex: 0 0 260px;
@@ -59,6 +62,11 @@ body {
     margin: 0px 0px 30px 0px;
     padding: 0px 0px 27px 0px;
     border-bottom: 1px $gray-color solid;
+  }
+}
+
+#menu {
+  @include small {
     display: flex;
     flex-wrap: wrap;
   }
@@ -115,7 +123,7 @@ h1 {
 }
 
 h2 {
-  margin: 40px 0px 15px 0px;
+  margin: 30px 0px 15px 0px;
   padding: 0px;
   font-family: "Asap";
   font-size: 125%;
@@ -213,4 +221,16 @@ h2 {
   border-radius: 4px;
   background-color: white;
   display: block;
+}
+
+.simplebar-track.simplebar-vertical {
+  width: 8px;
+}
+
+.simplebar-track.simplebar-horizontal {
+  height: 8px;
+}
+
+.simplebar-scrollbar::before {
+  background-color: $text-color;
 }
