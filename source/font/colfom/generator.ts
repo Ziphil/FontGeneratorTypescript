@@ -97,6 +97,48 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     return glyph;
   }
 
+  private get transphoneGap(): number {
+    return (this.bowlWidth + this.thickness) * 0.14;
+  }
+
+  private get transphoneVerMargin(): number {
+    return this.mean * 0.03;
+  }
+
+  @part()
+  public partTransphone(): Part {
+    const startPoint = $(0, -this.bowlHeight / 2 + this.transphoneVerMargin);
+    const endPoint = $(0, this.bowlHeight / 2 - this.transphoneVerMargin);
+    const part = Part.union(
+      Contour.line(startPoint, endPoint).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    return part;
+  }
+
+  @glyph("x", "X")
+  public glyphXal(): Glyph {
+    const part = Part.union(
+      this.partBowl(),
+      this.partBowl().translate($(this.bowlWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("j", "J")
+  public glyphJol(): Glyph {
+    const part = Part.union(
+      this.partBowl(),
+      this.partBowl().translate($(this.bowlWidth, 0)),
+      this.partTransphone().translate($(this.bowlWidth * 3 / 2 + this.thickness + this.transphoneGap, 0))
+
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
   private get tailDepth(): number {
     return this.bowlHeight / 2 * 0.5;
   }
@@ -108,24 +150,6 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const endPoint = startPoint.add($(-(this.tailDepth + this.virtualDescent) * (radius - this.tailDepth) / Math.sqrt(this.tailDepth * (radius * 2 - this.tailDepth)), this.tailDepth + this.virtualDescent));
     const part = Part.union(
       Contour.line(startPoint, endPoint).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
-    );
-    return part;
-  }
-
-  private get transphoneGap(): number {
-    return (this.bowlWidth + this.thickness) * 0.14;
-  }
-
-  private get transphoneMargin(): number {
-    return this.mean * 0.03;
-  }
-
-  @part()
-  public partTransphone(): Part {
-    const startPoint = $(0, -this.bowlHeight / 2 + this.transphoneMargin);
-    const endPoint = $(0, this.bowlHeight / 2 - this.transphoneMargin);
-    const part = Part.union(
-      Contour.line(startPoint, endPoint).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -315,6 +339,83 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     return glyph;
   }
 
+  private get yesLegBend(): number {
+    return this.bowlWidth / 2 * 0.5;
+  }
+
+  private get yesLegVerMargin(): number {
+    return this.mean * 0.03;
+  }
+
+  @part()
+  public partYesBowl(): Part {
+    const part = Part.union(
+      Contour.arc($.origin, this.bowlHeight / 2, 180, 360).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    return part;
+  }
+
+  @part()
+  public partYesLeg(): Part {
+    const bend = this.yesLegBend;
+    const height = this.bowlHeight / 2 - this.yesLegVerMargin;
+    const leftHandle = height * 0.6;
+    const part = Part.union(
+      Contour.bezier($.origin, $(0, leftHandle), null, $(bend, height)).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(-this.bowlWidth / 2, 0));
+    return part;
+  }
+
+  @glyph("y", "Y")
+  public glyphYes(): Glyph {
+    const part = Part.union(
+      this.partYesBowl(),
+      this.partYesLeg(),
+      this.partYesLeg().reflectHor()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("h", "H")
+  public glyphHes(): Glyph {
+    const part = Part.union(
+      this.partYesBowl(),
+      this.partYesLeg(),
+      this.partYesLeg().reflectHor(),
+      this.partTransphone().translate($(this.bowlWidth / 2 + this.thickness + this.transphoneGap, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("s", "S")
+  public glyphSal(): Glyph {
+    const part = Part.union(
+      this.partYesBowl().reflectVer(),
+      this.partYesLeg().reflectVer(),
+      this.partYesLeg().reflectHor().reflectVer()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("z", "Z")
+  public glyphZol(): Glyph {
+    const part = Part.union(
+      this.partYesBowl().reflectVer(),
+      this.partYesLeg().reflectVer(),
+      this.partYesLeg().reflectHor().reflectVer(),
+      this.partTransphone().translate($(this.bowlWidth / 2 + this.thickness + this.transphoneGap, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
 
   private get spaceWidth(): number {
     return this.bowlWidth * 0.6;
