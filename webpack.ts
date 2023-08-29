@@ -9,7 +9,7 @@ let config = {
   entry: ["babel-polyfill", "./source/index-client.ts", "./resource/style.scss"],
   output: {
     path: path.join(__dirname, "dist"),
-    publicPath: process.env.NODE_ENV === "production" ? "/FontGeneratorTypescript" : "/",
+    publicPath: process.env["NODE_ENV"] === "production" ? "/FontGeneratorTypescript" : "/",
     filename: "./bundle.js"
   },
   devtool: "source-map",
