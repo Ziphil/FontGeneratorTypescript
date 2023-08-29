@@ -30,6 +30,7 @@ body {
   background-color: $background-color;
   font-feature-settings: "lnum";
   @include large {
+    height: 100vh;
     overflow: hidden;
   }
 }
@@ -73,10 +74,13 @@ body {
 }
 
 #menu .item {
+  all: unset;
+  width: 100%;
   padding: 3px 0px 3px 0px;
   border-radius: 4px;
   box-sizing: border-box;
   cursor: pointer;
+  display: block;
   @include large {
     margin: 0px 0px 3px 0px;
   }
@@ -92,6 +96,10 @@ body {
 #menu .item.current {
   background-color: $gray-color;
   font-weight: bold;
+}
+
+#menu .item:focus {
+  box-shadow: 0px 0px 0px 2px $gray-color inset;
 }
 
 #menu .item:hover {

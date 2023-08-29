@@ -14,8 +14,11 @@ import {
 
 export class Main {
 
+  private renderer?: FontRenderer;
+
   public main(): void {
     this.setupPaper();
+    this.setupEventListener();
     this.render();
   }
 
@@ -25,11 +28,20 @@ export class Main {
     paper.setup(size);
   }
 
+  private setupEventListener(): void {
+    window.addEventListener("hashchange", () => {
+      this.render();
+    });
+  }
+
   private render(): void {
-    const id = location.pathname.substring(1);
+    const id = location.hash.substring(1);
     const fontManager = FONT_MANAGER;
-    const renderer = new FontRenderer(fontManager, id);
-    renderer.render();
+    if (this.renderer === undefined) {
+      const renderer = new FontRenderer(fontManager);
+      this.renderer = renderer;
+    }
+    this.renderer.render(id);
   }
 
 }

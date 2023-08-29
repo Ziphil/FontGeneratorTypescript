@@ -9,7 +9,7 @@ let config = {
   entry: ["babel-polyfill", "./source/index-client.ts", "./resource/style.scss"],
   output: {
     path: path.join(__dirname, "dist"),
-    publicPath: "/",
+    publicPath: process.env.NODE_ENV === "production" ? "/FontGeneratorTypescript" : "/",
     filename: "./bundle.js"
   },
   devtool: "source-map",
@@ -59,7 +59,7 @@ let config = {
   devServer: {
     historyApiFallback: true,
     static: {
-      directory: path.join(__dirname, "dist", "client")
+      directory: path.join(__dirname, "dist")
     },
   },
   plugins: [
@@ -67,7 +67,9 @@ let config = {
       template: "./resource/client.html",
       title: "Font Preview"
     }),
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin({
+
+    })
   ]
 };
 

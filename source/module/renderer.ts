@@ -33,158 +33,161 @@ export class FontRenderer {
 
   private fontManager: FontManager;
   private font: Font | undefined;
-  private id: string;
+  private project: Project | undefined;
+  private id: string | undefined;
+  private menuReady: boolean;
+  private previewCanvasReady: boolean;
 
-  public constructor(fontManager: FontManager, id: string) {
+  public constructor(fontManager: FontManager) {
     this.fontManager = fontManager;
-    this.font = fontManager.findById(id);
-    this.id = id;
+    this.font = undefined;
+    this.id = undefined;
+    this.menuReady = false;
+    this.previewCanvasReady = false;
   }
 
-  public render(): void {
+  public render(id: string): void {
+    this.font = this.fontManager.findById(id);
+    this.id = id;
     this.setupMenu();
-    if (this.font !== undefined) {
-      this.setupMenuItem();
-      this.setupPreviewCanvas();
-      this.setupFontName();
-      this.appendGlyphPane();
-    }
+    this.updateMenuItem();
+    this.updateFontName();
+    this.setupPreviewCanvas();
+    this.updatePreviewCanvas();
+    this.updateGlyphPanes();
   }
 
   private setupMenu(): void {
-    const menuPane = document.getElementById("menu")! as HTMLDivElement;
-    const fonts = this.fontManager.getAll();
-    for (const [id, font] of fonts) {
-      const itemPane = document.createElement("div");
-      itemPane.classList.add("item");
-      itemPane.id = "item-" + id;
-      itemPane.textContent = font.fullName;
-      itemPane.addEventListener("click", () => {
-        location.href = "/" + id + location.search;
-      });
-      menuPane.append(itemPane);
+    if (!this.menuReady) {
+      const menuPane = document.getElementById("menu")! as HTMLDivElement;
+      const fonts = this.fontManager.getAll();
+      for (const [id, font] of fonts) {
+        const itemPane = document.createElement("button");
+        itemPane.classList.add("item");
+        itemPane.id = "item-" + id;
+        itemPane.textContent = font.fullName;
+        itemPane.addEventListener("click", () => {
+          location.href = location.search + "#" + id;
+        });
+        menuPane.append(itemPane);
+      }
+      this.menuReady = true;
     }
   }
 
-  private setupMenuItem(): void {
-    const itemPane = document.getElementById("item-" + this.id);
-    itemPane?.classList.add("current");
-  }
-
-  private setupPreviewCanvas(): void {
-    const input = document.getElementById("preview-text")! as HTMLInputElement;
-    const canvas = document.getElementById("preview")! as HTMLCanvasElement;
-    canvas.width = PREVIEW_CANVAS_WIDTH;
-    canvas.height = PREVIEW_CANVAS_HEIGHT;
-    const project = new Project("preview");
-    const previewString = queryParser.parse(location.search)["preview"] as string;
-    input.value = previewString ?? "";
-    this.renderPreview(project, input);
-    input.addEventListener("input", () => {
-      history.replaceState("", document.title, location.pathname + "?preview=" + encodeURIComponent(input.value));
-      this.renderPreview(project, input);
-    });
-  }
-
-  private renderPreview(project: Project, input: HTMLInputElement): void {
-    const generator = this.font!.generator;
-    const scale = PREVIEW_CANVAS_HEIGHT / generator.metrics.em;
-    project.activate();
-    project.activeLayer.removeChildren();
-    const scaledAscent = Math.floor(generator.metrics.ascent * scale);
-    const baselinePath = new Path({segments: [$(0, scaledAscent), $(10000, scaledAscent)]});
-    baselinePath.strokeColor = GRAY_COLOR;
-    baselinePath.strokeWidth = 2;
-    let position = 0;
-    const items = [];
-    const frontInfoGroups = [];
-    const backInfoGroups = [];
-    for (const char of Array.from(input.value)) {
-      const glyph = generator.glyph(char);
-      if (glyph !== null) {
-        const [item, width] = glyph.createItem(generator.metrics);
-        const metricsRectangle = new Path.Rectangle({point: $(0, 0), size: $(width * scale, generator.metrics.em * scale)});
-        const metricsOverlay = metricsRectangle.clone();
-        const widthText = new PointText({point: $(width * scale - 5, 15), content: Math.round(width).toString()});
-        const frontInfoGroup = new Group([widthText, metricsOverlay]);
-        const backInfoGroup = new Group([metricsRectangle]);
-        items.push(item);
-        frontInfoGroups.push(frontInfoGroup);
-        backInfoGroups.push(backInfoGroup);
-        item.scale(scale, $(0, 0));
-        item.translate($(position, 0));
-        frontInfoGroup.translate($(position, 0));
-        backInfoGroup.translate($(position, 0));
-        item.selectedColor = SELECTED_COLOR;
-        metricsRectangle.fillColor = METRICS_COLOR;
-        metricsOverlay.fillColor = METRICS_COLOR;
-        metricsOverlay.opacity = 0;
-        widthText.fontFamily = "Asap Condensed";
-        widthText.fontSize = 16 * 0.75;
-        widthText.fillColor = SELECTED_COLOR;
-        widthText.justification = "right";
-        frontInfoGroup.opacity = 0;
-        backInfoGroup.opacity = 0;
-        metricsOverlay.on("mouseenter", () => {
-          item.selected = true;
-          frontInfoGroup.opacity = 1;
-          backInfoGroup.opacity = 1;
-        });
-        metricsOverlay.on("mouseleave", () => {
-          item.selected = false;
-          frontInfoGroup.opacity = 0;
-          backInfoGroup.opacity = 0;
-        });
-        position += width * scale;
+  private updateMenuItem(): void {
+    const menuPane = document.getElementById("menu")! as HTMLDivElement;
+    for (let i = 0 ; i < menuPane.childNodes.length ; i ++) {
+      const itemPane = menuPane.childNodes.item(i) as HTMLAnchorElement;
+      if (itemPane.id === "item-" + this.id) {
+        itemPane.classList.add("current");
+      } else {
+        itemPane.classList.remove("current");
       }
     }
-    project.activeLayer.addChildren([...backInfoGroups, baselinePath, ...items, ...frontInfoGroups]);
   }
 
-  private appendGlyphPane(): void {
-    const listElement = document.getElementById("glyph-list")!;
-    const chars = this.font!.generator.chars;
-    chars.sort((firstChar, secondChar) => firstChar.codePointAt(0)! - secondChar.codePointAt(0)!);
-    for (const char of chars) {
-      listElement.append(this.createGlyphPane(char));
-      const project = new Project(`glyph-${char.codePointAt(0)}`);
-      this.renderGlyph(project, char);
-    }
-  }
-
-  private setupFontName(): void {
+  private updateFontName(): void {
     const nameElement = document.getElementById("name")!;
     const idElement = document.getElementById("id")!;
     const versionElement = document.getElementById("version")!;
-    nameElement.textContent = this.font!.fullName;
-    idElement.textContent = this.id;
-    versionElement.textContent = this.font!.info.version;
+    nameElement.textContent = this.font?.fullName ?? "Unknown";
+    idElement.textContent = this.id ?? "?";
+    versionElement.textContent = this.font?.info?.version ?? "?";
   }
 
-  private renderGlyph(project: Project, char: string): void {
-    const generator = this.font!.generator;
-    const scale = GLYPH_CANVAS_HEIGHT / generator.metrics.em;
-    project.activate();
-    const glyph = generator.glyph(char);
-    if (glyph !== null) {
-      const [item, width] = glyph.createItem(generator.metrics);
-      const scaledWidth = Math.floor(width * scale) + 0.5;
-      const scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
-      const baselinePath = new Path({segments: [$(0, scaledAscent), $(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
-      const widthPath = new Path({segments: [$(scaledWidth, 0), $(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
-      item.scale(scale, $(0, 0));
-      item.selectedColor = SELECTED_COLOR;
+  private setupPreviewCanvas(): void {
+    if (!this.previewCanvasReady) {
+      const input = document.getElementById("preview-text")! as HTMLInputElement;
+      const canvas = document.getElementById("preview")! as HTMLCanvasElement;
+      canvas.width = PREVIEW_CANVAS_WIDTH;
+      canvas.height = PREVIEW_CANVAS_HEIGHT;
+      input.addEventListener("input", () => {
+        history.replaceState("", document.title, location.pathname + "?preview=" + encodeURIComponent(input.value) + location.hash);
+        this.renderPreview(input);
+      });
+      this.previewCanvasReady = true;
+    }
+  }
+
+  private updatePreviewCanvas(): void {
+    const input = document.getElementById("preview-text")! as HTMLInputElement;
+    const project = new Project("preview");
+    const previewString = queryParser.parse(location.search)["preview"] as string;
+    input.value = previewString ?? "";
+    this.project?.clear();
+    this.project = project;
+    this.renderPreview(input);
+  }
+
+  private renderPreview(input: HTMLInputElement): void {
+    if (this.font !== undefined && this.project !== undefined) {
+      const generator = this.font.generator;
+      const scale = PREVIEW_CANVAS_HEIGHT / generator.metrics.em;
+      this.project.activate();
+      this.project.activeLayer.removeChildren();
+      const scaledAscent = Math.floor(generator.metrics.ascent * scale);
+      const baselinePath = new Path({segments: [$(0, scaledAscent), $(10000, scaledAscent)]});
       baselinePath.strokeColor = GRAY_COLOR;
-      widthPath.strokeColor = GRAY_COLOR;
-      baselinePath.strokeWidth = 1;
-      widthPath.strokeWidth = 1;
-      item.on("mouseenter", () => {
-        item.selected = true;
-      });
-      item.on("mouseleave", () => {
-        item.selected = false;
-      });
-      project.activeLayer.addChild(item);
+      baselinePath.strokeWidth = 2;
+      let position = 0;
+      const items = [];
+      const frontInfoGroups = [];
+      const backInfoGroups = [];
+      for (const char of Array.from(input.value)) {
+        const glyph = generator.glyph(char);
+        if (glyph !== null) {
+          const [item, width] = glyph.createItem(generator.metrics);
+          const metricsRectangle = new Path.Rectangle({point: $(0, 0), size: $(width * scale, generator.metrics.em * scale)});
+          const metricsOverlay = metricsRectangle.clone();
+          const widthText = new PointText({point: $(width * scale - 5, 15), content: Math.round(width).toString()});
+          const frontInfoGroup = new Group([widthText, metricsOverlay]);
+          const backInfoGroup = new Group([metricsRectangle]);
+          items.push(item);
+          frontInfoGroups.push(frontInfoGroup);
+          backInfoGroups.push(backInfoGroup);
+          item.scale(scale, $(0, 0));
+          item.translate($(position, 0));
+          frontInfoGroup.translate($(position, 0));
+          backInfoGroup.translate($(position, 0));
+          item.selectedColor = SELECTED_COLOR;
+          metricsRectangle.fillColor = METRICS_COLOR;
+          metricsOverlay.fillColor = METRICS_COLOR;
+          metricsOverlay.opacity = 0;
+          widthText.fontFamily = "Asap Condensed";
+          widthText.fontSize = 16 * 0.75;
+          widthText.fillColor = SELECTED_COLOR;
+          widthText.justification = "right";
+          frontInfoGroup.opacity = 0;
+          backInfoGroup.opacity = 0;
+          metricsOverlay.on("mouseenter", () => {
+            item.selected = true;
+            frontInfoGroup.opacity = 1;
+            backInfoGroup.opacity = 1;
+          });
+          metricsOverlay.on("mouseleave", () => {
+            item.selected = false;
+            frontInfoGroup.opacity = 0;
+            backInfoGroup.opacity = 0;
+          });
+          position += width * scale;
+        }
+      }
+      this.project.activeLayer.addChildren([...backInfoGroups, baselinePath, ...items, ...frontInfoGroups]);
+    }
+  }
+
+  private updateGlyphPanes(): void {
+    if (this.font !== undefined) {
+      const listElement = document.getElementById("glyph-list")!;
+      const chars = this.font.generator.chars;
+      chars.sort((firstChar, secondChar) => firstChar.codePointAt(0)! - secondChar.codePointAt(0)!);
+      listElement.innerHTML = "";
+      for (const char of chars) {
+        listElement.append(this.createGlyphPane(char));
+        const project = new Project(`glyph-${char.codePointAt(0)}`);
+        this.renderGlyph(project, char);
+      }
     }
   }
 
@@ -226,6 +229,35 @@ export class FontRenderer {
     widthPane.textContent = `↔${Math.round(width)} · ↕${Math.round(em)}`;
     infoPane.append(widthPane);
     return infoPane;
+  }
+
+  private renderGlyph(project: Project, char: string): void {
+    if (this.font !== undefined) {
+      const generator = this.font.generator;
+      const scale = GLYPH_CANVAS_HEIGHT / generator.metrics.em;
+      project.activate();
+      const glyph = generator.glyph(char);
+      if (glyph !== null) {
+        const [item, width] = glyph.createItem(generator.metrics);
+        const scaledWidth = Math.floor(width * scale) + 0.5;
+        const scaledAscent = Math.floor(generator.metrics.ascent * scale) + 0.5;
+        const baselinePath = new Path({segments: [$(0, scaledAscent), $(GLYPH_CANVAS_WIDTH, scaledAscent)], insert: true});
+        const widthPath = new Path({segments: [$(scaledWidth, 0), $(scaledWidth, GLYPH_CANVAS_HEIGHT)], insert: true});
+        item.scale(scale, $(0, 0));
+        item.selectedColor = SELECTED_COLOR;
+        baselinePath.strokeColor = GRAY_COLOR;
+        widthPath.strokeColor = GRAY_COLOR;
+        baselinePath.strokeWidth = 1;
+        widthPath.strokeWidth = 1;
+        item.on("mouseenter", () => {
+          item.selected = true;
+        });
+        item.on("mouseleave", () => {
+          item.selected = false;
+        });
+        project.activeLayer.addChild(item);
+      }
+    }
   }
 
 }
