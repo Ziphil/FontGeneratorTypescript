@@ -92,8 +92,8 @@ export class FontRenderer {
     const idElement = document.getElementById("id")!;
     const versionElement = document.getElementById("version")!;
     nameElement.textContent = this.font?.fullName ?? "Unknown";
-    idElement.textContent = this.id ?? "?";
-    versionElement.textContent = this.font?.info?.version ?? "?";
+    idElement.textContent = this.id || "?";
+    versionElement.textContent = this.font?.info?.version || "?";
   }
 
   private setupPreviewCanvas(): void {
