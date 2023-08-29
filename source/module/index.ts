@@ -10,4 +10,5 @@ export * from "./font-style";
 export * from "./generator";
 export * from "./glyph";
 export * from "./part";
+export * from "./path";
 export * from "./point";
