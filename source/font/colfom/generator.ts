@@ -256,8 +256,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
 
   @part()
   public partTal(): Part {
-    const radius = this.bowlHeight / 2;
-    const angle = MathUtil.atan2Deg(radius - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (radius * 2 - this.talBeakHeight)));
+    const angle = MathUtil.atan2Deg(this.bowlHeight / 2 - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (this.bowlHeight / 2 * 2 - this.talBeakHeight)));
     const part = Part.union(
       Contour.arc($.origin, this.bowlHeight / 2, angle, 360 - angle).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
@@ -525,8 +524,230 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     return glyph;
   }
 
+  private get diacriticThickness(): number {
+    return Math.min(this.config.weightConst * 90, this.config.weightConst * 30 + 50);
+  }
+
+  private get diacriticGap(): number {
+    return this.mean * 0.1;
+  }
+
+  private get circumflexHeight(): number {
+    return this.mean * 0.25;
+  }
+
+  private get circumflexWidth(): number {
+    return this.circumflexHeight * 1.1;
+  }
+
+  @part()
+  public partCircumflex(): Part {
+    const part = Part.union(
+      Contour.circle($.origin, this.circumflexHeight / 2).scale(this.circumflexWidth / this.circumflexHeight, 1).toStrokePart(this.diacriticThickness / 2, "round", "round")
+    );
+    part.translate($(0, -this.bowlHeight / 2 - this.circumflexHeight / 2 - this.thickness / 2 - this.diacriticThickness / 2 - this.diacriticGap));
+    return part;
+  }
+
+  private get acuteBowlHeight(): number {
+    return this.mean * 0.6;
+  }
+
+  private get acuteBowlWidth(): number {
+    return this.acuteBowlHeight * 0.9;
+  }
+
+  private get acuteHeight(): number {
+    return this.talBeakHeight / this.bowlHeight * this.acuteBowlHeight;
+  }
+
+  @part()
+  public partAcute(): Part {
+    const angle = MathUtil.atan2Deg(this.bowlHeight / 2 - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (this.bowlHeight / 2 * 2 - this.talBeakHeight)));
+    const part = Part.union(
+      Contour.arc($.origin, this.acuteBowlHeight / 2, 360 - angle, 180 + angle).scale(this.acuteBowlWidth / this.acuteBowlHeight, 1).toStrokePart(this.diacriticThickness / 2, "round", "round")
+    );
+    part.translate($(0, -this.bowlHeight / 2 + this.acuteBowlHeight / 2 - this.acuteHeight - this.diacriticThickness / 2 - this.thickness / 2 - this.diacriticGap));
+    return part;
+  }
+
+  @part()
+  public partGrave(): Part {
+    const angle = MathUtil.atan2Deg(this.bowlHeight / 2 - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (this.bowlHeight / 2 * 2 - this.talBeakHeight)));
+    const part = Part.union(
+      Contour.arc($.origin, this.acuteBowlHeight / 2, angle, 180 - angle).scale(this.acuteBowlWidth / this.acuteBowlHeight, 1).toStrokePart(this.diacriticThickness / 2, "round", "round")
+    );
+    part.translate($(0, -this.bowlHeight / 2 - this.acuteBowlHeight / 2 - this.thickness / 2 - this.diacriticThickness / 2 - this.diacriticGap));
+    return part;
+  }
+
+  @glyph("â", "Â")
+  public glyphAtCircumflex(): Glyph {
+    const part = Part.union(
+      this.glyphAt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partCircumflex()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("á", "Á")
+  public glyphAtAcute(): Glyph {
+    const part = Part.union(
+      this.glyphAt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partAcute()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("à", "À")
+  public glyphAtGrave(): Glyph {
+    const part = Part.union(
+      this.glyphAt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partGrave()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("ê", "Ê")
+  public glyphEtCircumflex(): Glyph {
+    const part = Part.union(
+      this.glyphEt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partCircumflex().reflectVer().translate($(this.talWidth - this.bowlWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("é", "É")
+  public glyphEtAcute(): Glyph {
+    const part = Part.union(
+      this.glyphEt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partAcute().reflectVer().translate($(this.talWidth - this.bowlWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("è", "È")
+  public glyphEtGrave(): Glyph {
+    const part = Part.union(
+      this.glyphEt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partGrave().reflectVer().translate($(this.talWidth - this.bowlWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("î", "Î")
+  public glyphItCircumflex(): Glyph {
+    const part = Part.union(
+      this.glyphIt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partCircumflex()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("í", "Í")
+  public glyphItAcute(): Glyph {
+    const part = Part.union(
+      this.glyphIt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partAcute()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("ì", "Ì")
+  public glyphItGrave(): Glyph {
+    const part = Part.union(
+      this.glyphIt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partGrave()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("ô", "Ô")
+  public glyphOtCircumflex(): Glyph {
+    const part = Part.union(
+      this.glyphOt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partCircumflex().reflectVer().translate($(this.talWidth - this.bowlWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("ó", "Ó")
+  public glyphOtAcute(): Glyph {
+    const part = Part.union(
+      this.glyphOt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partAcute().reflectVer().translate($(this.talWidth - this.bowlWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("ò", "Ò")
+  public glyphOtGrave(): Glyph {
+    const part = Part.union(
+      this.glyphOt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partGrave().reflectVer().translate($(this.talWidth - this.bowlWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("û", "Û")
+  public glyphUtCircumflex(): Glyph {
+    const part = Part.union(
+      this.glyphUt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partCircumflex()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("ú", "Ú")
+  public glyphUtAcute(): Glyph {
+    const part = Part.union(
+      this.glyphUt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partAcute()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("ù", "Ù")
+  public glyphUtGrave(): Glyph {
+    const part = Part.union(
+      this.glyphUt().toPart().translate($(-this.bowlWidth / 2 - this.thickness / 2, this.mean / 2)),
+      this.partGrave()
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
   private get spaceWidth(): number {
-    return this.bowlWidth * 0.6;
+    return this.mean * 0.6;
   }
 
   @glyph(" ")
