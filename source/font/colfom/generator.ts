@@ -392,6 +392,61 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     return glyph;
   }
 
+  private get spineWidth(): number {
+    return this.bowlWidth * 0.85;
+  }
+
+  @part()
+  public partNesBowl(): Part {
+    const part = Part.union(
+      Contour.arc($.origin, this.bowlHeight / 2, 180, 270).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    return part;
+  }
+
+  @part()
+  public partHalfSpine(): Part {
+    const width = this.spineWidth / (this.bowlWidth / this.bowlHeight) / 2;
+    const height = this.bowlHeight / 2;
+    const handle = width * 0.9;
+    const part = Part.union(
+      Contour.bezier($.origin, $(handle, 0), null, $(width, -height)).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(0, this.bowlHeight / 2));
+    return part;
+  }
+
+  @glyph("n", "N")
+  public glyphNes(): Glyph {
+    const part = Part.union(
+      this.partNesBowl().reflectVer(),
+      this.partNesBowl().reflectHor().translate($(this.spineWidth, 0)),
+      this.partYesLeg().reflectVer(),
+      this.partYesLeg().reflectHor().translate($(this.spineWidth, 0)),
+      this.partHalfSpine(),
+      this.partHalfSpine().reflectHor().reflectVer().translate($(this.spineWidth, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph("m", "M")
+  public glyphMes(): Glyph {
+    const part = Part.union(
+      this.partNesBowl().reflectVer(),
+      this.partNesBowl().reflectHor().translate($(this.spineWidth, 0)),
+      this.partYesLeg().reflectVer(),
+      this.partYesLeg().reflectHor().translate($(this.spineWidth, 0)),
+      this.partHalfSpine(),
+      this.partHalfSpine().reflectHor().reflectVer().translate($(this.spineWidth, 0)),
+      this.partTransphone().translate($(this.bowlWidth / 2 + this.spineWidth + this.thickness + this.transphoneGap, 0))
+    );
+    part.translate($(this.bowlWidth / 2 + this.thickness / 2, -this.mean / 2));
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
   @glyph("s", "S")
   public glyphSal(): Glyph {
     const part = Part.union(
