@@ -392,7 +392,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get spineWidth(): number {
-    return this.bowlWidth * 0.85;
+    return this.bowlWidth * 0.8;
   }
 
   @part()
@@ -407,7 +407,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   public partHalfSpine(): Part {
     const width = this.spineWidth / (this.bowlWidth / this.bowlHeight) / 2;
     const height = this.bowlHeight / 2;
-    const handle = width * 0.9;
+    const handle = width * 0.88;
     const part = Part.union(
       Contour.bezier($.origin, $(handle, 0), null, $(width, -height)).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
@@ -746,8 +746,74 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     return glyph;
   }
 
+  private get dotHeight(): number {
+    return this.thickness * 1.3;
+  }
+
+  private get dotGap(): number {
+    return this.mean * 0.07;
+  }
+
+  @part()
+  public partDot(): Part {
+    const part = Part.seq(
+      Contour.circle($.origin, this.dotHeight / 2)
+    );
+    part.translate($(this.dotHeight / 2, -this.dotHeight / 2 + this.overshoot));
+    return part;
+  }
+
+  @glyph(",")
+  public glyphTadek(): Glyph {
+    const part = Part.union(
+      this.partDot()
+    );
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  @glyph(".")
+  public glyphDek(): Glyph {
+    const part = Part.union(
+      this.partDot(),
+      this.partDot().translate($(this.dotHeight + this.dotGap, 0))
+    );
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  private get badekLeftBearing(): number {
+    return this.bearing * 1.8;
+  }
+
+  private get badekGap(): number {
+    return this.mean * 0.15;
+  }
+
+  @part()
+  public partBadekStem(): Part {
+    const height = this.mean + this.descent - this.dotHeight + this.overshoot - this.badekGap - this.thickness;
+    const part = Part.union(
+      Contour.line($.origin, $(0, -height)).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.dotHeight / 2, -this.dotHeight + this.overshoot - this.badekGap - this.thickness / 2));
+    return part;
+  }
+
+  @glyph("!")
+  public glyphBadek(): Glyph {
+    const part = Part.union(
+      this.partDot(),
+      this.partDot().translate($(this.dotHeight + this.dotGap, 0)),
+      this.partBadekStem()
+    );
+    const bearings = {left: this.badekLeftBearing, right: this.bearing};
+    const glyph = Glyph.byBearings(part, bearings);
+    return glyph;
+  }
+
   private get spaceWidth(): number {
-    return this.mean * 0.6;
+    return (this.bowlWidth + this.thickness) * 0.5;
   }
 
   @glyph(" ")
