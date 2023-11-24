@@ -828,6 +828,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     return this.yesLegBend / this.yesLegHeight * this.padekCurveHeight;
   }
 
+  @part()
   public partPadekCurve(): Part {
     const bend = this.padekCurveBend / this.bowlRatio;;
     const height = this.padekCurveHeight;
@@ -858,6 +859,204 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
       this.partPadekCurve()
     );
     const bearings = {left: this.badekLeftBearing, right: this.bearing};
+    const glyph = Glyph.byBearings(part, bearings);
+    return glyph;
+  }
+
+  @glyph("⁉", "‽")
+  public glyphBapadek(): Glyph {
+    const part = Part.union(
+      this.partDot(),
+      this.partDot().translate($(this.dotHeight + this.dotGap, 0)),
+      this.partBadekStem(),
+      this.partPadekStem().translate($(this.dotGap + this.dotHeight, 0)),
+      this.partPadekCurve().translate($(this.dotGap + this.dotHeight, 0))
+    );
+    const bearings = {left: this.badekLeftBearing, right: this.bearing};
+    const glyph = Glyph.byBearings(part, bearings);
+    return glyph;
+  }
+
+  private get dikakHeight(): number {
+    return this.bowlHeight * 0.4;
+  }
+
+  private get dikakBend(): number {
+    return this.yesLegBend / this.yesLegHeight * this.dikakHeight;
+  }
+
+  private get dikakRightBearing(): number {
+    return -this.bearing * 0.5;
+  }
+
+  @part()
+  public partDikak(): Part {
+    const bend = this.dikakBend / this.bowlRatio;;
+    const height = this.dikakHeight;
+    const leftHandle = height * 0.6;
+    const part = Part.union(
+      Contour.bezier($.origin, $(0, -leftHandle), null, $(bend, -height)).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.thickness / 2, -this.mean - this.descent + this.dikakHeight + this.thickness / 2));
+    return part;
+  }
+
+  @glyph("ʻ")
+  public glyphDikak(): Glyph {
+    const part = Part.union(
+      this.partDikak()
+    );
+    const bearings = {left: this.bearing, right: this.dikakRightBearing};
+    const glyph = Glyph.byBearings(part, bearings);
+    return glyph;
+  }
+
+  private get nokHeight(): number {
+    return this.bowlHeight * 0.4;
+  }
+
+  @part()
+  public partNok(): Part {
+    const height = this.dikakHeight;
+    const part = Part.union(
+      Contour.line($.origin, $(0, -height)).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.thickness / 2, -this.mean - this.descent + this.nokHeight + this.thickness / 2));
+    return part;
+  }
+
+  @glyph("'")
+  public glyphNok(): Glyph {
+    const part = Part.union(
+      this.partNok()
+    );
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  private get fekAltitude(): number {
+    return this.mean / 2;
+  }
+
+  private get fekWidth(): number {
+    return (this.bowlWidth + this.thickness) * 0.6;
+  }
+
+  @part()
+  public partFek(): Part {
+    const width = this.fekWidth;
+    const part = Part.union(
+      Contour.line($.origin, $(width, 0)).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.thickness / 2, -this.fekAltitude));
+    return part;
+  }
+
+  @glyph("-")
+  public glyphFek(): Glyph {
+    const part = Part.union(
+      this.partFek()
+    );
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  private get dashWidth(): number {
+    return (this.bowlWidth + this.thickness) * 2;
+  }
+
+  @part()
+  public partDash(): Part {
+    const width = this.dashWidth;
+    const part = Part.union(
+      Contour.line($.origin, $(width, 0)).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.thickness / 2, -this.fekAltitude));
+    return part;
+  }
+
+  @glyph("—")
+  public glyphDash(): Glyph {
+    const part = Part.union(
+      this.partDash()
+    );
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  private get fohakWidth(): number {
+    return (this.bowlWidth + this.thickness) * 1.5;
+  }
+
+  @part()
+  public partFohak(): Part {
+    const width = this.fohakWidth;
+    const part = Part.union(
+      Contour.line($.origin, $(width, 0)).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.thickness / 2, -this.thickness / 2));
+    return part;
+  }
+
+  @glyph("…")
+  public glyphFohak(): Glyph {
+    const part = Part.union(
+      this.partFohak()
+    );
+    const glyph = Glyph.byBearings(part, this.createBearings());
+    return glyph;
+  }
+
+  private get rakutWidth(): number {
+    return (this.bowlWidth + this.thickness) * 0.4;
+  }
+
+  private get rakutHeight(): number {
+    return this.mean * 0.9;
+  }
+
+  private get rakutBearing(): number {
+    return 0;
+  }
+
+  @part()
+  public partRakutHorizontalLine(): Part {
+    const width = this.rakutWidth;
+    const part = Part.union(
+      Contour.line($.origin, $(width, 0)).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.thickness / 2, -this.mean - this.descent + this.thickness / 2));
+    return part;
+  }
+
+  @part()
+  public partRakutVerticalLine(): Part {
+    const height = this.rakutHeight;
+    const part = Part.union(
+      Contour.line($.origin, $(0, height)).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.thickness / 2, -this.mean - this.descent + this.thickness / 2));
+    return part;
+  }
+
+  @glyph("[", "«")
+  public glyphOpeningRakut(): Glyph {
+    const part = Part.union(
+      this.partRakutHorizontalLine(),
+      this.partRakutVerticalLine()
+    );
+    const bearings = {left: this.bearing, right: this.rakutBearing};
+    const glyph = Glyph.byBearings(part, bearings);
+    return glyph;
+  }
+
+  @glyph("]", "»")
+  public glyphClosingRakut(): Glyph {
+    const part = Part.union(
+      this.partRakutHorizontalLine(),
+      this.partRakutVerticalLine().translate($(this.rakutWidth, 0))
+    );
+    const bearings = {left: this.rakutBearing, right: this.bearing};
     const glyph = Glyph.byBearings(part, bearings);
     return glyph;
   }
