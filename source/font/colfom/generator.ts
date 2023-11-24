@@ -61,7 +61,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get thickness(): number {
-    return this.config.weightConst * 90;
+    return this.config.weightConst * 87;
   }
 
   private get bowlHeight(): number {
@@ -392,7 +392,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get spineWidth(): number {
-    return this.bowlWidth * 0.8;
+    return this.bowlWidth * 0.9;
   }
 
   @part()
@@ -407,7 +407,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   public partHalfSpine(): Part {
     const width = this.spineWidth / (this.bowlWidth / this.bowlHeight) / 2;
     const height = this.bowlHeight / 2;
-    const handle = width * 0.88;
+    const handle = width * 0.85;
     const part = Part.union(
       Contour.bezier($.origin, $(handle, 0), null, $(width, -height)).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
@@ -525,7 +525,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get diacriticThickness(): number {
-    return Math.min(this.config.weightConst * 90, this.config.weightConst * 30 + 50);
+    return Math.min(this.thickness, this.config.weightConst * 30 + 50);
   }
 
   private get diacriticGap(): number {
