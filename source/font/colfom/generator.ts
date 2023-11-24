@@ -72,6 +72,10 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     return this.virtualMean * 0.9;
   }
 
+  private get bowlRatio(): number {
+    return this.bowlWidth / this.bowlHeight;
+  }
+
   private createBearings(): Bearings {
     const left = this.bearing;
     const right = this.bearing;
@@ -82,7 +86,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   @part()
   public partBowl(): Part {
     const part = Part.union(
-      Contour.circle($.origin, this.bowlHeight / 2).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.circle($.origin, this.bowlHeight / 2).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -149,7 +153,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const startPoint = $(Math.sqrt(this.lesTailDepth * (radius * 2 - this.lesTailDepth)), radius - this.lesTailDepth);
     const endPoint = startPoint.add($(-height * (radius - this.lesTailDepth) / Math.sqrt(this.lesTailDepth * (radius * 2 - this.lesTailDepth)), height));
     const part = Part.union(
-      Contour.line(startPoint, endPoint).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.line(startPoint, endPoint).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -251,14 +255,14 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get talWidth(): number {
-    return (this.bowlHeight / 2 + Math.sqrt(this.talBeakHeight * (this.bowlHeight - this.talBeakHeight))) * this.bowlWidth / this.bowlHeight;
+    return (this.bowlHeight / 2 + Math.sqrt(this.talBeakHeight * (this.bowlHeight - this.talBeakHeight))) * this.bowlRatio;
   }
 
   @part()
   public partTal(): Part {
     const angle = MathUtil.atan2Deg(this.bowlHeight / 2 - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (this.bowlHeight / 2 * 2 - this.talBeakHeight)));
     const part = Part.union(
-      Contour.arc($.origin, this.bowlHeight / 2, angle, 360 - angle).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.arc($.origin, this.bowlHeight / 2, angle, 360 - angle).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -311,7 +315,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const fromAngle = 360 - MathUtil.atan2Deg(radius - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (radius * 2 - this.talBeakHeight)));
     const toAngle = 180 - MathUtil.atan2Deg(radius - this.lesTailDepth, Math.sqrt(this.lesTailDepth * (radius * 2 - this.lesTailDepth)));
     const part = Part.union(
-      Contour.arc($.origin, this.bowlHeight / 2, fromAngle, toAngle).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.arc($.origin, this.bowlHeight / 2, fromAngle, toAngle).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -339,28 +343,32 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get yesLegBend(): number {
-    return this.bowlWidth / 2 * 0.5;
+    return this.bowlWidth / 2 * 0.45;
   }
 
   private get yesLegVerMargin(): number {
     return this.mean * 0.03;
   }
 
+  private get yesLegHeight(): number {
+    return this.bowlHeight / 2 - this.yesLegVerMargin;
+  }
+
   @part()
   public partYesBowl(): Part {
     const part = Part.union(
-      Contour.arc($.origin, this.bowlHeight / 2, 180, 360).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.arc($.origin, this.bowlHeight / 2, 180, 360).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
 
   @part()
   public partYesLeg(): Part {
-    const bend = this.yesLegBend;
-    const height = this.bowlHeight / 2 - this.yesLegVerMargin;
+    const bend = this.yesLegBend / this.bowlRatio;;
+    const height = this.yesLegHeight;
     const leftHandle = height * 0.6;
     const part = Part.union(
-      Contour.bezier($.origin, $(0, leftHandle), null, $(bend, height)).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.bezier($.origin, $(0, leftHandle), null, $(bend, height)).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     part.translate($(-this.bowlWidth / 2, 0));
     return part;
@@ -398,18 +406,18 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   @part()
   public partNesBowl(): Part {
     const part = Part.union(
-      Contour.arc($.origin, this.bowlHeight / 2, 180, 270).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.arc($.origin, this.bowlHeight / 2, 180, 270).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
 
   @part()
   public partHalfSpine(): Part {
-    const width = this.spineWidth / (this.bowlWidth / this.bowlHeight) / 2;
+    const width = (this.spineWidth / 2) / this.bowlRatio;
     const height = this.bowlHeight / 2;
     const handle = width * 0.85;
     const part = Part.union(
-      Contour.bezier($.origin, $(handle, 0), null, $(width, -height)).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.bezier($.origin, $(handle, 0), null, $(width, -height)).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     part.translate($(0, this.bowlHeight / 2));
     return part;
@@ -476,7 +484,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get utWidth(): number {
-    return (this.bowlHeight / 2 + Math.sqrt(this.utTailDepth * (this.bowlHeight - this.utTailDepth))) * this.bowlWidth / this.bowlHeight;
+    return (this.bowlHeight / 2 + Math.sqrt(this.utTailDepth * (this.bowlHeight - this.utTailDepth))) * this.bowlRatio;
   }
 
   @part()
@@ -485,7 +493,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const fromAngle = MathUtil.atan2Deg(radius - this.utTailDepth, Math.sqrt(this.utTailDepth * (radius * 2 - this.utTailDepth)));
     const toAngle = MathUtil.atan2Deg(radius - this.talBeakHeight, Math.sqrt(this.talBeakHeight * (radius * 2 - this.talBeakHeight)));
     const part = Part.union(
-      Contour.arc($.origin, this.bowlHeight / 2, fromAngle, 360 - toAngle).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.arc($.origin, this.bowlHeight / 2, fromAngle, 360 - toAngle).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -497,7 +505,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
     const startPoint = $(Math.sqrt(this.utTailDepth * (radius * 2 - this.utTailDepth)), radius - this.utTailDepth);
     const endPoint = startPoint.add($(-height * (radius - this.lesTailDepth) / Math.sqrt(this.lesTailDepth * (radius * 2 - this.lesTailDepth)), height));
     const part = Part.union(
-      Contour.line(startPoint, endPoint).scale(this.bowlWidth / this.bowlHeight, 1).toStrokePart(this.thickness / 2, "round", "round")
+      Contour.line(startPoint, endPoint).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
     );
     return part;
   }
@@ -751,7 +759,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get dotGap(): number {
-    return this.mean * 0.07;
+    return (this.bowlWidth + this.thickness) * 0.07;
   }
 
   @part()
@@ -806,6 +814,48 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
       this.partDot(),
       this.partDot().translate($(this.dotHeight + this.dotGap, 0)),
       this.partBadekStem()
+    );
+    const bearings = {left: this.badekLeftBearing, right: this.bearing};
+    const glyph = Glyph.byBearings(part, bearings);
+    return glyph;
+  }
+
+  private get padekCurveHeight(): number {
+    return this.bowlHeight * 0.6;
+  }
+
+  private get padekCurveBend(): number {
+    return this.yesLegBend / this.yesLegHeight * this.padekCurveHeight;
+  }
+
+  public partPadekCurve(): Part {
+    const bend = this.padekCurveBend / this.bowlRatio;;
+    const height = this.padekCurveHeight;
+    const leftHandle = height * 0.6;
+    const part = Part.union(
+      Contour.bezier($.origin, $(0, -leftHandle), null, $(bend, -height)).scale(this.bowlRatio, 1).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.dotHeight / 2, -this.mean - this.descent + this.padekCurveHeight + this.thickness / 2));
+    return part;
+  }
+
+  @part()
+  public partPadekStem(): Part {
+    const height = this.mean + this.descent - this.dotHeight + this.overshoot - this.badekGap - this.thickness - this.padekCurveHeight;
+    const part = Part.union(
+      Contour.line($.origin, $(0, -height)).toStrokePart(this.thickness / 2, "round", "round")
+    );
+    part.translate($(this.dotHeight / 2, -this.dotHeight + this.overshoot - this.badekGap - this.thickness / 2));
+    return part;
+  }
+
+  @glyph("?")
+  public glyphPadek(): Glyph {
+    const part = Part.union(
+      this.partDot(),
+      this.partDot().translate($(this.dotHeight + this.dotGap, 0)),
+      this.partPadekStem(),
+      this.partPadekCurve()
     );
     const bearings = {left: this.badekLeftBearing, right: this.bearing};
     const glyph = Glyph.byBearings(part, bearings);
