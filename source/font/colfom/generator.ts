@@ -533,7 +533,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get diacriticThickness(): number {
-    return Math.min(this.thickness, this.config.weightConst * 30 + 50);
+    return Math.min(this.thickness, this.config.weightConst * 30 + 45);
   }
 
   private get diacriticGap(): number {
@@ -755,7 +755,7 @@ export class ColfomGenerator extends Generator<ColfomConfig> {
   }
 
   private get dotHeight(): number {
-    return this.thickness * 1.3;
+    return Math.max(this.thickness * 1.2, this.thickness * 0.6 + 52);
   }
 
   private get dotGap(): number {
