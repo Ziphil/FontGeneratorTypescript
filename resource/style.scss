@@ -3,13 +3,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Asap+Condensed:wght@400;700&family=Asap:wght@400;700&display=swap");
 
 @mixin large {
-  @media screen and (min-width: 1251px) {
+  @media screen and (min-width: 641px) {
     @content;
   }
 }
 
 @mixin small {
-  @media screen and (max-width: 1250px) {
+  @media screen and (max-width: 640px) {
     @content;
   }
 }
@@ -29,6 +29,7 @@ body {
   color: $text-color;
   background-color: $background-color;
   font-feature-settings: "lnum";
+  line-height: 1;
   @include large {
     height: 100vh;
     overflow: hidden;
@@ -36,16 +37,17 @@ body {
 }
 
 #root {
-  padding: 40px 0px;
+  padding-block: 30px;
   display: flex;
   box-sizing: border-box;
   @include large {
     height: 100vh;
-    justify-content: center;
+    padding-inline: 40px;
+    flex-direction: row;
   }
   @include small {
+    padding-inline: 15px;
     flex-direction: column;
-    align-items: center;
   }
 }
 
@@ -53,125 +55,143 @@ body {
   @include large {
     width: 260px;
     flex: 0 0 260px;
-    margin: 0px 30px 0px 0px;
-    padding: 0px 30px 0px 0px;
-    border-right: 1px $gray-color solid;
+    margin-inline-end: 30px;
+    padding-inline-end: 30px;
+    border-inline-end: 1px $gray-color solid;
   }
   @include small {
-    width: 838px;
     flex: 0 0 auto;
-    margin: 0px 0px 30px 0px;
-    padding: 0px 0px 27px 0px;
-    border-bottom: 1px $gray-color solid;
+    margin-block-end: 30px;
+    padding-block-end: 30px;
+    border-block-end: 1px $gray-color solid;
   }
 }
 
 #menu {
-  @include small {
+  row-gap: 4px;
+  column-gap: 20px;
+  @include large {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+  }
+  @include small {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
   }
 }
 
 #menu .item {
   all: unset;
   width: 100%;
-  padding: 3px 0px 3px 0px;
+  padding-block: 4px;
+  column-gap: 4px;
   border-radius: 4px;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  display: block;
-  @include large {
-    margin: 0px 0px 3px 0px;
+  &.current {
+    background-color: $gray-color;
+    font-weight: bold;
   }
-  @include small {
-    margin: 0px 20px 3px 0px;
-    width: calc((100% - 20px * 2) / 3);
-    &:nth-child(3n) {
-      margin: 0px 0px 3px 0px;
-    }
+  &:focus {
+    box-shadow: 0px 0px 0px 2px $gray-color inset;
   }
-}
-
-#menu .item.current {
-  background-color: $gray-color;
-  font-weight: bold;
-}
-
-#menu .item:focus {
-  box-shadow: 0px 0px 0px 2px $gray-color inset;
-}
-
-#menu .item:hover {
-  background-color: $gray-color;
-}
-
-#menu .item::before {
-  margin: 0em 0.3em 0em 0em;
-  color: $gray-color;
-  font-weight: normal;
-  content: "❥";
+  &:hover {
+    background-color: $gray-color;
+  } 
+  &::before {
+    color: $gray-color;
+    font-weight: normal;
+    content: "❥";
+  }
 }
 
 #content {
-  width: 838px;
   padding: 0px;
-  @include large {
-    flex: 0 0 838px;
-  }
+  flex: 1 1 0px;
 }
 
 h1 {
-  margin: 0px 0px -8px 0px;
+  margin: 0px;
   padding: 0px;
+  column-gap: 15px;
+  row-gap: 8px;
   font-size: 200%;
   font-weight: bold;
   display: flex;
-  align-items: baseline;
+  @include large {
+    flex-direction: row;
+    align-items: baseline;
+  }
+  @include small {
+    flex-direction: column;
+    align-items: start;
+  }
 }
 
 h2 {
-  margin: 30px 0px 15px 0px;
+  margin-block-start: 30px;
+  margin-block-end: 15px;
   padding: 0px;
   font-family: "Asap";
   font-size: 125%;
   font-weight: bold;
+  letter-spacing: 0.3em;
   color: $gray-text-color;
   text-transform: uppercase;
-  letter-spacing: 0.3em;
 }
 
 #name {
   font-family: "Asap";
 }
 
-#id {
-  margin: 0px 0px 0px 15px;
-  padding: 0px 4px;
+h1 .info {
+  column-gap: 8px;
+  display: flex;
+  align-items: baseline
+}
+
+.id {
+  padding-inline: 4px;
   font-size: 70%;
   border: 1px $gray-color solid;
   border-radius: 4px;
+  display: flex;
+  align-items: baseline;
+}
+
+.id #family {
+  margin-inline-end: 4px;
+  padding-inline-end: 4px;
+  border-inline-end: 1px $gray-color solid;
 }
 
 #version {
-  margin: 0px 0px 0px 8px;
   font-size: 70%;
 }
 
 #preview-wrapper {
   margin: 0px;
   padding: 8px;
-  background-color: $gray-color;
+  row-gap: 8px;
   border-radius: 8px;
+  background-color: $gray-color;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  overflow: hidden;
 }
 
 #preview-text {
   width: 100%;
   margin: 0px;
-  padding: 4px 4px;
+  padding-block: 4px;
+  padding-inline: 4px;
+  border-radius: 4px;
   font-family: "Asap";
   font-size: inherit;
-  border-radius: 4px;
   background-color: white;
   box-sizing: border-box;
   border: none;
@@ -179,36 +199,39 @@ h2 {
 }
 
 #preview {
-  margin: 8px 0px 0px 0px;
   border-radius: 4px;
   background-color: white;
   display: block;
 }
 
 #glyph-list {
+  gap: 10px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: start;
-  gap: 10px;
 }
 
 .glyph-pane {
   padding: 8px;
-  background-color: $gray-color;
+  row-gap: 8px;
   border-radius: 8px;
+  background-color: $gray-color;
+  display: flex;
+  flex-direction: column;
 }
 
 .glyph-pane .info {
-  margin: 0px;
+  row-gap: 4px;
+  display: flex;
+  flex-direction: column;
 }
 
 .glyph-pane .bottom-info {
-  margin: 5px 0px 0px 0px;
 }
 
 .glyph-pane .char {
-  height: 20px;
+  height: 1em;
   font-family: "Asap";
   font-weight: bold;
   white-space: pre;
@@ -225,7 +248,6 @@ h2 {
 }
 
 .glyph-pane canvas {
-  margin: 5px 0px 0px 0px;
   border-radius: 4px;
   background-color: white;
   display: block;

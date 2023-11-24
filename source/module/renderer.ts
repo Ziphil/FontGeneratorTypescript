@@ -19,10 +19,10 @@ import {
 } from "./point";
 
 
-const GLYPH_CANVAS_WIDTH = 80;
+const GLYPH_CANVAS_WIDTH = 90;
 const GLYPH_CANVAS_HEIGHT = 80;
-const PREVIEW_CANVAS_WIDTH = 822;
-const PREVIEW_CANVAS_HEIGHT = 150;
+const PREVIEW_CANVAS_INLINE_PADDING = 8;
+const PREVIEW_CANVAS_HEIGHT = 160;
 
 const GRAY_COLOR = new Color({hue: 198, saturation: 0.5, lightness: 0.9});
 const SELECTED_COLOR = new Color({hue: 35, saturation: 0.9, lightness: 0.5});
@@ -89,18 +89,21 @@ export class FontRenderer {
 
   private updateFontName(): void {
     const nameElement = document.getElementById("name")!;
-    const idElement = document.getElementById("id")!;
+    const familyElement = document.getElementById("family")!;
+    const variantElement = document.getElementById("variant")!;
     const versionElement = document.getElementById("version")!;
     nameElement.textContent = this.font?.fullName ?? "Unknown";
-    idElement.textContent = this.id || "?";
+    familyElement.textContent = this.id?.slice(0, 2) || "?";
+    variantElement.textContent = this.id?.slice(2) || "?";
     versionElement.textContent = this.font?.info?.version || "?";
   }
 
   private setupPreviewCanvas(): void {
     if (!this.previewCanvasReady) {
       const input = document.getElementById("preview-text")! as HTMLInputElement;
+      const wrapper = document.getElementById("preview-wrapper")! as HTMLInputElement;
       const canvas = document.getElementById("preview")! as HTMLCanvasElement;
-      canvas.width = PREVIEW_CANVAS_WIDTH;
+      canvas.width = wrapper.offsetWidth - PREVIEW_CANVAS_INLINE_PADDING * 2;
       canvas.height = PREVIEW_CANVAS_HEIGHT;
       input.addEventListener("input", () => {
         history.replaceState("", document.title, location.pathname + "?preview=" + encodeURIComponent(input.value) + location.hash);
